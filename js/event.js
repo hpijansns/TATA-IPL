@@ -10,11 +10,25 @@ let startY = 0;
 // =========================
 // 🔥 GET FULL MATCH DATA
 // =========================
-const match = JSON.parse(localStorage.getItem('selectedMatch'));
+let match = null;
 
+try {
+    match = JSON.parse(localStorage.getItem('selectedMatch'));
+} catch {
+    match = null;
+}
+
+console.log("EVENT MATCH:", match);
+
+// ❌ NO MATCH
 if (!match) {
     container.innerHTML = `<div class="loading">No Match Found</div>`;
 } else {
+
+    // 🔥 IMPORTANT FIX (ID SAVE FOR SEATS)
+    if (match.id) {
+        localStorage.setItem("matchId", match.id);
+    }
 
     const teams = match.title.split(' vs ');
 
@@ -95,6 +109,9 @@ popup.addEventListener('click', (e) => {
     if (e.target === popup) closePopup();
 });
 
+// =========================
+// 🔥 ACCEPT → GO TO SEATS (FINAL FIX)
+// =========================
 document.getElementById('accept-tnc-btn').onclick = () => {
     closePopup();
 
@@ -102,11 +119,17 @@ document.getElementById('accept-tnc-btn').onclick = () => {
         fbq('track', 'InitiateCheckout');
     }
 
+    // 🔥 IMPORTANT (DATA SAFE PASS)
+    localStorage.setItem('selectedMatch', JSON.stringify(match));
+
     setTimeout(() => {
         window.location.href = "seats.html";
     }, 200);
 };
 
+// =========================
+// 🔥 BOOK BUTTON
+// =========================
 document.getElementById('book-now-btn').onclick = () => {
     openTnc();
 };
