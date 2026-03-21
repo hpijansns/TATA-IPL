@@ -4,15 +4,21 @@ const container = document.getElementById('event-container');
 const footer = document.getElementById('event-footer');
 const priceBox = document.getElementById('event-price');
 
+const popup = document.getElementById('tnc-modal');
+const box = document.getElementById('popup-box');
+
 const matchId = localStorage.getItem('selectedMatch');
 
-// ❌ Agar match nahi mila
+let startY = 0;
+
+// ❌ NO MATCH
 if (!matchId) {
     container.innerHTML = `<div class="loading">No Match Found</div>`;
 }
 
-// 🔥 FETCH DATA
+// 🔥 FETCH MATCH DATA
 get(ref('matches/' + matchId)).then((snap) => {
+
     const m = snap.val();
 
     if (!m) {
@@ -24,7 +30,7 @@ get(ref('matches/' + matchId)).then((snap) => {
 
     container.innerHTML = `
     
-    <!-- 🔥 TOP BANNER -->
+    <!-- 🔥 BANNER -->
     <div style="padding:16px">
         <img src="${m.banner}" style="width:100%; border-radius:10px;">
     </div>
@@ -42,7 +48,7 @@ get(ref('matches/' + matchId)).then((snap) => {
             👍 
             <div>
                 <strong>71.7k are Interested</strong>
-                <p>Mark interested to know more about this event.</p>
+                <p>Mark interested to know more</p>
             </div>
         </div>
         <button class="interested-btn">Interested?</button>
@@ -73,42 +79,83 @@ get(ref('matches/' + matchId)).then((snap) => {
     <div class="about-section">
         <h3>About The Event</h3>
         <p>
-            Witness an exciting showdown in the TATA IPL 2026 as 
-            <b>${teams[0]}</b> take on <b>${teams[1]}</b>.
-            Experience the thrill live in the stadium!
+            Witness an exciting IPL match between 
+            <b>${teams[0]}</b> and <b>${teams[1]}</b>.
         </p>
-        <span class="read-more">Read More</span>
     </div>
 
-    <!-- 🔥 T&C -->
+    <!-- 🔥 T&C LINK -->
     <div class="tnc-link" onclick="openTnc()">
         <span>Terms & Conditions</span>
         <span>➤</span>
     </div>
     `;
 
-    // 🔥 FOOTER SHOW
+    // FOOTER SHOW
     footer.style.display = "flex";
     priceBox.innerText = `₹${m.price} onwards`;
 });
 
-// 🔥 T&C OPEN
+
+// 🔥 OPEN POPUP
 window.openTnc = () => {
-    document.getElementById('tnc-modal').classList.add('active');
+    popup.classList.add('active');
 };
 
-// 🔥 T&C CLOSE
+
+// 🔥 CLOSE POPUP
+function closePopup() {
+    popup.classList.remove('active');
+    box.style.transform = 'translateY(0)';
+}
+
+// CLOSE BUTTON
+document.getElementById('close-popup').onclick = closePopup;
+
+// OUTSIDE CLICK
+popup.addEventListener('click', (e) => {
+    if (e.target === popup) closePopup();
+});
+
+// ACCEPT → REDIRECT
 document.getElementById('accept-tnc-btn').onclick = () => {
-    document.getElementById('tnc-modal').classList.remove('active');
-};
+    closePopup();
 
-// 🔥 BOOK NOW
-document.getElementById('book-now-btn').onclick = () => {
-
-    // Pixel Tracking
+    // Pixel track
     if (typeof fbq !== "undefined") {
         fbq('track', 'InitiateCheckout');
     }
 
-    window.location.href = "seats.html";
+    setTimeout(() => {
+        window.location.href = "seats.html";
+    }, 200);
 };
+
+
+// 🔥 BOOK BUTTON → OPEN POPUP
+document.getElementById('book-now-btn').onclick = () => {
+    openTnc();
+};
+
+
+// 🔥 SWIPE DOWN CLOSE (MOBILE FEEL)
+box.addEventListener('touchstart', (e) => {
+    startY = e.touches[0].clientY;
+});
+
+box.addEventListener('touchmove', (e) => {
+    let move = e.touches[0].clientY - startY;
+    if (move > 0) {
+        box.style.transform = `translateY(${move}px)`;
+    }
+});
+
+box.addEventListener('touchend', (e) => {
+    let diff = e.changedTouches[0].clientY - startY;
+
+    if (diff > 100) {
+        closePopup();
+    } else {
+        box.style.transform = 'translateY(0)';
+    }
+});
