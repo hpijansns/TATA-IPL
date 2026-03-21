@@ -150,3 +150,166 @@ body { background-color: #f4f4f5; color: var(--text-main); -webkit-font-smoothin
 .btn-delete { background: var(--primary); color: #fff; }
 .btn-secondary { background: #555; color: #fff; border: none; padding: 14px 24px; border-radius: 8px; font-size: 16px; font-weight: 600; cursor: pointer; width: 100%; transition: 0.2s; }
 .loading { text-align: center; padding: 40px; color: var(--text-muted); font-size: 14px; }
+
+
+/* ================= EVENT PAGE MOBILE FIX ================= */
+
+#event-container img {
+    width: 100%;
+    border-radius: 10px;
+}
+
+/* Interest box spacing fix */
+.interest-box {
+    margin: 12px 16px;
+}
+
+/* Details section compact */
+.event-details-list {
+    padding: 12px 16px;
+    gap: 10px;
+    font-size: 13px;
+}
+
+/* Explore banner */
+.explore-banner {
+    margin: 12px 16px;
+    padding: 10px;
+    font-size: 12px;
+}
+
+/* About */
+.about-section {
+    padding: 16px;
+}
+
+.about-section h3 {
+    font-size: 15px;
+}
+
+.about-section p {
+    font-size: 13px;
+}
+
+/* Limit bar */
+.limit-info-bar {
+    padding: 12px 16px;
+    font-size: 12px;
+}
+
+/* TNC link */
+.tnc-link {
+    padding: 14px 16px;
+    font-size: 14px;
+}
+
+/* ================= POPUP (PRO STYLE) ================= */
+
+.modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.75);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 999;
+}
+
+.modal.active {
+    display: flex;
+}
+
+/* Popup box */
+.tnc-popup {
+    background: #fff;
+    width: 90%;
+    max-width: 400px;
+    border-radius: 12px;
+    padding: 20px;
+    animation: popupFade 0.25s ease;
+}
+
+/* Header */
+.popup-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.popup-header h2 {
+    font-size: 18px;
+    font-weight: 600;
+}
+
+/* Close icon */
+#close-popup {
+    font-size: 20px;
+    cursor: pointer;
+    color: #888;
+}
+
+/* Scroll content */
+.tnc-scroll {
+    max-height: 250px;
+    overflow-y: auto;
+    margin: 16px 0;
+}
+
+.tnc-scroll p {
+    font-size: 13px;
+    color: #555;
+    margin-bottom: 10px;
+    line-height: 1.5;
+}
+
+/* Button */
+.tnc-btn {
+    width: 100%;
+    background: #f84464;
+    color: #fff;
+    border: none;
+    padding: 14px;
+    border-radius: 10px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+/* Animation */
+@keyframes popupFade {
+    from {
+        transform: translateY(40px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+/* ================= MOBILE PERFECT FIX ================= */
+
+@media (max-width: 600px) {
+
+    body {
+        padding-bottom: 90px;
+    }
+
+    .sticky-footer {
+        max-width: 100%;
+        border-radius: 0;
+    }
+
+    .book-now-btn {
+        padding: 12px 20px;
+        font-size: 14px;
+    }
+
+    .price-info .price {
+        font-size: 15px;
+    }
+
+    .price-info .status {
+        font-size: 11px;
+    }
+}
