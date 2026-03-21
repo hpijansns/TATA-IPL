@@ -1,3 +1,4 @@
+// ✅ Fix 1: 'import' hamesha small letters mein hona chahiye
 import { db, ref, get } from './firebase.js';
 
 document.addEventListener('DOMContentLoaded', async () => {
@@ -12,96 +13,91 @@ document.addEventListener('DOMContentLoaded', async () => {
     const acceptBtn = document.getElementById('accept-tnc-btn');
 
     // =========================
-    // 🔥 STEP 1: GET DATA
+    // 🔥 STEP 1: GET DATA FROM STORAGE
     // =========================
-
     let match = null;
+    const matchId = localStorage.getItem("matchId");
 
     try {
-        match = JSON.parse(localStorage.getItem('selectedMatch'));
-    } catch (e) {
-        match = null;
-    }
-
-    const id = localStorage.getItem("matchId");
-
-    console.log("MATCH:", match);
-    console.log("ID:", id);
-
-    // ❌ अगर कुछ भी नहीं मिला
-    if (!match && !id) {
-        container.innerHTML = `<div class="loading">No Match Found ❌</div>`;
-        return;
-    }
-
-    // =========================
-    // 🔥 STEP 2: TRY FIREBASE
-    // =========================
-
-    let m = match;
-
-    try {
-        if (id) {
-            const snap = await get(ref(db, 'matches/' + id));
-            if (snap.exists()) {
-                m = snap.val();
-            }
+        const storedData = localStorage.getItem('selectedMatch');
+        if (storedData) {
+            match = JSON.parse(storedData);
         }
     } catch (e) {
-        console.log("Firebase fail → using local");
+        console.error("JSON Parse Error", e);
     }
 
-    // ❌ अगर data अभी भी नहीं
-    if (!m) {
-        container.innerHTML = `<div class="loading">No Data Found ❌</div>`;
+    // Agar na ID hai na Data, to error dikhao
+    if (!match && !matchId) {
+        if(container) container.innerHTML = `<div class="loading">No Match Selected ❌</div>`;
         return;
     }
 
     // =========================
-    // 🔥 SAFE DATA
+    // 🔥 STEP 2: REFRESH FROM FIREBASE (Optional but Recommended)
     // =========================
+    let m = match; // Default local data rakhein
 
-    let team1 = "Team A";
-    let team2 = "Team B";
+    if (matchId) {
+        try {
+            const snap = await get(ref(db, 'matches/' + matchId));
+            if (snap.exists()) {
+                m = snap.val(); // Firebase se latest data mil gaya
+                console.log("Fresh data from Firebase loaded");
+            }
+        } catch (e) {
+            console.warn("Firebase fetch failed, using local storage");
+        }
+    }
 
+    // Final check agar data mil gaya
+    if (!m) {
+        if(container) container.innerHTML = `<div class="loading">Data Not Found ❌</div>`;
+        return;
+    }
+
+    // =========================
+    // 🔥 STEP 3: RENDER UI
+    // =========================
+    
+    // Title se team names alag karein
+    let team1 = "Team A", team2 = "Team B";
     if (m.title && m.title.includes(" vs ")) {
         const parts = m.title.split(" vs ");
         team1 = parts[0];
         team2 = parts[1];
     }
 
-    const banner = m.banner && m.banner.startsWith("http")
-        ? m.banner
-        : "https://via.placeholder.com/400x200?text=No+Image";
+    // Image fallback agar banner na ho
+    const bannerImg = m.banner || "https://assets-in.bmscdn.com/promotions/cms/creatives/1706382336630_tataipl2024web.jpg";
+
+    if (container) {
+        container.innerHTML = `
+            <div style="padding:16px">
+                <img src="${bannerImg}" style="width:100%; border-radius:12px; box-shadow: 0 4px 10px rgba(0,0,0,0.3);">
+            </div>
+
+            <div class="event-details-list">
+                <div>📅 ${m.date || 'TBA'}</div>
+                <div>⏰ ${m.time || 'TBA'}</div>
+                <div>📍 ${m.venue || 'Venue TBD'}</div>
+            </div>
+
+            <div class="about-section">
+                <h2 style="color:#333; margin-bottom:8px;">${team1} <span style="color:#e53935">vs</span> ${team2}</h2>
+                <p style="color:#666; font-size:14px; line-height:1.5;">
+                    Experience the thrill of the IPL 2026 live! Join thousands of fans for this epic clash at ${m.venue || 'the stadium'}.
+                </p>
+            </div>
+        `;
+    }
+
+    if (footer) footer.style.display = "flex";
+    if (priceBox) priceBox.innerText = `₹${m.price || 0} onwards`;
 
     // =========================
-    // 🔥 UI RENDER
+    // 🔥 STEP 4: BUTTON ACTIONS
     // =========================
-
-    container.innerHTML = `
-        <div style="padding:16px">
-            <img src="${banner}" style="width:100%; border-radius:10px;">
-        </div>
-
-        <div class="event-details-list">
-            <div>📅 ${m.date || 'N/A'}</div>
-            <div>⏰ ${m.time || 'N/A'}</div>
-            <div>📍 ${m.venue || 'N/A'}</div>
-        </div>
-
-        <div class="about-section">
-            <h3>${team1} vs ${team2}</h3>
-            <p>Watch this exciting IPL match live!</p>
-        </div>
-    `;
-
-    footer.style.display = "flex";
-    priceBox.innerText = `₹${m.price || 0} onwards`;
-
-    // =========================
-    // 🔥 BUTTONS
-    // =========================
-
     if (bookBtn) {
         bookBtn.onclick = () => popup.classList.add('active');
     }
@@ -119,8 +115,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (acceptBtn) {
         acceptBtn.onclick = () => {
             popup.classList.remove('active');
+            // Seats page par jane ke liye taiyar
             window.location.href = "seats.html";
         };
     }
-
 });
