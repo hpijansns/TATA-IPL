@@ -20,16 +20,17 @@
 
 <!-- VENUE IMAGE -->
 <div class="venue-container">
-    <img id="venue-img" src="" alt="Venue" style="width:100%; height:180px; object-fit:cover;">
+    <img id="venue-img" src="" alt="Venue"
+    style="width:100%; height:180px; object-fit:cover;">
 </div>
 
-<!-- FOOTER -->
+<!-- 🔥 BOOK BUTTON (POPUP OPEN) -->
 <div class="sticky-footer">
     <div class="price-info">
         <div class="price">₹1200 onwards</div>
         <div class="status">Filling Fast</div>
     </div>
-    <button class="book-now-btn">Book Now</button>
+    <button id="open-seat-popup" class="book-now-btn">Book Now</button>
 </div>
 
 <!-- POPUP -->
@@ -43,11 +44,13 @@
 
         <h2>How many seats?</h2>
 
+        <!-- VEHICLE IMAGE -->
         <img id="vehicle-img"
         src="https://in.bmscdn.com/webin/common/icons/bicycle.png"
         class="popup-img"
         style="width:180px; display:block; margin:20px auto;">
 
+        <!-- SEAT BUTTONS -->
         <div id="qty-bubbles" class="qty-bubbles"></div>
 
         <div class="info-pill">
