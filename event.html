@@ -1,112 +1,64 @@
-import { db, ref, get } from './firebase.js';
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Match Details</title>
 
-document.addEventListener('DOMContentLoaded', async () => {
+    <link rel="stylesheet" href="css/style.css">
+</head>
 
-    const container = document.getElementById('event-container');
-    const footer = document.getElementById('event-footer');
-    const priceBox = document.getElementById('event-price');
-    const bookBtn = document.getElementById('book-now-btn');
+<body class="mobile-layout">
 
-    const popup = document.getElementById('tnc-modal');
-    const closeBtn = document.getElementById('close-popup');
-    const acceptBtn = document.getElementById('accept-tnc-btn');
-
-    // =========================
-    // 🔥 GET MATCH FROM STORAGE
-    // =========================
-    const match = JSON.parse(localStorage.getItem('selectedMatch'));
-
-    if (!match || !match.id) {
-        container.innerHTML = `<div class="loading">No Match Found ❌</div>`;
-        return;
-    }
-
-    // 👉 ID SAVE (SEATS PAGE KE LIYE)
-    localStorage.setItem("matchId", match.id);
-
-    try {
-
-        const snap = await get(ref(db, 'matches/' + match.id));
-
-        if (!snap.exists()) {
-            container.innerHTML = `<div class="loading">No Data Found ❌</div>`;
-            return;
-        }
-
-        const m = snap.val();
-
-        const teams = m.title.split(' vs ');
-
-        // =========================
-        // 🔥 UI RENDER
-        // =========================
-        container.innerHTML = `
-        
-        <div style="padding:16px">
-            <img src="${m.banner}" style="width:100%; border-radius:10px;">
+    <!-- HEADER -->
+    <header class="bms-header">
+        <div class="header-left">
+            <span class="back-icon" onclick="window.history.back()">&#8249;</span>
+            <h1>Match Details</h1>
         </div>
+    </header>
 
-        <div class="interest-box">
-            <div class="interest-left">
-                👍 
-                <div>
-                    <strong>71.7k are Interested</strong>
-                    <p>Mark interested to know more</p>
-                </div>
+    <!-- 🔥 MAIN CONTENT -->
+    <main id="event-container" style="padding-bottom:100px;">
+        <div class="loading">Loading details...</div>
+    </main>
+
+    <!-- 🔥 POPUP -->
+    <div id="tnc-modal" class="modal">
+        <div class="modal-content tnc-popup">
+
+            <div class="popup-header">
+                <h2>Important Note</h2>
+                <span id="close-popup">✕</span>
             </div>
-            <button class="interested-btn">Interested?</button>
+
+            <div class="tnc-scroll">
+                <p>- Seated Event</p>
+                <p>- Random seats allotment</p>
+                <p>- Ticket required above 2 years</p>
+                <p>- No re-entry</p>
+            </div>
+
+            <button id="accept-tnc-btn" class="tnc-btn">
+                Okay, Got It
+            </button>
+
         </div>
+    </div>
 
-        <div class="event-details-list">
-            <div>📅 ${m.date}</div>
-            <div>⏰ ${m.time}</div>
-            <div>📍 ${m.venue}</div>
+    <!-- 🔥 FOOTER -->
+    <div class="sticky-footer" id="event-footer" style="display:none;">
+        <div class="price-info">
+            <div class="price" id="event-price">₹0 onwards</div>
+            <div class="status">Filling Fast</div>
         </div>
+        <button id="book-now-btn" class="book-now-btn">
+            Book Now
+        </button>
+    </div>
 
-        <div class="about-section">
-            <h3>About The Event</h3>
-            <p>
-                Witness match between 
-                <b>${teams[0]}</b> and <b>${teams[1]}</b>.
-            </p>
-        </div>
+    <!-- JS -->
+    <script type="module" src="js/event.js"></script>
 
-        <div class="tnc-link" onclick="openTnc()">
-            <span>Terms & Conditions</span>
-            <span>➤</span>
-        </div>
-        `;
-
-        // FOOTER SHOW
-        footer.style.display = "flex";
-        priceBox.innerText = `₹${m.price} onwards`;
-
-    } catch (err) {
-        console.error(err);
-        container.innerHTML = `<div class="loading">Error loading ❌</div>`;
-    }
-
-    // =========================
-    // 🔥 POPUP
-    // =========================
-    window.openTnc = () => popup.classList.add('active');
-
-    closeBtn.onclick = () => popup.classList.remove('active');
-
-    popup.addEventListener('click', (e) => {
-        if (e.target === popup) popup.classList.remove('active');
-    });
-
-    acceptBtn.onclick = () => {
-        popup.classList.remove('active');
-        window.location.href = "seats.html";
-    };
-
-    // =========================
-    // 🔥 BOOK NOW BUTTON
-    // =========================
-    bookBtn.onclick = () => {
-        popup.classList.add('active');
-    };
-
-});
+</body>
+</html>
