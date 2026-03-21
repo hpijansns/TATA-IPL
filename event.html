@@ -5,9 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Match Details</title>
 
+    <!-- CSS -->
     <link rel="stylesheet" href="css/style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    
+
     <!-- 🔥 Meta Pixel -->
     <script>
     !function(f,b,e,v,n,t,s)
@@ -33,6 +33,7 @@
 
 <body class="mobile-layout">
 
+    <!-- HEADER -->
     <header class="bms-header white-header">
         <div class="header-left">
             <span class="back-icon" onclick="window.history.back()">&#8249;</span>
@@ -48,24 +49,26 @@
         </div>
     </header>
 
-    <main id="event-container" class="event-wrapper" style="padding-bottom: 90px;">
+    <!-- MAIN CONTENT -->
+    <main id="event-container" style="padding-bottom:100px;">
         <div class="loading">Loading details...</div>
     </main>
 
-    <!-- T&C MODAL -->
+    <!-- 🔥 T&C MODAL -->
     <div id="tnc-modal" class="modal">
         <div class="modal-content text-left tnc-box">
             <h3>Important Note</h3>
             <div class="tnc-list">
-                <p>- Seated Event!</p>
-                <p>- Seat numbers random allot honge</p>
+                <p>- Seated Event</p>
+                <p>- Seats will be allotted randomly</p>
                 <p>- No Re-entry allowed</p>
+                <p>- Age limit: 2+ years</p>
             </div>
             <button id="accept-tnc-btn" class="btn-primary">Okay, Got It</button>
         </div>
     </div>
 
-    <!-- FOOTER -->
+    <!-- 🔥 STICKY FOOTER -->
     <div class="sticky-footer" id="event-footer" style="display:none;">
         <div class="price-info">
             <div class="price" id="event-price">₹0 onwards</div>
@@ -74,7 +77,7 @@
         <button id="book-now-btn" class="book-now-btn">Book Now</button>
     </div>
 
-    <!-- 🔥 IMPORTANT CHANGE -->
+    <!-- JS -->
     <script type="module" src="js/event.js"></script>
 
 </body>
