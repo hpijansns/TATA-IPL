@@ -1,10 +1,9 @@
-import { db, ref, onValue, set, remove, push } from './firebase.js';
+import { db } from './firebase.js';
+import { ref, onValue, set, remove, push } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
 document.addEventListener('DOMContentLoaded', () => {
 
     const form = document.getElementById('match-form');
-    if (!form) return;
-
     const tableBody = document.getElementById('admin-match-list');
 
     const editIdInput = document.getElementById('edit-id');
@@ -17,35 +16,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const mTeam2 = document.getElementById('m-team2');
     const mBanner = document.getElementById('m-banner');
 
-    const saveBtn = document.getElementById('save-btn');
-    const cancelBtn = document.getElementById('cancel-btn');
-    const formTitle = document.getElementById('form-title');
-
     let isEditing = false;
 
-    // 🔥 IMAGE PREVIEW FIX
-    const preview = document.createElement('img');
-    preview.style.width = "100%";
-    preview.style.marginTop = "10px";
-    preview.style.borderRadius = "8px";
-    preview.style.display = "none";
-
-    mBanner.parentElement.appendChild(preview);
-
-    function showPreview(url) {
-        if (url && url.startsWith("http")) {
-            preview.src = url;
-            preview.style.display = "block";
-        } else {
-            preview.style.display = "none";
-        }
-    }
-
-    mBanner.addEventListener('input', () => {
-        showPreview(mBanner.value);
-    });
-
-    // 🔥 FETCH
+    // ================= FETCH =================
     onValue(ref(db, 'matches'), (snapshot) => {
 
         tableBody.innerHTML = '';
@@ -55,8 +28,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
         window.allMatches = matches;
 
-        Object.keys(matches).forEach((key) => {
-            const m = matches[key];
+        Object.keys(matches).forEach((id) => {
+            const m = matches[id];
 
             tableBody.innerHTML += `
                 <tr>
@@ -64,15 +37,15 @@ document.addEventListener('DOMContentLoaded', () => {
                     <td>${m.date}</td>
                     <td>₹${m.price}</td>
                     <td>
-                        <button onclick="editMatch('${key}')">Edit</button>
-                        <button onclick="deleteMatch('${key}')">Delete</button>
+                        <button onclick="editMatch('${id}')">Edit</button>
+                        <button onclick="deleteMatch('${id}')">Delete</button>
                     </td>
                 </tr>
             `;
         });
     });
 
-    // 🔥 SAVE
+    // ================= SAVE =================
     form.addEventListener('submit', (e) => {
         e.preventDefault();
 
@@ -87,23 +60,23 @@ document.addEventListener('DOMContentLoaded', () => {
             banner: mBanner.value
         };
 
-        if (!data.banner) {
-            alert("Banner URL dal bhai!");
-            return;
-        }
+        console.log("SAVE DATA:", data);
 
         if (isEditing) {
-            set(ref(db, 'matches/' + editIdInput.value), data);
+            set(ref(db, 'matches/' + editIdInput.value), data)
+                .then(() => alert("Updated ✅"))
+                .catch(err => console.error(err));
         } else {
-            push(ref(db, 'matches'), data);
+            push(ref(db, 'matches'), data)
+                .then(() => alert("Saved ✅"))
+                .catch(err => console.error(err));
         }
 
         form.reset();
-        showPreview("");
-        cancelEdit();
+        isEditing = false;
     });
 
-    // 🔥 EDIT
+    // ================= EDIT =================
     window.editMatch = (id) => {
 
         const m = window.allMatches[id];
@@ -118,26 +91,12 @@ document.addEventListener('DOMContentLoaded', () => {
         mTeam2.value = m.team2;
         mBanner.value = m.banner;
 
-        showPreview(m.banner);
-
         isEditing = true;
-        formTitle.innerText = "Edit Match";
-        saveBtn.innerText = "Update Match";
-        cancelBtn.style.display = "block";
     };
 
+    // ================= DELETE =================
     window.deleteMatch = (id) => {
         remove(ref(db, 'matches/' + id));
     };
 
-    function cancelEdit() {
-        isEditing = false;
-        form.reset();
-        showPreview("");
-        cancelBtn.style.display = "none";
-        formTitle.innerText = "Add New Match";
-        saveBtn.innerText = "Save Match";
-    }
-
-    cancelBtn.addEventListener('click', cancelEdit);
 });
