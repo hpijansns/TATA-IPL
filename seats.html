@@ -10,20 +10,20 @@
 
 <body class="mobile-layout bg-white">
 
-<!-- 🔥 TOP HEADER -->
+<!-- HEADER -->
 <header class="bms-header">
     <div class="header-left">
-        <span class="back-icon">&#8249;</span>
+        <span class="back-icon" onclick="window.history.back()">&#8249;</span>
         <h1 id="match-title">Loading...</h1>
     </div>
 </header>
 
-<!-- 🔥 VENUE IMAGE (ADMIN CONTROLLED) -->
+<!-- VENUE IMAGE -->
 <div class="venue-container">
-    <img id="venue-img" src="" alt="Venue">
+    <img id="venue-img" src="" alt="Venue" style="width:100%; height:180px; object-fit:cover;">
 </div>
 
-<!-- 🔥 BOOK NOW BAR -->
+<!-- FOOTER -->
 <div class="sticky-footer">
     <div class="price-info">
         <div class="price">₹1200 onwards</div>
@@ -32,24 +32,22 @@
     <button class="book-now-btn">Book Now</button>
 </div>
 
-<!-- 🔥 POPUP (FIRST SCREEN) -->
+<!-- POPUP -->
 <div id="seat-popup" class="seat-popup active">
 
     <div class="popup-content">
 
-        <!-- TIMER -->
         <div class="timer-banner">
             You have <strong>approximately 4 minutes</strong> to select your seats.
         </div>
 
         <h2>How many seats?</h2>
 
-        <!-- IMAGE -->
         <img id="vehicle-img"
         src="https://in.bmscdn.com/webin/common/icons/bicycle.png"
-        class="popup-img">
+        class="popup-img"
+        style="width:180px; display:block; margin:20px auto;">
 
-        <!-- NUMBERS -->
         <div id="qty-bubbles" class="qty-bubbles"></div>
 
         <div class="info-pill">
