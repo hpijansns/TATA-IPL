@@ -61,7 +61,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     };
 
     // =========================
-    // 🔥 STEP 1: LOCAL DATA (FAST)
+    // 🔥 STEP 1: LOCAL DATA (MAIN FIX)
     // =========================
     let localMatch = null;
 
@@ -73,47 +73,49 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     console.log("LOCAL DATA:", localMatch);
 
-    if (localMatch) {
-
-        matchTitle.innerText = localMatch.title || "Match";
-
-        venueImg.src = localMatch.banner && localMatch.banner.startsWith("http")
-            ? localMatch.banner
-            : "https://via.placeholder.com/400x200?text=No+Image";
-    } else {
+    if (!localMatch) {
         matchTitle.innerText = "No Match Found ❌";
+        venueImg.src = "https://via.placeholder.com/400x200?text=No+Image";
+        return; // 🔥 IMPORTANT (STOP HERE)
     }
 
+    // ✅ SHOW LOCAL DATA FIRST
+    matchTitle.innerText = localMatch.title || "Match";
+
+    venueImg.src = (localMatch.banner && localMatch.banner.startsWith("http"))
+        ? localMatch.banner
+        : "https://via.placeholder.com/400x200?text=No+Image";
+
     // =========================
-    // 🔥 STEP 2: FIREBASE (ADMIN IMAGE LOAD)
+    // 🔥 STEP 2: FIREBASE (OPTIONAL UPDATE)
     // =========================
     const id = localStorage.getItem("matchId");
 
     console.log("MATCH ID:", id);
 
-    if (id) {
-        try {
+    if (!id) return;
 
-            const snapshot = await get(ref(db, 'matches/' + id));
+    try {
 
-            if (snapshot.exists()) {
+        const snapshot = await get(ref(db, 'matches/' + id));
 
-                const data = snapshot.val();
+        if (!snapshot.exists()) return;
 
-                console.log("FIREBASE DATA:", data);
+        const data = snapshot.val();
 
-                // ✅ FINAL OVERRIDE (ADMIN DATA)
-                matchTitle.innerText = data.title || matchTitle.innerText;
+        console.log("FIREBASE DATA:", data);
 
-                if (data.banner && data.banner.startsWith("http")) {
-                    venueImg.src = data.banner;
-                }
-
-            }
-
-        } catch (err) {
-            console.log("Firebase fail → local used");
+        // ✅ SAFE OVERRIDE
+        if (data.title) {
+            matchTitle.innerText = data.title;
         }
+
+        if (data.banner && data.banner.startsWith("http")) {
+            venueImg.src = data.banner;
+        }
+
+    } catch (err) {
+        console.log("Firebase fail → local data used");
     }
 
 });
