@@ -1,64 +1,62 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Match Details</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Match Details</title>
 
-    <link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/style.css">
 </head>
 
 <body class="mobile-layout">
 
-    <!-- HEADER -->
-    <header class="bms-header">
-        <div class="header-left">
-            <span class="back-icon" onclick="window.history.back()">&#8249;</span>
-            <h1>Match Details</h1>
-        </div>
-    </header>
-
-    <!-- 🔥 MAIN CONTENT -->
-    <main id="event-container" style="padding-bottom:100px;">
-        <div class="loading">Loading details...</div>
-    </main>
-
-    <!-- 🔥 POPUP -->
-    <div id="tnc-modal" class="modal">
-        <div class="modal-content tnc-popup">
-
-            <div class="popup-header">
-                <h2>Important Note</h2>
-                <span id="close-popup">✕</span>
-            </div>
-
-            <div class="tnc-scroll">
-                <p>- Seated Event</p>
-                <p>- Random seats allotment</p>
-                <p>- Ticket required above 2 years</p>
-                <p>- No re-entry</p>
-            </div>
-
-            <button id="accept-tnc-btn" class="tnc-btn">
-                Okay, Got It
-            </button>
-
-        </div>
+<!-- HEADER -->
+<header class="bms-header">
+    <div class="header-left">
+        <span class="back-icon" onclick="window.history.back()">&#8249;</span>
+        <h1>Match Details</h1>
     </div>
+</header>
 
-    <!-- 🔥 FOOTER -->
-    <div class="sticky-footer" id="event-footer" style="display:none;">
-        <div class="price-info">
-            <div class="price" id="event-price">₹0 onwards</div>
-            <div class="status">Filling Fast</div>
+<!-- MAIN -->
+<main id="event-container" style="padding-bottom:100px;">
+    <div class="loading">Loading match...</div>
+</main>
+
+<!-- POPUP -->
+<div id="tnc-modal" class="modal">
+    <div class="modal-content tnc-popup">
+
+        <div class="popup-header">
+            <h2>Important Note</h2>
+            <span id="close-popup">✕</span>
         </div>
-        <button id="book-now-btn" class="book-now-btn">
-            Book Now
+
+        <div class="tnc-scroll">
+            <p>- Seated Event</p>
+            <p>- Seats will be randomly allotted</p>
+            <p>- Ticket required above 2 years</p>
+            <p>- No re-entry</p>
+        </div>
+
+        <button id="accept-tnc-btn" class="tnc-btn">
+            Okay, Got It
         </button>
-    </div>
 
-    <!-- JS -->
-    <script type="module" src="js/event.js"></script>
+    </div>
+</div>
+
+<!-- FOOTER -->
+<div class="sticky-footer" id="event-footer" style="display:none;">
+    <div class="price-info">
+        <div class="price" id="event-price">₹0 onwards</div>
+        <div class="status">Filling Fast</div>
+    </div>
+    <button id="book-now-btn" class="book-now-btn">Book Now</button>
+</div>
+
+<!-- JS -->
+<script type="module" src="js/event.js"></script>
 
 </body>
 </html>
