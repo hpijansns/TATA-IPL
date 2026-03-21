@@ -54,37 +54,44 @@ document.addEventListener("DOMContentLoaded", async () => {
     };
 
     // =============================
-    // 🔥 LOAD MATCH (FINAL FIX)
+    // 🔥 FINAL FIX (IMPORTANT)
     // =============================
 
-    const id = localStorage.getItem("selectedMatch");
+    const id = localStorage.getItem("matchId"); // ✅ सही key
 
     console.log("MATCH ID:", id);
 
     if (!id) {
-        matchTitle.innerText = "No Match Found";
+        matchTitle.innerText = "No Match Found ❌";
         return;
     }
 
     try {
 
         const snapshot = await get(ref(db, 'matches/' + id));
+
+        if (!snapshot.exists()) {
+            matchTitle.innerText = "No Data Found ❌";
+            return;
+        }
+
         const data = snapshot.val();
 
         console.log("MATCH DATA:", data);
 
-        if (!data) {
-            matchTitle.innerText = "No Data Found";
-            return;
-        }
+        // ✅ TITLE
+        matchTitle.innerText = data.title || "No Title";
 
-        // ✅ FINAL DATA SET
-        matchTitle.innerText = data.title;
-        venueImg.src = data.banner;
+        // ✅ IMAGE SAFE LOAD
+        if (data.banner && data.banner.startsWith("http")) {
+            venueImg.src = data.banner;
+        } else {
+            venueImg.src = "https://via.placeholder.com/400x200?text=No+Image";
+        }
 
     } catch (err) {
         console.error(err);
-        matchTitle.innerText = "Error loading";
+        matchTitle.innerText = "Error loading ❌";
     }
 
 });
