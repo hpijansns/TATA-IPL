@@ -98,9 +98,16 @@ function renderMatches(matches) {
             </div>  
         `;  
 
-        // 🔥 CLICK → EVENT PAGE  
+        // 🔥🔥🔥 FINAL FIX (IMPORTANT)
         div.addEventListener('click', () => {  
+
+            // ✅ FULL DATA (event page ke liye)
             localStorage.setItem('selectedMatch', JSON.stringify(match));  
+
+            // ✅ ID (seats page ke liye)
+            localStorage.setItem('matchId', match.id);  
+
+            // 👉 पहले event page खुलेगा
             window.location.href = 'event.html';  
         });  
 
