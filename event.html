@@ -1,94 +1,112 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Match Details</title>
+import { db, ref, get } from './firebase.js';
 
-    <!-- CSS -->
-    <link rel="stylesheet" href="css/style.css">
+document.addEventListener('DOMContentLoaded', async () => {
 
-    <!-- 🔥 Meta Pixel -->
-    <script>
-    !function(f,b,e,v,n,t,s)
-    {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
-    n.callMethod.apply(n,arguments):n.queue.push(arguments)};
-    if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
-    n.queue=[];t=b.createElement(e);t.async=!0;
-    t.src=v;s=b.getElementsByTagName(e)[0];
-    s.parentNode.insertBefore(t,s)}(window, document,'script',
-    'https://connect.facebook.net/en_US/fbevents.js');
+    const container = document.getElementById('event-container');
+    const footer = document.getElementById('event-footer');
+    const priceBox = document.getElementById('event-price');
+    const bookBtn = document.getElementById('book-now-btn');
 
-    fbq('init', '1252040857081560');
-    fbq('track', 'PageView');
-    </script>
+    const popup = document.getElementById('tnc-modal');
+    const closeBtn = document.getElementById('close-popup');
+    const acceptBtn = document.getElementById('accept-tnc-btn');
 
-    <!-- 🔥 Noscript -->
-    <noscript>
-        <img height="1" width="1" style="display:none"
-        src="https://www.facebook.com/tr?id=1252040857081560&ev=PageView&noscript=1"/>
-    </noscript>
+    // =========================
+    // 🔥 GET MATCH FROM STORAGE
+    // =========================
+    const match = JSON.parse(localStorage.getItem('selectedMatch'));
 
-</head>
+    if (!match || !match.id) {
+        container.innerHTML = `<div class="loading">No Match Found ❌</div>`;
+        return;
+    }
 
-<body class="mobile-layout">
+    // 👉 ID SAVE (SEATS PAGE KE LIYE)
+    localStorage.setItem("matchId", match.id);
 
-    <!-- HEADER -->
-    <header class="bms-header white-header">
-        <div class="header-left">
-            <span class="back-icon" onclick="window.history.back()">&#8249;</span>
+    try {
+
+        const snap = await get(ref(db, 'matches/' + match.id));
+
+        if (!snap.exists()) {
+            container.innerHTML = `<div class="loading">No Data Found ❌</div>`;
+            return;
+        }
+
+        const m = snap.val();
+
+        const teams = m.title.split(' vs ');
+
+        // =========================
+        // 🔥 UI RENDER
+        // =========================
+        container.innerHTML = `
+        
+        <div style="padding:16px">
+            <img src="${m.banner}" style="width:100%; border-radius:10px;">
         </div>
-        <div class="header-right">
-            <span class="share-icon">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#333" stroke-width="2">
-                    <circle cx="18" cy="5" r="3"></circle>
-                    <circle cx="6" cy="12" r="3"></circle>
-                    <circle cx="18" cy="19" r="3"></circle>
-                </svg>
-            </span>
-        </div>
-    </header>
 
-    <!-- MAIN CONTENT -->
-    <main id="event-container" style="padding-bottom:100px;">
-        <div class="loading">Loading details...</div>
-    </main>
-
-    <!-- 🔥 IMPORTANT NOTE POPUP -->
-    <div id="tnc-modal" class="modal">
-        <div class="modal-content tnc-popup" id="popup-box">
-
-            <div class="popup-header">
-                <h2>Important Note</h2>
-                <span id="close-popup">✕</span>
+        <div class="interest-box">
+            <div class="interest-left">
+                👍 
+                <div>
+                    <strong>71.7k are Interested</strong>
+                    <p>Mark interested to know more</p>
+                </div>
             </div>
-
-            <div class="tnc-scroll">
-                <p>- Seated Event!</p>
-                <p>- Seat numbers will be randomly allotted.</p>
-                <p>- Children above 2 years must have ticket.</p>
-                <p>- Under 18 must be accompanied by adult.</p>
-                <p>- No Re-entry allowed.</p>
-            </div>
-
-            <button id="accept-tnc-btn" class="tnc-btn">
-                Okay, Got It
-            </button>
-
+            <button class="interested-btn">Interested?</button>
         </div>
-    </div>
 
-    <!-- 🔥 STICKY FOOTER -->
-    <div class="sticky-footer" id="event-footer" style="display:none;">
-        <div class="price-info">
-            <div class="price" id="event-price">₹0 onwards</div>
-            <div class="status">Filling Fast</div>
+        <div class="event-details-list">
+            <div>📅 ${m.date}</div>
+            <div>⏰ ${m.time}</div>
+            <div>📍 ${m.venue}</div>
         </div>
-        <button id="book-now-btn" class="book-now-btn">Book Now</button>
-    </div>
 
-    <!-- JS -->
-    <script type="module" src="js/event.js"></script>
+        <div class="about-section">
+            <h3>About The Event</h3>
+            <p>
+                Witness match between 
+                <b>${teams[0]}</b> and <b>${teams[1]}</b>.
+            </p>
+        </div>
 
-</body>
-</html>
+        <div class="tnc-link" onclick="openTnc()">
+            <span>Terms & Conditions</span>
+            <span>➤</span>
+        </div>
+        `;
+
+        // FOOTER SHOW
+        footer.style.display = "flex";
+        priceBox.innerText = `₹${m.price} onwards`;
+
+    } catch (err) {
+        console.error(err);
+        container.innerHTML = `<div class="loading">Error loading ❌</div>`;
+    }
+
+    // =========================
+    // 🔥 POPUP
+    // =========================
+    window.openTnc = () => popup.classList.add('active');
+
+    closeBtn.onclick = () => popup.classList.remove('active');
+
+    popup.addEventListener('click', (e) => {
+        if (e.target === popup) popup.classList.remove('active');
+    });
+
+    acceptBtn.onclick = () => {
+        popup.classList.remove('active');
+        window.location.href = "seats.html";
+    };
+
+    // =========================
+    // 🔥 BOOK NOW BUTTON
+    // =========================
+    bookBtn.onclick = () => {
+        popup.classList.add('active');
+    };
+
+});
