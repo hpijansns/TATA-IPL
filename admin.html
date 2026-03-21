@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="css/style.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
-    <!-- 🔥 Meta Pixel Code -->
+    <!-- Meta Pixel -->
     <script>
     !function(f,b,e,v,n,t,s)
     {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
@@ -22,103 +22,105 @@
     fbq('init', '1252040857081560');
     fbq('track', 'PageView');
     </script>
-
-    <!-- 🔥 Noscript -->
-    <noscript>
-        <img height="1" width="1" style="display:none"
-        src="https://www.facebook.com/tr?id=1252040857081560&ev=PageView&noscript=1"/>
-    </noscript>
-
 </head>
 
 <body class="admin-body">
 
-    <nav class="admin-nav">
-        <div class="container">
-            <h2>Admin Dashboard</h2>
-        </div>
-    </nav>
+<nav class="admin-nav">
+    <div class="container">
+        <h2>Admin Dashboard</h2>
+    </div>
+</nav>
 
-    <div class="container admin-container">
-        <div class="admin-card form-section">
-            <h3 id="form-title">Add New Match</h3>
+<div class="container admin-container">
 
-            <form id="match-form">
-                <input type="hidden" id="edit-id">
+    <!-- FORM -->
+    <div class="admin-card form-section">
+        <h3 id="form-title">Add New Match</h3>
 
-                <div class="form-group">
-                    <label>Match Title</label>
-                    <input type="text" id="m-title" required>
-                </div>
+        <form id="match-form">
+            <input type="hidden" id="edit-id">
 
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>Date</label>
-                        <input type="date" id="m-date" required>
-                    </div>
-
-                    <div class="form-group">
-                        <label>Time</label>
-                        <input type="time" id="m-time" required>
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <label>Venue</label>
-                    <input type="text" id="m-venue" required>
-                </div>
-
-                <div class="form-group">
-                    <label>Base Price (₹)</label>
-                    <input type="number" id="m-price" required>
-                </div>
-
-                <div class="form-group">
-                    <label>Team 1 Logo</label>
-                    <input type="url" id="m-team1" required>
-                </div>
-
-                <div class="form-group">
-                    <label>Team 2 Logo</label>
-                    <input type="url" id="m-team2" required>
-                </div>
-
-                <div class="form-group">
-                    <label>Banner</label>
-                    <input type="url" id="m-banner" required>
-                </div>
-
-                <button type="submit" id="save-btn" class="btn-primary" style="margin-top:20px;">
-                    Save Match
-                </button>
-
-                <button type="button" id="cancel-btn" class="btn-secondary" style="margin-top:20px; display:none;">
-                    Cancel Edit
-                </button>
-            </form>
-        </div>
-
-        <div class="admin-card table-section">
-            <h3>Manage Matches</h3>
-
-            <div class="table-responsive">
-                <table id="admin-table">
-                    <thead>
-                        <tr>
-                            <th>Title</th>
-                            <th>Date</th>
-                            <th>Price</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-
-                    <tbody id="admin-match-list"></tbody>
-                </table>
+            <div class="form-group">
+                <label>Match Title</label>
+                <input type="text" id="m-title" required>
             </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Date</label>
+                    <input type="date" id="m-date" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Time</label>
+                    <input type="time" id="m-time" required>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Venue</label>
+                <input type="text" id="m-venue" required>
+            </div>
+
+            <div class="form-group">
+                <label>Base Price (₹)</label>
+                <input type="number" id="m-price" required>
+            </div>
+
+            <div class="form-group">
+                <label>Team 1 Logo</label>
+                <input type="url" id="m-team1" required>
+            </div>
+
+            <div class="form-group">
+                <label>Team 2 Logo</label>
+                <input type="url" id="m-team2" required>
+            </div>
+
+            <!-- 🔥 UPDATED BANNER WITH PREVIEW -->
+            <div class="form-group">
+                <label>Venue / Banner Image URL</label>
+                <input type="url" id="m-banner" placeholder="https://..." required>
+
+                <!-- 🔥 PREVIEW -->
+                <img id="banner-preview"
+                     style="width:100%; margin-top:10px; border-radius:8px; display:none;">
+            </div>
+
+            <button type="submit" id="save-btn" class="btn-primary" style="margin-top:20px;">
+                Save Match
+            </button>
+
+            <button type="button" id="cancel-btn" class="btn-secondary" style="margin-top:20px; display:none;">
+                Cancel Edit
+            </button>
+        </form>
+    </div>
+
+    <!-- TABLE -->
+    <div class="admin-card table-section">
+        <h3>Manage Matches</h3>
+
+        <div class="table-responsive">
+            <table id="admin-table">
+                <thead>
+                    <tr>
+                        <th>Title</th>
+                        <th>Date</th>
+                        <th>Price</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+
+                <tbody id="admin-match-list"></tbody>
+            </table>
         </div>
     </div>
 
-    <script type="module" src="js/admin.js"></script>
+</div>
+
+<script type="module" src="js/admin.js"></script>
 
 </body>
 </html>
