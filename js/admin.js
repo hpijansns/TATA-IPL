@@ -22,21 +22,14 @@ document.addEventListener('DOMContentLoaded', () => {
   const cancelBtn = document.getElementById('cancel-btn');
   const formTitle = document.getElementById('form-title');
 
+  // 🔥 FIX: HTML वाला preview पकड़ो
+  const preview = document.getElementById('banner-preview');
+
   let isEditing = false;
 
   // =============================
-  // 🔥 IMAGE PREVIEW (VENUE)
+  // 🔥 IMAGE PREVIEW (FIXED)
   // =============================
-  const preview = document.createElement('img');
-  preview.style.cssText = `
-    width:100%;
-    margin-top:10px;
-    border-radius:8px;
-    display:none;
-  `;
-
-  mBanner.parentElement.appendChild(preview);
-
   function showPreview(url) {
     if (url && url.startsWith('http')) {
       preview.src = url;
@@ -96,10 +89,8 @@ document.addEventListener('DOMContentLoaded', () => {
       price: Number(mPrice.value || 0),
       team1: mTeam1.value.trim(),
       team2: mTeam2.value.trim(),
-      banner: mBanner.value.trim() // 🔥 VENUE IMAGE
+      banner: mBanner.value.trim()
     };
-
-    console.log("Saving:", data);
 
     try {
 
@@ -146,6 +137,7 @@ document.addEventListener('DOMContentLoaded', () => {
     mTeam2.value = m.team2 || '';
     mBanner.value = m.banner || '';
 
+    // 🔥 preview show in edit
     showPreview(m.banner);
 
     isEditing = true;
