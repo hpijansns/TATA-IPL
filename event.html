@@ -54,17 +54,27 @@
         <div class="loading">Loading details...</div>
     </main>
 
-    <!-- 🔥 T&C MODAL -->
+    <!-- 🔥 IMPORTANT NOTE POPUP -->
     <div id="tnc-modal" class="modal">
-        <div class="modal-content text-left tnc-box">
-            <h3>Important Note</h3>
-            <div class="tnc-list">
-                <p>- Seated Event</p>
-                <p>- Seats will be allotted randomly</p>
-                <p>- No Re-entry allowed</p>
-                <p>- Age limit: 2+ years</p>
+        <div class="modal-content tnc-popup" id="popup-box">
+
+            <div class="popup-header">
+                <h2>Important Note</h2>
+                <span id="close-popup">✕</span>
             </div>
-            <button id="accept-tnc-btn" class="btn-primary">Okay, Got It</button>
+
+            <div class="tnc-scroll">
+                <p>- Seated Event!</p>
+                <p>- Seat numbers will be randomly allotted.</p>
+                <p>- Children above 2 years must have ticket.</p>
+                <p>- Under 18 must be accompanied by adult.</p>
+                <p>- No Re-entry allowed.</p>
+            </div>
+
+            <button id="accept-tnc-btn" class="tnc-btn">
+                Okay, Got It
+            </button>
+
         </div>
     </div>
 
