@@ -1,80 +1,66 @@
-import { ref, onValue } from './firebase.js';
+import { db, ref, onValue } from './firebase.js';
 
-const matchList = document.getElementById('match-list');
-const eventTitle = document.getElementById('event-count-title');
+document.addEventListener('DOMContentLoaded', () => {
 
-onValue(ref('matches'), (snapshot) => {
-    const data = snapshot.val();
+    const container = document.getElementById('match-list');
 
-    if (!data) {
-        matchList.innerHTML = `<div class="loading">No Matches</div>`;
-        return;
-    }
+    if (!container) return;
 
-    const matches = Object.keys(data).map(id => ({
-        id,
-        ...data[id]
-    }));
+    onValue(ref(db, 'matches'), (snapshot) => {
 
-    eventTitle.innerText = `${matches.length} Events`;
-    matchList.innerHTML = '';
+        const data = snapshot.val();
 
-    matches.forEach(m => {
+        container.innerHTML = '';
 
-        const dateObj = new Date(m.date);
-        const day = dateObj.getDate();
-        const month = dateObj.toLocaleString('en-US', { month: 'short' });
-        const weekday = dateObj.toLocaleString('en-US', { weekday: 'short' });
+        if (!data) {
+            container.innerHTML = "<div class='loading'>No matches found</div>";
+            return;
+        }
 
-        matchList.innerHTML += `
-        
-        <div class="timeline-row" onclick="goToMatch('${m.id}')">
+        Object.keys(data).forEach((id) => {
 
-            <!-- LEFT DATE -->
-            <div class="timeline-left">
-                <div class="date-val">${day}</div>
-                <div class="month-val">${month}</div>
-                <div class="day-val">${weekday}</div>
-                <div class="city-val">${m.venue.split(':')[1] || ''}</div>
-            </div>
+            const m = data[id];
 
-            <!-- RIGHT CARD -->
-            <div class="timeline-right">
+            container.innerHTML += `
+                <div class="timeline-row" onclick="window.location.href='event.html?id=${id}'">
 
-                <div class="match-label">Match</div>
-
-                <div class="teams-vs-ui">
-                    
-                    <div class="team-ui">
-                        <img src="${m.team1}">
-                        <span>${m.title.split(' vs ')[0]}</span>
+                    <div class="timeline-left">
+                        <div class="date-val">${new Date(m.date).getDate()}</div>
+                        <div class="month-val">${new Date(m.date).toLocaleString('default',{month:'short'})}</div>
+                        <div class="day-val">${new Date(m.date).toLocaleString('default',{weekday:'short'})}</div>
+                        <div class="city-val">${m.venue.split(':')[1] || ''}</div>
                     </div>
 
-                    <div class="vs-circle">VS</div>
+                    <div class="timeline-right">
+                        <div class="match-label">TATA IPL</div>
 
-                    <div class="team-ui">
-                        <img src="${m.team2}">
-                        <span>${m.title.split(' vs ')[1]}</span>
+                        <div class="teams-vs-ui">
+                            <div class="team-ui">
+                                <img src="${m.team1}">
+                                <span>${m.title.split('vs')[0]}</span>
+                            </div>
+
+                            <div class="vs-circle">VS</div>
+
+                            <div class="team-ui">
+                                <img src="${m.team2}">
+                                <span>${m.title.split('vs')[1]}</span>
+                            </div>
+                        </div>
+
+                        <div class="venue-time">
+                            ${m.time} | ${m.venue}
+                        </div>
+
+                        <div class="action-link">
+                            ₹${m.price} onwards →
+                        </div>
                     </div>
 
                 </div>
+            `;
+        });
 
-                <div class="venue-time">
-                    ${m.time} • ${m.venue}
-                </div>
-
-                <div class="action-link">
-                    ₹${m.price} onwards →
-                </div>
-
-            </div>
-
-        </div>
-        `;
     });
-});
 
-window.goToMatch = (id) => {
-    localStorage.setItem('selectedMatch', id);
-    window.location.href = "event.html";
-};
+});
