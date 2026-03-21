@@ -12,7 +12,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     let selectedSeats = 1;
 
     // =========================
-    // 🔥 VEHICLES
+    // 🔥 VEHICLES (1–10)
     // =========================
     const vehicles = {
         1: "https://in.bmscdn.com/webin/common/icons/bicycle.png",
@@ -28,7 +28,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     };
 
     // =========================
-    // 🔥 CREATE BUBBLES
+    // 🔥 CREATE SEAT BUTTONS
     // =========================
     for (let i = 1; i <= 10; i++) {
 
@@ -39,10 +39,12 @@ document.addEventListener("DOMContentLoaded", async () => {
         if (i === 1) btn.classList.add('active');
 
         btn.onclick = () => {
+
             document.querySelectorAll('.qty-bubble')
                 .forEach(b => b.classList.remove('active'));
 
             btn.classList.add('active');
+
             vehicleImg.src = vehicles[i];
             selectedSeats = i;
         };
@@ -59,50 +61,58 @@ document.addEventListener("DOMContentLoaded", async () => {
     };
 
     // =========================
-    // 🔥 STEP 1: ALWAYS LOAD FROM LOCAL
+    // 🔥 STEP 1: LOCAL DATA (FAST)
     // =========================
-    let match = null;
+    let localMatch = null;
 
     try {
-        match = JSON.parse(localStorage.getItem('selectedMatch'));
-    } catch {}
+        localMatch = JSON.parse(localStorage.getItem('selectedMatch'));
+    } catch {
+        localMatch = null;
+    }
 
-    console.log("LOCAL:", match);
+    console.log("LOCAL DATA:", localMatch);
 
-    if (match) {
-        matchTitle.innerText = match.title || "Match";
+    if (localMatch) {
 
-        venueImg.src = match.banner && match.banner.startsWith("http")
-            ? match.banner
+        matchTitle.innerText = localMatch.title || "Match";
+
+        venueImg.src = localMatch.banner && localMatch.banner.startsWith("http")
+            ? localMatch.banner
             : "https://via.placeholder.com/400x200?text=No+Image";
     } else {
-        matchTitle.innerText = "No Match ❌";
+        matchTitle.innerText = "No Match Found ❌";
     }
 
     // =========================
-    // 🔥 STEP 2: FIREBASE (OPTIONAL UPDATE ONLY)
+    // 🔥 STEP 2: FIREBASE (ADMIN IMAGE LOAD)
     // =========================
     const id = localStorage.getItem("matchId");
 
+    console.log("MATCH ID:", id);
+
     if (id) {
         try {
+
             const snapshot = await get(ref(db, 'matches/' + id));
 
             if (snapshot.exists()) {
+
                 const data = snapshot.val();
 
-                console.log("FIREBASE:", data);
+                console.log("FIREBASE DATA:", data);
 
-                // overwrite only if valid
-                if (data.title) matchTitle.innerText = data.title;
+                // ✅ FINAL OVERRIDE (ADMIN DATA)
+                matchTitle.innerText = data.title || matchTitle.innerText;
 
                 if (data.banner && data.banner.startsWith("http")) {
                     venueImg.src = data.banner;
                 }
+
             }
 
         } catch (err) {
-            console.log("Firebase fail → ignore");
+            console.log("Firebase fail → local used");
         }
     }
 
