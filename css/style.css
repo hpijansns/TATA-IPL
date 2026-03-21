@@ -313,3 +313,73 @@ body { background-color: #f4f4f5; color: var(--text-main); -webkit-font-smoothin
         font-size: 11px;
     }
 }
+
+/* PERFECT CENTER */
+.qty-container {
+    text-align: center;
+    padding: 24px 16px;
+}
+
+/* TITLE */
+.qty-container h2 {
+    font-size: 20px;
+    margin-bottom: 20px;
+}
+
+/* IMAGE */
+.cycle-img img {
+    width: 180px;
+    margin: 20px auto;
+    display: block;
+}
+
+/* BUBBLES */
+.qty-bubbles {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    margin: 24px 0;
+}
+
+.qty-bubble {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.qty-bubble.active {
+    background: #f84464;
+    color: #fff;
+}
+
+/* INFO */
+.info-pill {
+    background: #eee;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 12px;
+    display: inline-block;
+}
+
+/* BUTTON */
+.bottom-fixed-btn {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    max-width: 500px;
+    padding: 16px;
+    background: #fff;
+}
+
+.btn-primary {
+    width: 100%;
+    background: #f84464;
+    color: #fff;
+    padding: 14px;
+    border-radius: 8px;
+    border: none;
+    font-size: 16px;
+}
