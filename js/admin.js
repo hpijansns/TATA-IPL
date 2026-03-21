@@ -24,12 +24,20 @@ document.addEventListener('DOMContentLoaded', () => {
 
   let isEditing = false;
 
-  // ===== Preview (URL) =====
+  // =============================
+  // 🔥 IMAGE PREVIEW (VENUE)
+  // =============================
   const preview = document.createElement('img');
-  preview.style.cssText = "width:100%;margin-top:10px;border-radius:8px;display:none";
+  preview.style.cssText = `
+    width:100%;
+    margin-top:10px;
+    border-radius:8px;
+    display:none;
+  `;
+
   mBanner.parentElement.appendChild(preview);
 
-  function showPreview(url){
+  function showPreview(url) {
     if (url && url.startsWith('http')) {
       preview.src = url;
       preview.style.display = 'block';
@@ -37,17 +45,27 @@ document.addEventListener('DOMContentLoaded', () => {
       preview.style.display = 'none';
     }
   }
-  mBanner.addEventListener('input', ()=> showPreview(mBanner.value));
 
-  // ===== Fetch =====
+  mBanner.addEventListener('input', () => {
+    showPreview(mBanner.value);
+  });
+
+  // =============================
+  // 🔥 FETCH MATCHES
+  // =============================
   onValue(ref(db, 'matches'), (snap) => {
+
     tableBody.innerHTML = '';
     const data = snap.val();
+
     if (!data) return;
+
     window.allMatches = data;
 
     Object.keys(data).forEach(id => {
+
       const m = data[id];
+
       tableBody.insertAdjacentHTML('beforeend', `
         <tr>
           <td>${m.title || ''}</td>
@@ -60,10 +78,14 @@ document.addEventListener('DOMContentLoaded', () => {
         </tr>
       `);
     });
+
   });
 
-  // ===== Save / Update =====
+  // =============================
+  // 🔥 SAVE / UPDATE
+  // =============================
   form.addEventListener('submit', async (e) => {
+
     e.preventDefault();
 
     const data = {
@@ -74,31 +96,45 @@ document.addEventListener('DOMContentLoaded', () => {
       price: Number(mPrice.value || 0),
       team1: mTeam1.value.trim(),
       team2: mTeam2.value.trim(),
-      banner: mBanner.value.trim()
+      banner: mBanner.value.trim() // 🔥 VENUE IMAGE
     };
 
-    console.log('SAVE:', data);
+    console.log("Saving:", data);
 
     try {
+
       if (isEditing && editIdInput.value) {
+
         await set(ref(db, 'matches/' + editIdInput.value), data);
         alert('Updated ✅');
+
       } else {
+
         await push(ref(db, 'matches'), data);
         alert('Saved ✅');
+
       }
+
       form.reset();
       showPreview('');
       cancelEdit();
+
     } catch (err) {
+
       console.error(err);
       alert('Error: ' + err.message);
+
     }
+
   });
 
-  // ===== Edit =====
+  // =============================
+  // 🔥 EDIT MATCH
+  // =============================
   window.editMatch = (id) => {
+
     const m = window.allMatches[id];
+
     editIdInput.value = id;
 
     mTitle.value = m.title || '';
@@ -118,21 +154,34 @@ document.addEventListener('DOMContentLoaded', () => {
     cancelBtn.style.display = 'inline-block';
   };
 
-  // ===== Delete =====
+  // =============================
+  // 🔥 DELETE MATCH
+  // =============================
   window.deleteMatch = async (id) => {
+
     if (!confirm('Delete this match?')) return;
+
     await remove(ref(db, 'matches/' + id));
+
   };
 
-  function cancelEdit(){
+  // =============================
+  // 🔥 CANCEL EDIT
+  // =============================
+  function cancelEdit() {
+
     isEditing = false;
     editIdInput.value = '';
+
     form.reset();
     showPreview('');
+
     cancelBtn.style.display = 'none';
     formTitle.innerText = 'Add New Match';
     saveBtn.innerText = 'Save Match';
+
   }
 
   cancelBtn.addEventListener('click', cancelEdit);
+
 });
