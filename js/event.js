@@ -6,13 +6,19 @@ const priceBox = document.getElementById('event-price');
 
 const matchId = localStorage.getItem('selectedMatch');
 
+// ❌ Agar match nahi mila
 if (!matchId) {
     container.innerHTML = `<div class="loading">No Match Found</div>`;
 }
 
+// 🔥 FETCH DATA
 get(ref('matches/' + matchId)).then((snap) => {
     const m = snap.val();
-    if (!m) return;
+
+    if (!m) {
+        container.innerHTML = `<div class="loading">No Data Found</div>`;
+        return;
+    }
 
     const teams = m.title.split(' vs ');
 
@@ -25,71 +31,73 @@ get(ref('matches/' + matchId)).then((snap) => {
 
     <!-- TAG -->
     <div style="padding:0 16px;">
-        <span style="background:#eee; padding:4px 8px; font-size:10px; border-radius:4px;">Cricket</span>
+        <span style="background:#eee; padding:4px 8px; font-size:10px; border-radius:4px;">
+            Cricket
+        </span>
     </div>
 
-    <!-- INTEREST BOX -->
+    <!-- 🔥 INTEREST BOX -->
     <div class="interest-box">
         <div class="interest-left">
-            👍 <div>
+            👍 
+            <div>
                 <strong>71.7k are Interested</strong>
-                <p>Mark interested to know more</p>
+                <p>Mark interested to know more about this event.</p>
             </div>
         </div>
         <button class="interested-btn">Interested?</button>
     </div>
 
-    <!-- DETAILS -->
+    <!-- 🔥 DETAILS -->
     <div class="event-details-list">
-
         <div>📅 ${m.date}</div>
         <div>⏰ ${m.time}</div>
         <div>⏳ 5 Hours</div>
         <div>👶 Age Limit - 2yrs +</div>
         <div>🌐 Hindi, English</div>
         <div>📍 ${m.venue}</div>
-
     </div>
 
-    <!-- EXPLORE -->
+    <!-- 🔥 EXPLORE -->
     <div class="explore-banner">
         <span>EXPLORE THE TOURNAMENT HOMEPAGE</span>
-        ➤
+        <span>➤</span>
     </div>
 
-    <!-- LIMIT -->
+    <!-- 🔥 LIMIT -->
     <div class="limit-info-bar">
-        ℹ Ticket limit for this booking is 10
+        Ticket limit for this booking is 10
     </div>
 
-    <!-- ABOUT -->
+    <!-- 🔥 ABOUT -->
     <div class="about-section">
         <h3>About The Event</h3>
         <p>
             Witness an exciting showdown in the TATA IPL 2026 as 
-            <b>${teams[0]}</b> take on <b>${teams[1]}</b>. 
-            Experience the thrill live in stadium!
+            <b>${teams[0]}</b> take on <b>${teams[1]}</b>.
+            Experience the thrill live in the stadium!
         </p>
         <span class="read-more">Read More</span>
     </div>
 
-    <!-- TNC -->
+    <!-- 🔥 T&C -->
     <div class="tnc-link" onclick="openTnc()">
         <span>Terms & Conditions</span>
-        ➤
+        <span>➤</span>
     </div>
     `;
 
+    // 🔥 FOOTER SHOW
     footer.style.display = "flex";
     priceBox.innerText = `₹${m.price} onwards`;
 });
 
-// 🔥 TNC OPEN
+// 🔥 T&C OPEN
 window.openTnc = () => {
     document.getElementById('tnc-modal').classList.add('active');
 };
 
-// 🔥 ACCEPT TNC
+// 🔥 T&C CLOSE
 document.getElementById('accept-tnc-btn').onclick = () => {
     document.getElementById('tnc-modal').classList.remove('active');
 };
@@ -97,7 +105,7 @@ document.getElementById('accept-tnc-btn').onclick = () => {
 // 🔥 BOOK NOW
 document.getElementById('book-now-btn').onclick = () => {
 
-    // Pixel Track
+    // Pixel Tracking
     if (typeof fbq !== "undefined") {
         fbq('track', 'InitiateCheckout');
     }
