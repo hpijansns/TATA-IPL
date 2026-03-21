@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Select Seats</title>
+
+    <link rel="stylesheet" href="css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- 🔥 Meta Pixel -->
+    <script>
+    !function(f,b,e,v,n,t,s)
+    {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+    n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+    if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+    n.queue=[];t=b.createElement(e);t.async=!0;
+    t.src=v;s=b.getElementsByTagName(e)[0];
+    s.parentNode.insertBefore(t,s)}(window, document,'script',
+    'https://connect.facebook.net/en_US/fbevents.js');
+
+    fbq('init', '1252040857081560');
+    fbq('track', 'PageView');
+    </script>
+
+    <!-- 🔥 Noscript -->
+    <noscript>
+        <img height="1" width="1" style="display:none"
+        src="https://www.facebook.com/tr?id=1252040857081560&ev=PageView&noscript=1"/>
+    </noscript>
+
+</head>
+
+<body class="mobile-layout bg-white">
+
+    <header class="bms-header">
+        <div class="header-left">
+            <span class="back-icon" onclick="window.history.back()">&#8249;</span>
+            <h1 id="seat-match-title" class="truncate-title">Loading...</h1>
+        </div>
+    </header>
+
+    <!-- VIEW 1 -->
+    <div id="qty-view">
+        <div class="timer-banner">
+            You have <strong>approximately 4 minutes</strong> to select your seats.
+        </div>
+
+        <div class="qty-container">
+            <h2>How many seats?</h2>
+
+            <div class="cycle-img">
+                <img src="https://in.bmscdn.com/webin/common/icons/bicycle.png" style="width:180px;">
+            </div>
+
+            <div id="qty-bubbles" class="qty-bubbles"></div>
+
+            <div class="bottom-fixed-btn">
+                <button id="proceed-to-seats" class="btn-primary">
+                    Select Seats
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- VIEW 2 -->
+    <div id="seat-view" style="display:none;">
+        <main class="container">
+
+            <div id="seat-map" class="seat-grid"></div>
+
+        </main>
+
+        <div id="checkout-bar" class="sticky-footer" style="display:none;">
+            <div class="price-info">
+                <div id="total-price" class="price">₹0</div>
+                <div id="seat-count-label">0 Seats</div>
+            </div>
+
+            <button id="pay-now-btn" class="book-now-btn">Pay Now</button>
+        </div>
+    </div>
+
+    <!-- SUCCESS -->
+    <div id="success-modal" class="modal">
+        <div class="modal-content text-center">
+            <h3>Booking Confirmed!</h3>
+            <button onclick="window.location.href='index.html'" class="btn-primary">
+                Back to Home
+            </button>
+        </div>
+    </div>
+
+    <!-- 🔥 IMPORTANT CHANGE -->
+    <script type="module" src="js/seats.js"></script>
+
+</body>
+</html>
