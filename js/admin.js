@@ -23,14 +23,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let isEditing = false;
 
-    // 🔥 PREVIEW ELEMENT (FIXED)
+    // 🔥 IMAGE PREVIEW FIX
     const preview = document.createElement('img');
     preview.style.width = "100%";
     preview.style.marginTop = "10px";
     preview.style.borderRadius = "8px";
     preview.style.display = "none";
 
-    mBanner.parentElement.appendChild(preview); // 🔥 FIXED
+    mBanner.parentElement.appendChild(preview);
 
     function showPreview(url) {
         if (url && url.startsWith("http")) {
@@ -41,7 +41,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // 🔥 LIVE PREVIEW
     mBanner.addEventListener('input', () => {
         showPreview(mBanner.value);
     });
@@ -88,7 +87,10 @@ document.addEventListener('DOMContentLoaded', () => {
             banner: mBanner.value
         };
 
-        console.log("DATA:", data); // 🔥 debug
+        if (!data.banner) {
+            alert("Banner URL dal bhai!");
+            return;
+        }
 
         if (isEditing) {
             set(ref(db, 'matches/' + editIdInput.value), data);
@@ -124,7 +126,6 @@ document.addEventListener('DOMContentLoaded', () => {
         cancelBtn.style.display = "block";
     };
 
-    // 🔥 DELETE
     window.deleteMatch = (id) => {
         remove(ref(db, 'matches/' + id));
     };
