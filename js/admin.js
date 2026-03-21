@@ -1,4 +1,4 @@
-import { ref, onValue, set, remove, push } from './firebase.js';
+import { db, ref, onValue, set, remove, push } from './firebase.js';
 
 document.addEventListener('DOMContentLoaded', () => {
 
@@ -23,7 +23,34 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let isEditing = false;
 
-    onValue(ref('matches'), (snapshot) => {
+    // =============================
+    // 🔥 IMAGE PREVIEW (AUTO)
+    // =============================
+
+    const preview = document.createElement('img');
+    preview.style.width = "100%";
+    preview.style.marginTop = "10px";
+    preview.style.borderRadius = "8px";
+    preview.style.display = "none";
+
+    mBanner.parentNode.appendChild(preview);
+
+    // live preview
+    mBanner.addEventListener('input', () => {
+        if (mBanner.value) {
+            preview.src = mBanner.value;
+            preview.style.display = "block";
+        } else {
+            preview.style.display = "none";
+        }
+    });
+
+    // =============================
+    // 🔥 FETCH DATA FROM FIREBASE
+    // =============================
+
+    onValue(ref(db, 'matches'), (snapshot) => {
+
         tableBody.innerHTML = '';
         const matches = snapshot.val();
 
@@ -40,13 +67,17 @@ document.addEventListener('DOMContentLoaded', () => {
                     <td>${match.date}</td>
                     <td>₹${match.price}</td>
                     <td>
-                        <button onclick="editMatch('${key}')">Edit</button>
-                        <button onclick="deleteMatch('${key}')">Delete</button>
+                        <button class="action-btn btn-edit" onclick="editMatch('${key}')">Edit</button>
+                        <button class="action-btn btn-delete" onclick="deleteMatch('${key}')">Delete</button>
                     </td>
                 </tr>
             `;
         });
     });
+
+    // =============================
+    // 🔥 SAVE / UPDATE MATCH
+    // =============================
 
     form.addEventListener('submit', (e) => {
         e.preventDefault();
@@ -59,20 +90,26 @@ document.addEventListener('DOMContentLoaded', () => {
             price: mPrice.value,
             team1: mTeam1.value,
             team2: mTeam2.value,
-            banner: mBanner.value
+            banner: mBanner.value // 🔥 venue image
         };
 
         if (isEditing) {
-            set(ref('matches/' + editIdInput.value), data);
+            set(ref(db, 'matches/' + editIdInput.value), data);
         } else {
-            push(ref('matches'), data);
+            push(ref(db, 'matches'), data);
         }
 
         form.reset();
+        preview.style.display = "none";
         cancelEdit();
     });
 
+    // =============================
+    // 🔥 EDIT MATCH
+    // =============================
+
     window.editMatch = (id) => {
+
         const m = window.allMatches[id];
 
         editIdInput.value = id;
@@ -85,19 +122,36 @@ document.addEventListener('DOMContentLoaded', () => {
         mTeam2.value = m.team2;
         mBanner.value = m.banner;
 
+        // preview show
+        if (m.banner) {
+            preview.src = m.banner;
+            preview.style.display = "block";
+        }
+
         isEditing = true;
         formTitle.innerText = "Edit Match";
         saveBtn.innerText = "Update Match";
         cancelBtn.style.display = "inline-block";
     };
 
+    // =============================
+    // 🔥 DELETE MATCH
+    // =============================
+
     window.deleteMatch = (id) => {
-        remove(ref('matches/' + id));
+        if (confirm("Delete this match?")) {
+            remove(ref(db, 'matches/' + id));
+        }
     };
+
+    // =============================
+    // 🔥 CANCEL EDIT
+    // =============================
 
     function cancelEdit() {
         isEditing = false;
         form.reset();
+        preview.style.display = "none";
         cancelBtn.style.display = "none";
         formTitle.innerText = "Add New Match";
         saveBtn.innerText = "Save Match";
