@@ -98,10 +98,15 @@ document.addEventListener('DOMContentLoaded', () => {
                 </div>
             `;
 
-            // 🔥 CLICK → EVENT PAGE
+            // 🔥🔥🔥 FINAL FIX (IMPORTANT)
             div.addEventListener('click', () => {
-                localStorage.setItem('selectedMatch', JSON.stringify(match));
-                window.location.href = 'event.html';
+
+                // ❌ पहले गलत था (object save)
+                // localStorage.setItem('selectedMatch', JSON.stringify(match));
+
+                // ✅ अब सही (ID save)
+                window.location.href = `seats.html?id=${match.id}`;
+
             });
 
             matchList.appendChild(div);
