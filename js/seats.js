@@ -54,49 +54,44 @@ document.addEventListener("DOMContentLoaded", async () => {
     };
 
     // =============================
-    // 🔥 DATA LOAD (DOUBLE SAFE)
+    // 🔥 FINAL FIX (IMPORTANT)
     // =============================
 
-    const id = localStorage.getItem("matchId");
-    const localData = JSON.parse(localStorage.getItem("selectedMatch"));
+    const id = localStorage.getItem("matchId"); // ✅ सही key
 
     console.log("MATCH ID:", id);
-    console.log("LOCAL DATA:", localData);
 
-    // 👉 FIRST TRY FIREBASE
-    if (id) {
-        try {
-
-            const snapshot = await get(ref(db, 'matches/' + id));
-
-            if (snapshot.exists()) {
-                const data = snapshot.val();
-
-                matchTitle.innerText = data.title || "No Title";
-                venueImg.src = data.banner || "";
-
-                return; // ✅ STOP HERE (SUCCESS)
-            }
-
-        } catch (err) {
-            console.log("Firebase failed, using local data...");
-        }
+    if (!id) {
+        matchTitle.innerText = "No Match Found ❌";
+        return;
     }
 
-    // 👉 FALLBACK (LOCAL STORAGE)
-    if (localData) {
+    try {
 
-        matchTitle.innerText = localData.title || "No Title";
+        const snapshot = await get(ref(db, 'matches/' + id));
 
-        if (localData.banner && localData.banner.startsWith("http")) {
-            venueImg.src = localData.banner;
+        if (!snapshot.exists()) {
+            matchTitle.innerText = "No Data Found ❌";
+            return;
+        }
+
+        const data = snapshot.val();
+
+        console.log("MATCH DATA:", data);
+
+        // ✅ TITLE
+        matchTitle.innerText = data.title || "No Title";
+
+        // ✅ IMAGE SAFE LOAD
+        if (data.banner && data.banner.startsWith("http")) {
+            venueImg.src = data.banner;
         } else {
             venueImg.src = "https://via.placeholder.com/400x200?text=No+Image";
         }
 
-    } else {
-
-        matchTitle.innerText = "No Data Found ❌";
+    } catch (err) {
+        console.error(err);
+        matchTitle.innerText = "Error loading ❌";
     }
 
 });
