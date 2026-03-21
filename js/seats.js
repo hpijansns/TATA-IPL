@@ -59,53 +59,51 @@ document.addEventListener("DOMContentLoaded", async () => {
     };
 
     // =========================
-    // 🔥 STEP 1: LOCAL STORAGE (FAST LOAD)
+    // 🔥 STEP 1: ALWAYS LOAD FROM LOCAL
     // =========================
-    let localMatch = null;
+    let match = null;
 
     try {
-        localMatch = JSON.parse(localStorage.getItem('selectedMatch'));
-    } catch {
-        localMatch = null;
-    }
+        match = JSON.parse(localStorage.getItem('selectedMatch'));
+    } catch {}
 
-    console.log("LOCAL DATA:", localMatch);
+    console.log("LOCAL:", match);
 
-    if (localMatch) {
-        matchTitle.innerText = localMatch.title || "Match";
-        if (localMatch.banner) {
-            venueImg.src = localMatch.banner;
-        }
+    if (match) {
+        matchTitle.innerText = match.title || "Match";
+
+        venueImg.src = match.banner && match.banner.startsWith("http")
+            ? match.banner
+            : "https://via.placeholder.com/400x200?text=No+Image";
+    } else {
+        matchTitle.innerText = "No Match ❌";
     }
 
     // =========================
-    // 🔥 STEP 2: FIREBASE (REAL DATA)
+    // 🔥 STEP 2: FIREBASE (OPTIONAL UPDATE ONLY)
     // =========================
     const id = localStorage.getItem("matchId");
 
-    console.log("MATCH ID:", id);
+    if (id) {
+        try {
+            const snapshot = await get(ref(db, 'matches/' + id));
 
-    if (!id) return;
+            if (snapshot.exists()) {
+                const data = snapshot.val();
 
-    try {
+                console.log("FIREBASE:", data);
 
-        const snapshot = await get(ref(db, 'matches/' + id));
+                // overwrite only if valid
+                if (data.title) matchTitle.innerText = data.title;
 
-        if (!snapshot.exists()) return;
+                if (data.banner && data.banner.startsWith("http")) {
+                    venueImg.src = data.banner;
+                }
+            }
 
-        const data = snapshot.val();
-
-        console.log("FIREBASE DATA:", data);
-
-        // ✅ FINAL UPDATE
-        matchTitle.innerText = data.title || "Match";
-
-        if (data.banner && data.banner.startsWith("http")) {
-            venueImg.src = data.banner;
+        } catch (err) {
+            console.log("Firebase fail → ignore");
         }
-
-    } catch (err) {
-        console.log("Firebase error → using local data");
     }
 
 });
