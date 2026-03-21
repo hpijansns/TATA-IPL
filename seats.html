@@ -2,57 +2,68 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Select Seats</title>
 
 <link rel="stylesheet" href="css/style.css">
-
 </head>
 
 <body class="mobile-layout bg-white">
 
+<!-- 🔥 TOP HEADER -->
 <header class="bms-header">
     <div class="header-left">
         <span class="back-icon">&#8249;</span>
-        <h1 class="truncate-title">KOLKATA KNIGHT RIDERS VS...</h1>
+        <h1 id="match-title">Loading...</h1>
     </div>
 </header>
 
-<!-- TIMER -->
-<div class="timer-banner">
-    You have <strong>approximately 4 minutes</strong> to select your seats.
+<!-- 🔥 VENUE IMAGE (ADMIN CONTROLLED) -->
+<div class="venue-container">
+    <img id="venue-img" src="" alt="Venue">
 </div>
 
-<!-- STADIUM -->
-<div class="stadium-bg"></div>
+<!-- 🔥 BOOK NOW BAR -->
+<div class="sticky-footer">
+    <div class="price-info">
+        <div class="price">₹1200 onwards</div>
+        <div class="status">Filling Fast</div>
+    </div>
+    <button class="book-now-btn">Book Now</button>
+</div>
 
-<!-- MAIN -->
-<div class="qty-container">
+<!-- 🔥 POPUP (FIRST SCREEN) -->
+<div id="seat-popup" class="seat-popup active">
 
-    <h2>How many seats?</h2>
+    <div class="popup-content">
 
-    <!-- IMAGE -->
-    <div class="cycle-img">
+        <!-- TIMER -->
+        <div class="timer-banner">
+            You have <strong>approximately 4 minutes</strong> to select your seats.
+        </div>
+
+        <h2>How many seats?</h2>
+
+        <!-- IMAGE -->
         <img id="vehicle-img"
-        src="https://in.bmscdn.com/webin/common/icons/bicycle.png">
+        src="https://in.bmscdn.com/webin/common/icons/bicycle.png"
+        class="popup-img">
+
+        <!-- NUMBERS -->
+        <div id="qty-bubbles" class="qty-bubbles"></div>
+
+        <div class="info-pill">
+            You can add upto 10 tickets.
+        </div>
+
+        <button id="confirm-btn" class="btn-primary">
+            Select Seats
+        </button>
+
     </div>
-
-    <!-- NUMBERS -->
-    <div class="qty-bubbles" id="qty-bubbles"></div>
-
-    <!-- INFO -->
-    <div class="info-pill">
-        You can add upto 10 tickets.
-    </div>
-
 </div>
 
-<!-- BUTTON -->
-<div class="bottom-fixed-btn">
-    <button class="btn-primary">Select Seats</button>
-</div>
-
-<script src="js/seats.js"></script>
+<script type="module" src="js/seats.js"></script>
 
 </body>
 </html>
