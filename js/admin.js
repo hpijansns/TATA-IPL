@@ -1,4 +1,5 @@
-import { db, ref, onValue, set, remove, push } from './firebase.js';
+import { db } from './firebase.js';
+import { ref, onValue, set, remove, push } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
 document.addEventListener('DOMContentLoaded', () => {
 
@@ -24,7 +25,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let isEditing = false;
 
     // =============================
-    // 🔥 IMAGE PREVIEW (AUTO)
+    // 🔥 IMAGE PREVIEW
     // =============================
 
     const preview = document.createElement('img');
@@ -35,18 +36,21 @@ document.addEventListener('DOMContentLoaded', () => {
 
     mBanner.parentNode.appendChild(preview);
 
-    // live preview
-    mBanner.addEventListener('input', () => {
-        if (mBanner.value) {
-            preview.src = mBanner.value;
+    function updatePreview(url) {
+        if (url) {
+            preview.src = url;
             preview.style.display = "block";
         } else {
             preview.style.display = "none";
         }
+    }
+
+    mBanner.addEventListener('input', () => {
+        updatePreview(mBanner.value);
     });
 
     // =============================
-    // 🔥 FETCH DATA FROM FIREBASE
+    // 🔥 FETCH DATA
     // =============================
 
     onValue(ref(db, 'matches'), (snapshot) => {
@@ -76,36 +80,47 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // =============================
-    // 🔥 SAVE / UPDATE MATCH
+    // 🔥 SAVE / UPDATE
     // =============================
 
     form.addEventListener('submit', (e) => {
         e.preventDefault();
 
         const data = {
-            title: mTitle.value,
+            title: mTitle.value.trim(),
             date: mDate.value,
             time: mTime.value,
-            venue: mVenue.value,
-            price: mPrice.value,
-            team1: mTeam1.value,
-            team2: mTeam2.value,
-            banner: mBanner.value // 🔥 venue image
+            venue: mVenue.value.trim(),
+            price: Number(mPrice.value),
+            team1: mTeam1.value.trim(),
+            team2: mTeam2.value.trim(),
+            banner: mBanner.value.trim()
         };
 
+        console.log("Saving:", data); // 🔥 debug
+
+        if (!data.title || !data.banner) {
+            alert("Title aur Banner URL zaroori hai!");
+            return;
+        }
+
         if (isEditing) {
-            set(ref(db, 'matches/' + editIdInput.value), data);
+            set(ref(db, 'matches/' + editIdInput.value), data)
+                .then(() => alert("Updated ✅"))
+                .catch(err => console.error(err));
         } else {
-            push(ref(db, 'matches'), data);
+            push(ref(db, 'matches'), data)
+                .then(() => alert("Saved ✅"))
+                .catch(err => console.error(err));
         }
 
         form.reset();
-        preview.style.display = "none";
+        updatePreview("");
         cancelEdit();
     });
 
     // =============================
-    // 🔥 EDIT MATCH
+    // 🔥 EDIT
     // =============================
 
     window.editMatch = (id) => {
@@ -122,11 +137,7 @@ document.addEventListener('DOMContentLoaded', () => {
         mTeam2.value = m.team2;
         mBanner.value = m.banner;
 
-        // preview show
-        if (m.banner) {
-            preview.src = m.banner;
-            preview.style.display = "block";
-        }
+        updatePreview(m.banner);
 
         isEditing = true;
         formTitle.innerText = "Edit Match";
@@ -135,7 +146,7 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     // =============================
-    // 🔥 DELETE MATCH
+    // 🔥 DELETE
     // =============================
 
     window.deleteMatch = (id) => {
@@ -145,13 +156,13 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     // =============================
-    // 🔥 CANCEL EDIT
+    // 🔥 CANCEL
     // =============================
 
     function cancelEdit() {
         isEditing = false;
         form.reset();
-        preview.style.display = "none";
+        updatePreview("");
         cancelBtn.style.display = "none";
         formTitle.innerText = "Add New Match";
         saveBtn.innerText = "Save Match";
