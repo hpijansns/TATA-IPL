@@ -1,16 +1,13 @@
 import { db, ref, get } from "./firebase.js";
 
 document.addEventListener("DOMContentLoaded", () => {
-    // 1. Elements
-    const bubbles = document.getElementById('qty-bubbles');
+    console.log("Seats Page Logic Loaded ✅");
+
+    const bubblesContainer = document.getElementById('qty-bubbles');
     const vehicleImg = document.getElementById('vehicle-img');
     const matchTitle = document.getElementById('match-title');
     const venueImg = document.getElementById('venue-img');
     const popup = document.getElementById('seat-popup');
-    const confirmBtn = document.getElementById('confirm-btn');
-    const openBtn = document.getElementById('open-seat-popup');
-
-    let selectedSeats = 1;
 
     const vehicles = {
         1: "https://in.bmscdn.com/webin/common/icons/bicycle.png",
@@ -25,11 +22,13 @@ document.addEventListener("DOMContentLoaded", () => {
         10: "https://in.bmscdn.com/webin/common/icons/suv-car.png"
     };
 
+    let selectedSeats = 1;
+
     // ==========================================
-    // 🟢 STEP 1: RENDER BUBBLES IMMEDIATELY
+    // 🟢 1. NUMBERS (BUBBLES) TURANT BANAO
     // ==========================================
-    if (bubbles) {
-        bubbles.innerHTML = ""; 
+    if (bubblesContainer) {
+        bubblesContainer.innerHTML = ""; 
         for (let i = 1; i <= 10; i++) {
             const btn = document.createElement('div');
             btn.className = 'qty-bubble';
@@ -39,28 +38,37 @@ document.addEventListener("DOMContentLoaded", () => {
             btn.onclick = () => {
                 document.querySelectorAll('.qty-bubble').forEach(b => b.classList.remove('active'));
                 btn.classList.add('active');
-                if (vehicleImg) vehicleImg.src = vehicles[i] || vehicles[6];
+                if (vehicleImg) vehicleImg.src = vehicles[i];
                 selectedSeats = i;
                 localStorage.setItem("seatQty", i);
             };
-            bubbles.appendChild(btn);
+            bubblesContainer.appendChild(btn);
         }
     }
 
     // ==========================================
-    // 🔵 STEP 2: LOAD DATA FROM LOCAL STORAGE
+    // 🔵 2. LOCAL STORAGE SE DATA LOAD KARO (Same as Test Page)
     // ==========================================
     const rawData = localStorage.getItem('selectedMatch');
     const matchId = localStorage.getItem("matchId");
 
     if (rawData) {
-        const match = JSON.parse(rawData);
-        if (matchTitle) matchTitle.innerText = match.title || "Select Seats";
-        if (venueImg) venueImg.src = match.venue_img || match.banner || "";
+        try {
+            const match = JSON.parse(rawData);
+            if (matchTitle) matchTitle.innerText = match.title || "Select Seats";
+            
+            // Priority: venue_img (Stadium Map) -> banner
+            if (venueImg) {
+                venueImg.src = match.venue_img || match.banner || "";
+                venueImg.onerror = () => {
+                    venueImg.src = "https://via.placeholder.com/800x400?text=Venue+Map+Not+Available";
+                };
+            }
+        } catch (e) { console.error("Data Parse Error", e); }
     }
 
     // ==========================================
-    // 🔴 STEP 3: FIREBASE SYNC (BACKGROUND)
+    // 🔴 3. FIREBASE SYNC (In Background)
     // ==========================================
     if (matchId && db) {
         get(ref(db, `matches/${matchId}`)).then(snap => {
@@ -69,17 +77,21 @@ document.addEventListener("DOMContentLoaded", () => {
                 if (venueImg && data.venue_img) venueImg.src = data.venue_img;
                 if (matchTitle && data.title) matchTitle.innerText = data.title;
             }
-        }).catch(err => console.log("Firebase Sync Fail:", err));
+        }).catch(err => console.log("Firebase sync failed, but it's okay."));
     }
 
     // ==========================================
-    // 🟡 STEP 4: BUTTONS LOGIC
+    // 🟡 4. BUTTONS
     // ==========================================
+    const openBtn = document.getElementById('open-seat-popup');
     if (openBtn) openBtn.onclick = () => popup.classList.add('active');
+
+    const confirmBtn = document.getElementById('confirm-btn');
     if (confirmBtn) {
         confirmBtn.onclick = () => {
             localStorage.setItem("seatQty", selectedSeats);
             popup.classList.remove('active');
+            // window.location.href = "layout.html"; 
         };
     }
 });
