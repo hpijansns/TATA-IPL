@@ -8,6 +8,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const tableBody = document.getElementById('admin-match-list');
 
+  // Input Fields
   const editIdInput = document.getElementById('edit-id');
   const mTitle = document.getElementById('m-title');
   const mDate = document.getElementById('m-date');
@@ -16,49 +17,54 @@ document.addEventListener('DOMContentLoaded', () => {
   const mPrice = document.getElementById('m-price');
   const mTeam1 = document.getElementById('m-team1');
   const mTeam2 = document.getElementById('m-team2');
-  const mBanner = document.getElementById('m-banner');
+  
+  // 🔥 Do alag images ke fields
+  const mBanner = document.getElementById('m-banner');      // Poster Image
+  const mVenueImg = document.getElementById('m-venue-img'); // Stadium Map Image
 
   const saveBtn = document.getElementById('save-btn');
   const cancelBtn = document.getElementById('cancel-btn');
   const formTitle = document.getElementById('form-title');
 
-  // 🔥 FIX: HTML वाला preview पकड़ो
-  const preview = document.getElementById('banner-preview');
+  // 🔥 Preview Elements
+  const bannerPreview = document.getElementById('banner-preview');
+  const venuePreview = document.getElementById('venue-preview');
 
   let isEditing = false;
 
-  // =============================
-  // 🔥 IMAGE PREVIEW (FIXED)
-  // =============================
-  function showPreview(url) {
-    if (url && url.startsWith('http')) {
-      preview.src = url;
-      preview.style.display = 'block';
-    } else {
-      preview.style.display = 'none';
+  // ==========================================
+  // 🔥 IMAGE PREVIEW LOGIC
+  // ==========================================
+  function showPreview(url, element) {
+    if (element) {
+      if (url && url.trim().startsWith('http')) {
+        element.src = url;
+        element.style.display = 'block';
+        element.style.width = '100px';
+        element.style.marginTop = '10px';
+      } else {
+        element.style.display = 'none';
+      }
     }
   }
 
-  mBanner.addEventListener('input', () => {
-    showPreview(mBanner.value);
-  });
+  // Input hote hi preview dikhao
+  if(mBanner) mBanner.addEventListener('input', () => showPreview(mBanner.value, bannerPreview));
+  if(mVenueImg) mVenueImg.addEventListener('input', () => showPreview(mVenueImg.value, venuePreview));
 
-  // =============================
-  // 🔥 FETCH MATCHES
-  // =============================
+  // ==========================================
+  // 🔥 FETCH MATCHES (DISPLAY IN TABLE)
+  // ==========================================
   onValue(ref(db, 'matches'), (snap) => {
-
+    if (!tableBody) return;
     tableBody.innerHTML = '';
     const data = snap.val();
-
     if (!data) return;
 
     window.allMatches = data;
 
     Object.keys(data).forEach(id => {
-
       const m = data[id];
-
       tableBody.insertAdjacentHTML('beforeend', `
         <tr>
           <td>${m.title || ''}</td>
@@ -71,14 +77,12 @@ document.addEventListener('DOMContentLoaded', () => {
         </tr>
       `);
     });
-
   });
 
-  // =============================
-  // 🔥 SAVE / UPDATE
-  // =============================
+  // ==========================================
+  // 🔥 SAVE / UPDATE FUNCTION
+  // ==========================================
   form.addEventListener('submit', async (e) => {
-
     e.preventDefault();
 
     const data = {
@@ -89,45 +93,36 @@ document.addEventListener('DOMContentLoaded', () => {
       price: Number(mPrice.value || 0),
       team1: mTeam1.value.trim(),
       team2: mTeam2.value.trim(),
-      banner: mBanner.value.trim()
+      banner: mBanner.value.trim(),     // Poster URL
+      venue_img: mVenueImg.value.trim() // 🔥 Stadium Map URL
     };
 
     try {
-
       if (isEditing && editIdInput.value) {
-
+        // Update existing match
         await set(ref(db, 'matches/' + editIdInput.value), data);
-        alert('Updated ✅');
-
+        alert('Match Updated Successfully ✅');
       } else {
-
+        // Add new match
         await push(ref(db, 'matches'), data);
-        alert('Saved ✅');
-
+        alert('Match Saved Successfully ✅');
       }
 
-      form.reset();
-      showPreview('');
-      cancelEdit();
-
+      cancelEdit(); // Reset form
     } catch (err) {
-
       console.error(err);
       alert('Error: ' + err.message);
-
     }
-
   });
 
-  // =============================
-  // 🔥 EDIT MATCH
-  // =============================
+  // ==========================================
+  // 🔥 EDIT MATCH (WINDOW FUNCTION)
+  // ==========================================
   window.editMatch = (id) => {
-
     const m = window.allMatches[id];
+    if (!m) return;
 
     editIdInput.value = id;
-
     mTitle.value = m.title || '';
     mDate.value = m.date || '';
     mTime.value = m.time || '';
@@ -136,44 +131,50 @@ document.addEventListener('DOMContentLoaded', () => {
     mTeam1.value = m.team1 || '';
     mTeam2.value = m.team2 || '';
     mBanner.value = m.banner || '';
+    mVenueImg.value = m.venue_img || ''; // 🔥 Map URL Load karo
 
-    // 🔥 preview show in edit
-    showPreview(m.banner);
+    // Previews update
+    showPreview(m.banner, bannerPreview);
+    showPreview(m.venue_img, venuePreview);
 
     isEditing = true;
-    formTitle.innerText = 'Edit Match';
-    saveBtn.innerText = 'Update Match';
-    cancelBtn.style.display = 'inline-block';
+    if(formTitle) formTitle.innerText = 'Edit Match Details';
+    if(saveBtn) saveBtn.innerText = 'Update Match';
+    if(cancelBtn) cancelBtn.style.display = 'inline-block';
+    
+    // Scroll to top of form
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  // =============================
+  // ==========================================
   // 🔥 DELETE MATCH
-  // =============================
+  // ==========================================
   window.deleteMatch = async (id) => {
-
-    if (!confirm('Delete this match?')) return;
-
-    await remove(ref(db, 'matches/' + id));
-
+    if (!confirm('Are you sure you want to delete this match?')) return;
+    try {
+      await remove(ref(db, 'matches/' + id));
+    } catch (err) {
+      alert("Delete failed: " + err.message);
+    }
   };
 
-  // =============================
-  // 🔥 CANCEL EDIT
-  // =============================
+  // ==========================================
+  // 🔥 CANCEL / RESET
+  // ==========================================
   function cancelEdit() {
-
     isEditing = false;
     editIdInput.value = '';
-
     form.reset();
-    showPreview('');
+    
+    // Clear previews
+    if(bannerPreview) bannerPreview.style.display = 'none';
+    if(venuePreview) venuePreview.style.display = 'none';
 
-    cancelBtn.style.display = 'none';
-    formTitle.innerText = 'Add New Match';
-    saveBtn.innerText = 'Save Match';
-
+    if(cancelBtn) cancelBtn.style.display = 'none';
+    if(formTitle) formTitle.innerText = 'Add New Match';
+    if(saveBtn) saveBtn.innerText = 'Save Match';
   }
 
-  cancelBtn.addEventListener('click', cancelEdit);
+  if(cancelBtn) cancelBtn.addEventListener('click', cancelEdit);
 
 });
