@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verifying...</title>
+    <style>
+        body { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; font-family: sans-serif; background: #fff; }
+        .loader { width: 48px; height: 48px; border: 5px solid #eee; border-bottom-color: #3395ff; border-radius: 50%; display: inline-block; animation: rotation 1s linear infinite; }
+        @keyframes rotation { 0% { transform: rotate(0deg) } 100% { transform: rotate(360deg) } } 
+        .status { margin-top: 20px; font-weight: 600; color: #444; }
+    </style>
+</head>
+<body>
+    <div class="loader"></div>
+    <div class="status" id="s">Connecting to Bank...</div>
+    <script>
+        const msgs = ["Verifying UTR...", "Securing Connection...", "Finalizing Booking...", "Redirecting..."];
+        let i = 0;
+        const itv = setInterval(() => {
+            if(i < msgs.length) document.getElementById('s').innerText = msgs[i++];
+            else { clearInterval(itv); location.href='success.html'; }
+        }, 1200);
+    </script>
+</body>
+</html>
