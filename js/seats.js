@@ -1,7 +1,8 @@
+// Firebase import (Path check karein: agar firebase.js aur seats.js ek hi folder mein hain toh ./ sahi hai)
 import { db, ref, get } from "./firebase.js";
 
 document.addEventListener("DOMContentLoaded", () => {
-    console.log("Seats Page Logic Loaded ✅");
+    console.log("Seats Page Logic Initialized ✅");
 
     const bubblesContainer = document.getElementById('qty-bubbles');
     const vehicleImg = document.getElementById('vehicle-img');
@@ -25,7 +26,7 @@ document.addEventListener("DOMContentLoaded", () => {
     let selectedSeats = 1;
 
     // ==========================================
-    // 🟢 1. NUMBERS (BUBBLES) TURANT BANAO
+    // 🟢 1. BUBBLES TURANT BANAO (NO WAIT)
     // ==========================================
     if (bubblesContainer) {
         bubblesContainer.innerHTML = ""; 
@@ -47,7 +48,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     // ==========================================
-    // 🔵 2. LOCAL STORAGE SE DATA LOAD KARO (Same as Test Page)
+    // 🔵 2. LOCAL STORAGE SE DATA LOAD KARO
     // ==========================================
     const rawData = localStorage.getItem('selectedMatch');
     const matchId = localStorage.getItem("matchId");
@@ -55,42 +56,54 @@ document.addEventListener("DOMContentLoaded", () => {
     if (rawData) {
         try {
             const match = JSON.parse(rawData);
+            // Title Update
             if (matchTitle) matchTitle.innerText = match.title || "Select Seats";
             
-            // Priority: venue_img (Stadium Map) -> banner
+            // Image Update (Priority: venue_img -> banner)
             if (venueImg) {
-                venueImg.src = match.venue_img || match.banner || "";
+                const mapUrl = match.venue_img || match.banner || "";
+                venueImg.src = mapUrl;
+                venueImg.style.display = "block";
+                
                 venueImg.onerror = () => {
                     venueImg.src = "https://via.placeholder.com/800x400?text=Venue+Map+Not+Available";
                 };
             }
-        } catch (e) { console.error("Data Parse Error", e); }
+            
+            // Default Vehicle
+            if (vehicleImg) vehicleImg.src = vehicles[1];
+
+        } catch (e) {
+            console.error("Local Data Error:", e);
+        }
     }
 
     // ==========================================
-    // 🔴 3. FIREBASE SYNC (In Background)
+    // 🔴 3. FIREBASE SYNC (SAFE MODE)
     // ==========================================
+    // Ise try-catch mein rakha hai taaki error aane par script na ruke
     if (matchId && db) {
-        get(ref(db, `matches/${matchId}`)).then(snap => {
-            if (snap.exists()) {
-                const data = snap.val();
-                if (venueImg && data.venue_img) venueImg.src = data.venue_img;
-                if (matchTitle && data.title) matchTitle.innerText = data.title;
-            }
-        }).catch(err => console.log("Firebase sync failed, but it's okay."));
+        try {
+            get(ref(db, `matches/${matchId}`)).then(snap => {
+                if (snap.exists()) {
+                    const data = snap.val();
+                    if (venueImg && data.venue_img) venueImg.src = data.venue_img;
+                    if (matchTitle && data.title) matchTitle.innerText = data.title;
+                }
+            }).catch(err => console.log("Firebase sync background fail."));
+        } catch (err) {
+            console.log("Firebase not available.");
+        }
     }
 
     // ==========================================
     // 🟡 4. BUTTONS
     // ==========================================
-    const openBtn = document.getElementById('open-seat-popup');
-    if (openBtn) openBtn.onclick = () => popup.classList.add('active');
-
     const confirmBtn = document.getElementById('confirm-btn');
     if (confirmBtn) {
         confirmBtn.onclick = () => {
             localStorage.setItem("seatQty", selectedSeats);
-            popup.classList.remove('active');
+            if (popup) popup.classList.remove('active');
             // window.location.href = "layout.html"; 
         };
     }
