@@ -41,9 +41,10 @@ document.addEventListener('DOMContentLoaded', () => {
             let sorted = [...matchesData];  
 
             if (sortFilter.value === 'price-asc') {  
+                // Price Low to High
                 sorted.sort((a, b) => (Number(a.price) || 0) - (Number(b.price) || 0));  
             } else {  
-                // Date ke hisaab se sort
+                // Latest by Date
                 sorted.sort((a, b) => new Date(a.date) - new Date(b.date));  
             }  
 
@@ -113,7 +114,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     id: match.id || "",
                     title: match.title || "TBC vs TBC",
                     banner: match.banner || "",        // Poster Image
-                    venue_img: match.venue_img || "",  // 🔥 Stadium Map Image
+                    venue_img: match.venue_img || "",  // 🔥 Stadium Map Image (Fixed)
                     date: match.date || "",
                     time: match.time || "",
                     venue: match.venue || "",
@@ -137,4 +138,3 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
 });
-                        
