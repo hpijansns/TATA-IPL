@@ -34,18 +34,17 @@ document.addEventListener('DOMContentLoaded', () => {
     // =========================  
     // 🔥 SORT FILTER  
     // =========================  
-    sortFilter.addEventListener('change', () => {  
-
-        let sorted = [...matchesData];  
-
-        if (sortFilter.value === 'price-asc') {  
-            sorted.sort((a, b) => a.price - b.price);  
-        } else {  
-            sorted.sort((a, b) => new Date(a.date) - new Date(b.date));  
-        }  
-
-        renderMatches(sorted);  
-    });
+    if (sortFilter) {
+        sortFilter.addEventListener('change', () => {  
+            let sorted = [...matchesData];  
+            if (sortFilter.value === 'price-asc') {  
+                sorted.sort((a, b) => (Number(a.price) || 0) - (Number(b.price) || 0));  
+            } else {  
+                sorted.sort((a, b) => new Date(a.date) - new Date(b.date));  
+            }  
+            renderMatches(sorted);  
+        });
+    }
 
     // =========================  
     // 🔥 RENDER FUNCTION  
@@ -53,7 +52,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function renderMatches(matches) {  
 
         matchList.innerHTML = '';  
-        eventTitle.innerText = `${matches.length} Events`;  
+        if (eventTitle) eventTitle.innerText = `${matches.length} Events`;  
 
         matches.forEach(match => {  
 
@@ -78,15 +77,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
                     <div class="teams-vs-ui">  
                         <div class="team-ui">  
-                            <img src="${match.team1 || ''}">
-                            <span>${(match.title || '').split(' vs ')[0] || ''}</span>  
+                            <img src="${match.team1 || ''}" onerror="this.src='https://via.placeholder.com/50'">
+                            <span>${(match.title || '').split(' vs ')[0] || 'Team 1'}</span>  
                         </div>  
 
                         <div class="vs-circle">VS</div>  
 
                         <div class="team-ui">  
-                            <img src="${match.team2 || ''}">
-                            <span>${(match.title || '').split(' vs ')[1] || ''}</span>  
+                            <img src="${match.team2 || ''}" onerror="this.src='https://via.placeholder.com/50'">
+                            <span>${(match.title || '').split(' vs ')[1] || 'Team 2'}</span>  
                         </div>  
                     </div>  
 
@@ -98,14 +97,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 </div>  
             `;  
 
-            // 🔥🔥🔥 FINAL FIX (MAIN PART)
+            // 🔥 CLICK HANDLER FIXED FOR DATA FLOW
             div.addEventListener('click', () => {  
 
-                // ✅ CLEAN OBJECT (NO BUG)
+                // ✅ CLEAN OBJECT (Ensuring no undefined fields)
                 const cleanMatch = {
-                    id: match.id,
-                    title: match.title || "",
-                    banner: match.banner || "",
+                    id: match.id || "",
+                    title: match.title || "TBC vs TBC",
+                    banner: match.banner || match.team1 || "", // Important: Fallback if banner is null
                     date: match.date || "",
                     time: match.time || "",
                     venue: match.venue || "",
@@ -114,11 +113,14 @@ document.addEventListener('DOMContentLoaded', () => {
                     team2: match.team2 || ""
                 };
 
-                // ✅ SAFE SAVE
+                // ✅ SAFE SAVE TO LOCAL STORAGE
                 localStorage.setItem('selectedMatch', JSON.stringify(cleanMatch));  
                 localStorage.setItem('matchId', match.id);  
 
-                window.location.href = 'event.html';  
+                // Chhota sa delay redirection ke liye taaki GitHub pages par data save ho jaye
+                setTimeout(() => {
+                    window.location.href = 'event.html';  
+                }, 50);
             });
 
             matchList.appendChild(div);  
