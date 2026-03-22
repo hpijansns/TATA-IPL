@@ -127,77 +127,27 @@
         </div>
     </div>
 
-    <div class="admin-card payment-section" style="margin-top: 30px; border-top: 5px solid #3395ff; background: #fff; padding: 20px; border-radius: 12px;">
+    <div class="admin-card payment-section" style="margin-top: 30px; border-top: 4px solid #3395ff;">
         <h3>💳 Payment Settings (QR Control)</h3>
         <p style="font-size: 12px; color: #666; margin-bottom: 20px;">Yahan se aap apne Payment Page ka UPI QR badal sakte hain.</p>
         
-        <div class="form-group" style="margin-bottom: 15px;">
-            <label style="display:block; margin-bottom: 5px; font-weight: 500;">Your UPI ID (e.g. pintu@upi)</label>
+        <div class="form-group">
+            <label>Your UPI ID (e.g. pintu@upi)</label>
             <input type="text" id="admin-upi-id" placeholder="Enter your UPI ID" style="width:100%; padding:12px; border:1px solid #ddd; border-radius:8px; box-sizing: border-box;">
         </div>
 
-        <div class="form-group" style="margin-bottom: 15px;">
-            <label style="display:block; margin-bottom: 5px; font-weight: 500;">OR QR Image URL (Optional)</label>
+        <div class="form-group">
+            <label>OR QR Image URL (Optional)</label>
             <input type="text" id="admin-qr-url" placeholder="Paste Direct QR Image Link here" style="width:100%; padding:12px; border:1px solid #ddd; border-radius:8px; box-sizing: border-box;">
             <p style="font-size: 11px; color: #888; margin-top: 5px;">* Agar image URL nahi dalenge toh UPI ID se apne aap QR ban jayega.</p>
         </div>
 
-        <button id="save-payment-btn" class="btn-primary" style="background: #3395ff; width: 100%; padding: 15px; border-radius: 8px; color: #fff; font-weight: bold; border: none; cursor: pointer;">
+        <button id="save-payment-btn" class="btn-primary" style="background: #3395ff; width: 100%; margin-top: 10px; padding: 15px; border-radius: 8px; border: none; color: #fff; font-weight: bold; cursor: pointer;">
             Update QR Details
         </button>
     </div>
 
 </div>
-
-<script type="module">
-    import { db, ref, set, get } from "./js/firebase.js";
-
-    const upiInp = document.getElementById('admin-upi-id');
-    const urlInp = document.getElementById('admin-qr-url');
-    const saveBtn = document.getElementById('save-payment-btn');
-
-    // 1. Load purana data
-    async function loadPaymentSettings() {
-        try {
-            const snap = await get(ref(db, 'settings/payment'));
-            if(snap.exists()){
-                upiInp.value = snap.val().upiId || "";
-                urlInp.value = snap.val().qrUrl || "";
-                console.log("Settings Loaded ✅");
-            }
-        } catch(e) { console.error("Firebase Load Error:", e); }
-    }
-    loadPaymentSettings();
-
-    // 2. Save data (addEventListener use kiya hai for 100% fix)
-    if(saveBtn) {
-        saveBtn.addEventListener('click', async () => {
-            const upi = upiInp.value.trim();
-            const qr = urlInp.value.trim();
-
-            if(!upi && !qr) {
-                alert("Bhai, kam se kam UPI ID toh daal do!");
-                return;
-            }
-
-            saveBtn.innerText = "Updating... ⏳";
-            saveBtn.disabled = true;
-
-            try {
-                await set(ref(db, 'settings/payment'), {
-                    upiId: upi,
-                    qrUrl: qr
-                });
-                alert("Payment QR Details Successfully Updated! 🚀");
-            } catch(e) {
-                alert("Error: " + e.message);
-            } finally {
-                saveBtn.innerText = "Update QR Details";
-                saveBtn.disabled = false;
-            }
-        });
-    }
-</script>
 
 <script type="module" src="js/admin.js"></script>
 
