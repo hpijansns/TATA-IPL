@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Secure Checkout | Razorpay</title>
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; background: #f4f6f8; margin: 0; padding: 20px; text-align: center; }
+        .checkout-box { background: #fff; max-width: 400px; margin: auto; border-radius: 12px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
+        .checkout-header { background: #3395ff; color: #fff; padding: 20px; display: flex; justify-content: space-between; align-items: center; }
+        .qr-section { padding: 30px; }
+        #qr-code { width: 220px; border: 8px solid #fff; box-shadow: 0 0 10px rgba(0,0,0,0.1); border-radius: 10px; }
+        .utr-box { padding: 20px; background: #fff; border-top: 1px solid #eee; }
+        .utr-input { width: 90%; padding: 15px; border: 2px solid #eee; border-radius: 8px; font-size: 16px; outline: none; transition: 0.3s; }
+        .utr-input:focus { border-color: #3395ff; }
+        .pay-now-btn { width: 90%; padding: 15px; background: #3395ff; color: #fff; border: none; border-radius: 8px; font-weight: 700; margin-top: 15px; cursor: pointer; }
+        .pay-now-btn:disabled { background: #ccc; cursor: not-allowed; }
+        .secured-by { margin-top: 20px; font-size: 11px; color: #aaa; text-transform: uppercase; letter-spacing: 1px; }
+    </style>
+</head>
+<body>
+
+    <div class="checkout-box">
+        <div class="checkout-header">
+            <span style="font-weight:700;">PAYMENT GATEWAY</span>
+            <span id="p-amt" style="font-size:20px; font-weight:700;">₹0</span>
+        </div>
+        
+        <div class="qr-section">
+            <p style="color:#666; font-size:14px; margin-top:0;">Scan QR to complete payment</p>
+            <img id="qr-code" src="https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=upi://pay?pa=PINTU@UPI&pn=IPL_Booking" alt="UPI QR">
+            <div style="margin-top:15px; display:flex; justify-content:center; gap:10px;">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/e/e1/UPI-Logo.png" height="15">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/2/24/Paytm_Logo_%28standalone%29.svg" height="15">
+            </div>
+        </div>
+
+        <div class="utr-box">
+            <input type="number" id="utr" class="utr-input" placeholder="Enter 12-digit Ref. Number (UTR)" oninput="v()">
+            <button id="b" class="pay-now-btn" disabled onclick="location.href='processing.html'">PAY SECURELY</button>
+        </div>
+    </div>
+
+    <div class="secured-by">
+        🔒 Secured by 256-bit SSL Encryption
+    </div>
+
+    <script>
+        document.getElementById('p-amt').innerText = "₹" + (localStorage.getItem('finalPrice') || 0);
+        function v() {
+            const val = document.getElementById('utr').value;
+            document.getElementById('b').disabled = (val.length !== 12);
+        }
+    </script>
+</body>
+</html>
