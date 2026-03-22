@@ -3,10 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Select Seats - IPL 2026</title>
+    <title>Select Seats</title>
     <link rel="stylesheet" href="css/style.css">
     <style>
-        /* Agar CSS file load na ho toh ye backup styles kaam aayenge */
         .venue-container { width: 100%; background: #f0f0f0; min-height: 250px; display: flex; align-items: center; justify-content: center; }
         #venue-img { width: 100%; height: auto; max-height: 300px; object-fit: contain; display: none; }
         .qty-bubbles { display: flex; justify-content: center; gap: 10px; margin: 20px 0; flex-wrap: wrap; }
@@ -19,7 +18,7 @@
     <header class="bms-header">
         <div class="header-left">
             <span class="back-icon" onclick="window.history.back()">&#8249;</span>
-            <h1 id="match-title">Loading Match...</h1>
+            <h1 id="match-title">Loading...</h1>
         </div>
     </header>
 
@@ -37,18 +36,27 @@
 
     <div id="seat-popup" class="seat-popup">
         <div class="popup-content">
-            <div class="timer-banner">Select number of tickets</div>
-            <h2 style="margin: 15px 0;">How many seats?</h2>
-            
-            <img id="vehicle-img" src="https://in.bmscdn.com/webin/common/icons/bicycle.png" style="width:100px; display:block; margin: 10px auto;">
-
+            <h2>How many seats?</h2>
             <div id="qty-bubbles" class="qty-bubbles"></div>
-
-            <button class="btn-primary" onclick="document.getElementById('seat-popup').classList.remove('active')" style="margin-top: 20px; width: 100%;">
-                Continue
-            </button>
+            <button class="btn-primary" onclick="document.getElementById('seat-popup').classList.remove('active')">Continue</button>
         </div>
     </div>
+
+    <script>
+        const rawData = localStorage.getItem('selectedMatch');
+        if (rawData) {
+            const match = JSON.parse(rawData);
+            document.getElementById('match-title').innerText = match.title || "Match Details";
+            document.getElementById('display-price').innerText = `₹${match.price || 0} onwards`;
+            
+            const imgEl = document.getElementById('venue-img');
+            const imageUrl = match.venue_img || match.banner;
+            if (imageUrl) {
+                imgEl.src = imageUrl;
+                imgEl.style.display = 'block';
+            }
+        }
+    </script>
 
     <script type="module" src="js/seats.js"></script>
 
