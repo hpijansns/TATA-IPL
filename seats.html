@@ -3,155 +3,124 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Select Seats</title>
+    <title>Secure Checkout</title>
     <link rel="stylesheet" href="css/style.css">
     <style>
-        .venue-container { width: 100%; background: #f0f0f0; min-height: 250px; display: flex; align-items: center; justify-content: center; margin-bottom: 20px; border-radius: 15px; overflow: hidden; border: 1px solid #ddd; }
-        #venue-img { width: 100%; height: auto; max-height: 300px; object-fit: contain; display: none; }
+        body { font-family: 'Inter', sans-serif; background: #f9f9f9; padding: 15px; text-align: center; }
         
-        /* Select Seat Type Styles */
-        .seat-selection-area { padding: 15px; padding-bottom: 120px; }
-        .section-title { font-size: 18px; font-weight: 700; margin-bottom: 15px; color: #333; }
-        
-        .type-card {
-            background: #efefef; /* Grey color like your screenshot */
-            border-radius: 12px;
-            padding: 15px;
-            text-align: center;
-            margin-bottom: 12px;
-            cursor: pointer;
-            border: 2px solid transparent;
-            transition: 0.3s;
-        }
-        .type-card.selected { border-color: #f84464; background: #fff5f7; }
-        .type-card h3 { margin: 0; font-size: 16px; color: #444; }
-        .type-card p { margin: 5px 0 0; font-weight: 700; color: #333; }
+        .payment-container { background: #fff; border-radius: 15px; padding: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border: 1px solid #ddd; margin-top: 10px; }
+        .payment-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px dashed #eee; padding-bottom: 15px; margin-bottom: 15px; }
+        .payment-header h2 { margin: 0; font-size: 18px; color: #333; }
+        .price-badge { background: #fff5f7; color: #f84464; padding: 8px 15px; border-radius: 8px; font-weight: 700; font-size: 18px; border: 1px solid #f84464; }
 
-        /* Summary Box */
-        .summary-card { background: #f9f9f9; border-radius: 12px; padding: 15px; margin-top: 20px; border: 1px solid #eee; }
-        .sum-row { display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 14px; color: #555; }
-        .sum-val { font-weight: 600; color: #222; }
-        
-        /* Quantity Controls */
-        .qty-box { display: flex; align-items: center; gap: 15px; }
-        .q-btn { width: 32px; height: 32px; border-radius: 50%; border: none; background: #ddd; font-weight: bold; cursor: pointer; }
-        .q-btn:active { background: #ccc; }
-        
-        .total-row { border-top: 1px solid #ddd; padding-top: 10px; margin-top: 10px; color: #f84464; font-weight: 700; font-size: 18px; }
+        /* 🔥 QR Image (Start mein display none rahega, bilkul seats.html ki tarah) */
+        .qr-box { background: #f0f0f0; min-height: 250px; border-radius: 12px; display: flex; align-items: center; justify-content: center; margin-bottom: 20px; overflow: hidden; border: 1px solid #ddd; }
+        #qr-code { width: 100%; height: auto; max-width: 250px; object-fit: contain; display: none; }
 
-        .book-now-btn { position: fixed; bottom: 20px; left: 5%; width: 90%; padding: 15px; background: #ccc; color: #fff; border: none; border-radius: 10px; font-weight: 700; cursor: not-allowed; }
-        .book-now-btn.active { background: #f84464; cursor: pointer; }
+        .utr-section { text-align: left; }
+        .utr-label { font-size: 14px; font-weight: 600; color: #444; margin-bottom: 8px; display: block; }
+        .utr-input { width: 100%; padding: 15px; border: 1px solid #ccc; border-radius: 10px; font-size: 16px; outline: none; box-sizing: border-box; }
+        .utr-input:focus { border-color: #f84464; }
+        
+        .pay-now-btn { width: 100%; padding: 16px; background: #ccc; color: #fff; border: none; border-radius: 10px; font-weight: 700; font-size: 16px; margin-top: 20px; cursor: not-allowed; transition: 0.3s; }
+        .pay-now-btn.active { background: #f84464; cursor: pointer; }
+        
+        .trust-icons { margin-top: 15px; display: flex; justify-content: center; gap: 15px; opacity: 0.7; }
+        .trust-icons img { height: 18px; }
     </style>
 </head>
-<body class="mobile-layout bg-white">
+<body class="mobile-layout">
 
-    <header class="bms-header">
-        <div class="header-left">
-            <span class="back-icon" onclick="window.history.back()">&#8249;</span>
-            <h1 id="match-title">Loading...</h1>
-        </div>
+    <header class="bms-header" style="margin-bottom: 15px;">
+        <span class="back-icon" onclick="window.history.back()">&#8249;</span>
+        <h1 style="font-size: 18px; margin-left: 10px; display: inline;">Complete Payment</h1>
     </header>
 
-    <div class="seat-selection-area">
-        <div class="venue-container">
-            <img id="venue-img" src="" alt="Stadium Layout">
+    <div class="payment-container">
+        <div class="payment-header">
+            <h2>Total Payable</h2>
+            <div id="p-amt" class="price-badge">₹0</div>
+        </div>
+        
+        <p style="font-size: 14px; color: #666; margin-bottom: 15px;" id="qr-msg">Loading Secure QR...</p>
+
+        <div class="qr-box">
+            <img id="qr-code" src="" alt="UPI QR">
         </div>
 
-        <h2 class="section-title">Select Seat Type</h2>
-
-        <div class="seat-types">
-            <div class="type-card" onclick="setSeat('General Stand', 800, this)">
-                <h3>General Stand</h3>
-                <p>₹800</p>
-            </div>
-            <div class="type-card" onclick="setSeat('Upper Tier', 1200, this)">
-                <h3>Upper Tier</h3>
-                <p>₹1200</p>
-            </div>
-            <div class="type-card" onclick="setSeat('Premium Stand', 2500, this)">
-                <h3>Premium Stand</h3>
-                <p>₹2500</p>
-            </div>
-            <div class="type-card" onclick="setSeat('VIP Box', 5000, this)">
-                <h3>VIP Box</h3>
-            </div>
-            <div class="type-card" onclick="setSeat('Club Lounge', 8000, this)">
-                <h3>Club Lounge</h3>
-                <p>₹8000</p>
-            </div>
+        <div class="trust-icons">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/e/e1/UPI-Logo.png" alt="UPI">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/2/24/Paytm_Logo_%28standalone%29.svg" alt="Paytm">
         </div>
 
-        <div class="summary-card">
-            <div class="sum-row"><span>Seat Type:</span> <span id="res-type" class="sum-val">None</span></div>
-            <div class="sum-row"><span>Price per Ticket:</span> <span id="res-price" class="sum-val">₹0</span></div>
-            <div class="sum-row">
-                <span>Quantity:</span>
-                <div class="qty-box">
-                    <button class="q-btn" onclick="updateQty(-1)">-</button>
-                    <span id="res-qty" class="sum-val">1</span>
-                    <button class="q-btn" onclick="updateQty(1)">+</button>
-                </div>
-            </div>
-            <div class="sum-row total-row">
-                <span>Total Payable:</span>
-                <span id="res-total">₹0</span>
-            </div>
+        <div class="utr-section" style="margin-top: 25px;">
+            <label class="utr-label">Enter 12-digit UTR/Ref. Number</label>
+            <input type="number" id="utr" class="utr-input" placeholder="Example: 4123XXXXXXXX" oninput="checkUTR()">
         </div>
+
+        <button id="pay-btn" class="pay-now-btn" disabled onclick="location.href='processing.html'">Verify & Confirm Booking</button>
     </div>
 
-    <button id="final-btn" class="book-now-btn" disabled onclick="goNext()">Select a Seat to Continue</button>
-
     <script>
-        const rawData = localStorage.getItem('selectedMatch');
-        if (rawData) {
-            const match = JSON.parse(rawData);
-            document.getElementById('match-title').innerText = match.title || "Match Details";
-            
-            const imgEl = document.getElementById('venue-img');
-            const imageUrl = match.venue_img || match.banner;
-            if (imageUrl) {
-                imgEl.src = imageUrl;
-                imgEl.style.display = 'block';
+        // LocalStorage se Price uthao
+        const finalPrice = localStorage.getItem('finalPrice') || 0;
+        document.getElementById('p-amt').innerText = "₹" + finalPrice;
+
+        // UTR Button Logic
+        function checkUTR() {
+            const val = document.getElementById('utr').value;
+            const btn = document.getElementById('pay-btn');
+            if (val.length === 12) {
+                btn.disabled = false;
+                btn.classList.add('active');
+            } else {
+                btn.disabled = true;
+                btn.classList.remove('active');
             }
         }
-
-        // --- NAYA CALCULATION LOGIC ---
-        window.sPrice = 0;
-        window.sQty = 1;
-
-        window.setSeat = (name, price, el) => {
-            document.querySelectorAll('.type-card').forEach(c => c.classList.remove('selected'));
-            el.classList.add('selected');
-            window.sPrice = price;
-            document.getElementById('res-type').innerText = name;
-            document.getElementById('res-price').innerText = `₹${price}`;
-            
-            const btn = document.getElementById('final-btn');
-            btn.disabled = false;
-            btn.classList.add('active');
-            btn.innerText = "Continue to Payment";
-            refreshTotal();
-        };
-
-        window.updateQty = (val) => {
-            let n = window.sQty + val;
-            if (n >= 1 && n <= 10) {
-                window.sQty = n;
-                document.getElementById('res-qty').innerText = n;
-                refreshTotal();
-            }
-        };
-
-        function refreshTotal() {
-            const total = window.sQty * window.sPrice;
-            document.getElementById('res-total').innerText = `₹${total}`;
-            localStorage.setItem("finalPrice", total); 
-        }
-
-        window.goNext = () => { window.location.href = "payment.html"; };
     </script>
 
-    <script type="module" src="js/seats.js"></script>
+    <script type="module">
+        import { db, ref, get } from "./js/firebase.js";
+
+        // Same seats.html style execution
+        document.addEventListener("DOMContentLoaded", async () => {
+            const qrImg = document.getElementById('qr-code');
+            const qrMsg = document.getElementById('qr-msg');
+            const price = localStorage.getItem('finalPrice') || 0;
+
+            try {
+                const snapshot = await get(ref(db, 'settings/payment'));
+                
+                if (snapshot.exists()) {
+                    const data = snapshot.val();
+                    let finalQR = "";
+                    
+                    if (data.qrUrl && data.qrUrl.trim() !== "") {
+                        finalQR = data.qrUrl;
+                    } else if (data.upiId && data.upiId.trim() !== "") {
+                        // UPI Link ko URL-safe banaya (Aarush Fashion store name included)
+                        const upiString = `upi://pay?pa=${data.upiId}&pn=AarushFashion&am=${price}&cu=INR`;
+                        finalQR = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(upiString)}`;
+                    }
+
+                    // Agar QR URL mil gaya, toh image src dalo aur display block karo (Just like venue image)
+                    if (finalQR !== "") {
+                        qrImg.src = finalQR;
+                        qrImg.style.display = 'block';
+                        qrMsg.innerText = "Scan QR to complete your payment";
+                    } else {
+                        qrMsg.innerText = "Payment method not set up.";
+                    }
+                } else {
+                    qrMsg.innerText = "QR Details missing in Admin Panel.";
+                }
+            } catch (error) {
+                console.log("Firebase QR Load Error:", error);
+                qrMsg.innerText = "Error loading QR. Try refreshing.";
+            }
+        });
+    </script>
 
 </body>
 </html>
