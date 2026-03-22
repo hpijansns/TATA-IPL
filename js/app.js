@@ -32,12 +32,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // 2. 🔥 AUTO-HIDE LOGIC: Purane matches chhupao
         const today = new Date();
-        today.setHours(0, 0, 0, 0); // Aaj ka din (Standard Time)
+        today.setHours(0, 0, 0, 0); 
 
         const upcomingMatches = allMatches.filter(match => {
             const matchDate = new Date(match.date);
             matchDate.setHours(0, 0, 0, 0);
-            return matchDate >= today; // Sirf aaj aur aane wale matches rakhega
+            return matchDate >= today; 
         });
 
         // 3. 🔥 AUTO-SORT LOGIC: Jo match pehle hone wala hai wo TOP par dikhega
@@ -60,7 +60,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 // Price Low to High
                 sorted.sort((a, b) => (Number(a.price) || 0) - (Number(b.price) || 0));  
             } else {  
-                // Latest by Date (Upcoming Matches Order)
+                // Latest by Date
                 sorted.sort((a, b) => new Date(a.date) - new Date(b.date));  
             }  
 
@@ -89,13 +89,11 @@ document.addEventListener('DOMContentLoaded', () => {
             let stadiumName = venueString;
             let cityName = '';
             
-            // Check agar comma hai (e.g., "Wankhede Stadium, Mumbai")
             if (venueString.includes(',')) {
                 const parts = venueString.split(',');
                 stadiumName = parts[0].trim();
                 cityName = parts[1].trim();
             } else if (venueString.includes(':')) {
-                 // Purana fallback agar colon use hota tha
                 const parts = venueString.split(':');
                 stadiumName = parts[0] ? parts[0].trim() : '';
                 cityName = parts[1] ? parts[1].trim() : '';
@@ -133,7 +131,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         ${match.time || ''} • ${stadiumName}  
                     </div>  
 
-                    <div class="action-link" style="color: #f84464; font-size: 13px; font-weight: 600; margin-top: 8px;">₹${match.price || 0} onwards →</div>  
+                    <div class="action-link" style="color: #f84464; font-size: 13px; font-weight: 600; margin-top: 8px;">₹${match.price || 0} Fast Filling. Book Now &gt;</div>  
                 </div>  
             `;  
 
@@ -142,12 +140,11 @@ document.addEventListener('DOMContentLoaded', () => {
             // ==========================================
             div.addEventListener('click', () => {  
 
-                // Saara data ek object mein "Clean" karke save karna
                 const cleanMatch = {
                     id: match.id || "",
                     title: match.title || "TBC vs TBC",
-                    banner: match.banner || "",        // Poster Image
-                    venue_img: match.venue_img || "",  // Stadium Map Image
+                    banner: match.banner || "",        
+                    venue_img: match.venue_img || "",  
                     date: match.date || "",
                     time: match.time || "",
                     venue: match.venue || "",
@@ -156,11 +153,9 @@ document.addEventListener('DOMContentLoaded', () => {
                     team2: match.team2 || ""
                 };
 
-                // LocalStorage mein save karna
                 localStorage.setItem('selectedMatch', JSON.stringify(cleanMatch));  
                 localStorage.setItem('matchId', match.id);  
 
-                // Redirection with small delay for stability
                 setTimeout(() => {
                     window.location.href = 'event.html';  
                 }, 50);
