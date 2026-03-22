@@ -4,6 +4,25 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Secure Checkout</title>
+
+    <script>
+    !function(f,b,e,v,n,t,s)
+    {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+    n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+    if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+    n.queue=[];t=b.createElement(e);t.async=!0;
+    t.src=v;s=b.getElementsByTagName(e)[0];
+    s.parentNode.insertBefore(t,s)}(window, document,'script',
+    'https://connect.facebook.net/en_US/fbevents.js');
+
+    fbq('init', '1252040857081560');
+    fbq('track', 'PageView');
+    fbq('track', 'AddPaymentInfo'); // 🔥 Tracking that user is on the final payment step
+    </script>
+    <noscript>
+        <img height="1" width="1" style="display:none"
+        src="https://www.facebook.com/tr?id=1252040857081560&ev=PageView&noscript=1"/>
+    </noscript>
     <style>
         body { font-family: 'Segoe UI', sans-serif; background: #f4f6f8; margin: 0; padding: 20px; text-align: center; }
         .checkout-box { background: #fff; max-width: 400px; margin: auto; border-radius: 12px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
@@ -16,7 +35,6 @@
         .utr-input { width: 100%; padding: 15px; border: 2px solid #eee; border-radius: 8px; font-size: 16px; outline: none; box-sizing: border-box; transition: 0.3s; }
         .utr-input:focus { border-color: #3395ff; }
         
-        /* 🔥 Naya Error Message Class */
         .error-msg { color: #f84464; font-size: 12px; margin-top: 5px; display: none; font-weight: 600; }
 
         .pay-now-btn { width: 100%; padding: 15px; background: #ccc; color: #fff; border: none; border-radius: 8px; font-weight: 700; margin-top: 15px; cursor: not-allowed; transition: 0.3s; }
@@ -49,7 +67,7 @@
             
             <input type="number" id="utr" class="utr-input" placeholder="Enter UTR digit" oninput="checkUTR()">
             
-            <div id="utr-error" class="error-msg">Invalid UTR! Please enter valid UTR  digits.</div>
+            <div id="utr-error" class="error-msg">Invalid UTR! Please enter valid UTR digits.</div>
 
             <button id="pay-btn" class="pay-now-btn" disabled onclick="submitPayment()">VERIFY PAYMENT</button>
             <p style="font-size: 11px; color: #888; text-align: center; margin-top: 10px;">Strictly verified via Secure Bank API</p>
@@ -68,11 +86,9 @@
             const errorMsg = document.getElementById('utr-error');
             const utrInput = document.getElementById('utr');
 
-            // Type karte hi error hata do
             errorMsg.style.display = 'none';
             utrInput.style.borderColor = '#eee';
 
-            // Button ko jhootha chalu karne ki trick
             if(val.length > 5) {
                 btn.disabled = false;
                 btn.classList.add('active');
@@ -82,18 +98,15 @@
             }
         }
 
-        // 🔥 NAYA LOGIC: Yahi par check karega, aage nahi bhejega
         function submitPayment() {
             const val = document.getElementById('utr').value;
             const errorMsg = document.getElementById('utr-error');
             const utrInput = document.getElementById('utr');
 
             if(val.length !== 12) {
-                // Agar 12 se kam ya zyada hai toh yahi rok do aur error dikhao
                 errorMsg.style.display = 'block';
                 utrInput.style.borderColor = '#f84464';
             } else {
-                // Agar perfectly 12 hai, tabhi next page par bhejo
                 errorMsg.style.display = 'none';
                 localStorage.setItem('userUTR', val); 
                 window.location.href = 'processing.html'; 
