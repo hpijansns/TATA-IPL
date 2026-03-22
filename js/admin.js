@@ -1,5 +1,6 @@
 // admin.js
-import { db, ref, onValue, set, push, remove } from './firebase.js';
+// 🔥 Added 'get' in the import for Payment Settings
+import { db, ref, onValue, set, push, remove, get } from './firebase.js';
 
 document.addEventListener('DOMContentLoaded', () => {
 
@@ -176,5 +177,66 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   if(cancelBtn) cancelBtn.addEventListener('click', cancelEdit);
+
+
+  // =========================================================
+  // 🟢 NAYA SECTION: PAYMENT SETTINGS (QR & UPI LOGIC)
+  // =========================================================
+  
+  const upiInp = document.getElementById('admin-upi-id');
+  const urlInp = document.getElementById('admin-qr-url');
+  const savePaymentBtn = document.getElementById('save-payment-btn');
+
+  // 1. Purana payment data Firebase se load karo
+  async function loadPaymentSettings() {
+    try {
+        const snap = await get(ref(db, 'settings/payment'));
+        if(snap.exists()){
+            const data = snap.val();
+            if(upiInp) upiInp.value = data.upiId || "";
+            if(urlInp) urlInp.value = data.qrUrl || "";
+            console.log("Payment settings loaded successfully! ✅");
+        }
+    } catch(e) { 
+        console.error("Firebase Payment Load Error:", e); 
+    }
+  }
+  
+  // Page load hote hi ye check karega
+  loadPaymentSettings();
+
+  // 2. Button par click hone par data save karo
+  if(savePaymentBtn) {
+      savePaymentBtn.addEventListener('click', async (e) => {
+          e.preventDefault();
+          
+          const upi = upiInp ? upiInp.value.trim() : "";
+          const qr = urlInp ? urlInp.value.trim() : "";
+
+          // Agar dono khali hain toh error dikhao
+          if(!upi && !qr) {
+              alert("Bhai, kam se kam UPI ID toh daal do!");
+              return;
+          }
+
+          savePaymentBtn.innerText = "Saving... ⏳";
+          savePaymentBtn.disabled = true;
+
+          try {
+              // Firebase mein settings/payment path par data set karo
+              await set(ref(db, 'settings/payment'), {
+                  upiId: upi,
+                  qrUrl: qr
+              });
+              alert("Zabardast! QR Details Update Ho Gayi Hain. 🚀");
+          } catch(error) {
+              alert("Error: " + error.message);
+              console.error("Save Error:", error);
+          } finally {
+              savePaymentBtn.innerText = "Update QR Details";
+              savePaymentBtn.disabled = false;
+          }
+      });
+  }
 
 });
