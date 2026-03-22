@@ -6,26 +6,18 @@
     <title>Select Seats - TATA IPL 2026</title>
     <link rel="stylesheet" href="css/style.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <style>
-        /* Emergency Fix Styles */
-        .qty-bubbles { display: flex !important; justify-content: center !important; gap: 10px !important; margin: 20px 0 !important; flex-wrap: wrap; min-height: 40px; }
-        .qty-bubble { width: 40px !important; height: 40px !important; border: 1px solid #ddd; border-radius: 50% !important; display: flex !important; align-items: center !important; justify-content: center !important; font-size: 14px; font-weight: 700; cursor: pointer; background: #fff; color: #333; }
-        .qty-bubble.active { background: #f84464 !important; color: #fff !important; border-color: #f84464 !important; }
-        .venue-container { width: 100%; background: #f0f0f0; min-height: 200px; display: flex; align-items: center; justify-content: center; overflow: hidden; }
-        #venue-img { width: 100%; height: auto; max-height: 250px; object-fit: contain; }
-    </style>
 </head>
 <body class="mobile-layout bg-white">
 
     <header class="bms-header">
         <div class="header-left">
             <span class="back-icon" onclick="window.history.back()">&#8249;</span>
-            <h1 id="match-title">Select Seats</h1>
+            <h1 id="match-title" class="truncate-title">Loading Match...</h1>
         </div>
     </header>
 
-    <div class="venue-container">
-        <img id="venue-img" src="" alt="Stadium Layout">
+    <div class="venue-container" style="background: #f0f0f0; min-height: 200px; display: flex; align-items: center; justify-content: center;">
+        <img id="venue-img" src="" alt="Stadium Layout" style="width:100%; height:auto; max-height:250px; object-fit: contain;">
     </div>
 
     <div class="sticky-footer">
@@ -38,15 +30,23 @@
 
     <div id="seat-popup" class="seat-popup active">
         <div class="popup-content">
-            <div class="timer-banner">You have approximately 4 minutes to select your seats.</div>
+            <div class="timer-banner">
+                You have <strong>approximately 4 minutes</strong> to select your seats.
+            </div>
+
             <h2>How many seats?</h2>
+
             <img id="vehicle-img" src="https://in.bmscdn.com/webin/common/icons/bicycle.png" class="popup-img" style="width: 120px; margin: 15px auto; display: block;">
+
             <div id="qty-bubbles" class="qty-bubbles"></div>
-            <div class="info-pill">You can add up to 10 tickets.</div>
+
+            <div class="info-pill">You can add upto 10 tickets.</div>
+
             <button id="confirm-btn" class="btn-primary">Select Seats</button>
         </div>
     </div>
 
     <script type="module" src="js/seats.js"></script>
+
 </body>
 </html>
