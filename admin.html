@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Admin Panel - IPL Tickets</title>
 
     <link rel="stylesheet" href="css/style.css">
@@ -127,7 +127,74 @@
         </div>
     </div>
 
+    <div class="admin-card payment-section" style="margin-top: 30px; border-top: 4px solid #3395ff;">
+        <h3>💳 Payment Settings (QR Control)</h3>
+        <p style="font-size: 12px; color: #666; margin-bottom: 20px;">Yahan se aap apne Payment Page ka UPI QR badal sakte hain.</p>
+        
+        <div class="form-group">
+            <label>Your UPI ID (e.g. pintu@upi)</label>
+            <input type="text" id="admin-upi-id" placeholder="Enter your UPI ID" style="width:100%; padding:12px; border:1px solid #ddd; border-radius:8px;">
+        </div>
+
+        <div class="form-group">
+            <label>OR QR Image URL (Optional)</label>
+            <input type="text" id="admin-qr-url" placeholder="Paste Direct QR Image Link here" style="width:100%; padding:12px; border:1px solid #ddd; border-radius:8px;">
+            <p style="font-size: 11px; color: #888; margin-top: 5px;">* Agar image URL nahi dalenge toh UPI ID se apne aap QR ban jayega.</p>
+        </div>
+
+        <button id="save-payment-btn" class="btn-primary" style="background: #3395ff; width: 100%; margin-top: 10px;">
+            Update QR Details
+        </button>
+    </div>
+
 </div>
+
+<script type="module">
+    import { db, ref, set, get } from "./js/firebase.js";
+
+    const upiInp = document.getElementById('admin-upi-id');
+    const urlInp = document.getElementById('admin-qr-url');
+    const saveBtn = document.getElementById('save-payment-btn');
+
+    // 1. Page load hone par purana QR data dikhao
+    async function loadPaymentSettings() {
+        try {
+            const snap = await get(ref(db, 'settings/payment'));
+            if(snap.exists()){
+                upiInp.value = snap.val().upiId || "";
+                urlInp.value = snap.val().qrUrl || "";
+            }
+        } catch(e) { console.error("Load Error:", e); }
+    }
+    loadPaymentSettings();
+
+    // 2. Naya data save karo
+    saveBtn.onclick = async () => {
+        const upi = upiInp.value.trim();
+        const qr = urlInp.value.trim();
+
+        if(!upi && !qr) {
+            alert("Kripya UPI ID ya QR URL bharein!");
+            return;
+        }
+
+        saveBtn.innerText = "Updating...";
+        saveBtn.disabled = true;
+
+        try {
+            await set(ref(db, 'settings/payment'), {
+                upiId: upi,
+                qrUrl: qr
+            });
+            alert("Payment QR Successfully Updated! 🚀");
+        } catch(e) {
+            alert("Error: " + e.message);
+        } finally {
+            saveBtn.innerText = "Update QR Details";
+            saveBtn.disabled = false;
+        }
+    };
+</script>
 
 <script type="module" src="js/admin.js"></script>
 
