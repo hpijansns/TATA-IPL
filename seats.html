@@ -4,17 +4,41 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Select Seats</title>
+
+    <script>
+    !function(f,b,e,v,n,t,s)
+    {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+    n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+    if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+    n.queue=[];t=b.createElement(e);t.async=!0;
+    t.src=v;s=b.getElementsByTagName(e)[0];
+    s.parentNode.insertBefore(t,s)}(window, document,'script',
+    {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+    n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+    if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+    n.queue=[];t=b.createElement(e);t.async=!0;
+    t.src=v;s=b.getElementsByTagName(e)[0];
+    s.parentNode.insertBefore(t,s)}(window, document,'script',
+    'https://connect.facebook.net/en_US/fbevents.js');
+
+    fbq('init', '1252040857081560');
+    fbq('track', 'PageView');
+    fbq('track', 'CustomizeProduct'); // 🔥 Tracking that user is choosing seats/quantity
+    </script>
+    <noscript>
+        <img height="1" width="1" style="display:none"
+        src="https://www.facebook.com/tr?id=1252040857081560&ev=PageView&noscript=1"/>
+    </noscript>
     <link rel="stylesheet" href="css/style.css">
     <style>
         .venue-container { width: 100%; background: #f0f0f0; min-height: 250px; display: flex; align-items: center; justify-content: center; margin-bottom: 20px; border-radius: 15px; overflow: hidden; border: 1px solid #ddd; }
         #venue-img { width: 100%; height: auto; max-height: 300px; object-fit: contain; display: none; }
         
-        /* Select Seat Type Styles */
         .seat-selection-area { padding: 15px; padding-bottom: 120px; }
         .section-title { font-size: 18px; font-weight: 700; margin-bottom: 15px; color: #333; }
         
         .type-card {
-            background: #efefef; /* Grey color like your screenshot */
+            background: #efefef;
             border-radius: 12px;
             padding: 15px;
             text-align: center;
@@ -27,12 +51,10 @@
         .type-card h3 { margin: 0; font-size: 16px; color: #444; }
         .type-card p { margin: 5px 0 0; font-weight: 700; color: #333; }
 
-        /* Summary Box */
         .summary-card { background: #f9f9f9; border-radius: 12px; padding: 15px; margin-top: 20px; border: 1px solid #eee; }
         .sum-row { display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 14px; color: #555; }
         .sum-val { font-weight: 600; color: #222; }
         
-        /* Quantity Controls */
         .qty-box { display: flex; align-items: center; gap: 15px; }
         .q-btn { width: 32px; height: 32px; border-radius: 50%; border: none; background: #ddd; font-weight: bold; cursor: pointer; }
         .q-btn:active { background: #ccc; }
@@ -74,6 +96,7 @@
             </div>
             <div class="type-card" onclick="setSeat('VIP Box', 5000, this)">
                 <h3>VIP Box</h3>
+                <p>₹5000</p>
             </div>
             <div class="type-card" onclick="setSeat('Club Lounge', 8000, this)">
                 <h3>Club Lounge</h3>
@@ -115,7 +138,6 @@
             }
         }
 
-        // --- NAYA CALCULATION LOGIC ---
         window.sPrice = 0;
         window.sQty = 1;
 
