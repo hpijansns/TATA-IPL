@@ -9,7 +9,6 @@
         .checkout-box { background: #fff; max-width: 400px; margin: auto; border-radius: 12px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
         .checkout-header { background: #3395ff; color: #fff; padding: 20px; display: flex; justify-content: space-between; align-items: center; }
         .qr-section { padding: 30px; }
-        /* Image styling */
         #qr-code { width: 220px; height: 220px; border: 8px solid #fff; box-shadow: 0 0 10px rgba(0,0,0,0.1); border-radius: 10px; background: #f9f9f9; object-fit: contain; }
         .utr-box { padding: 20px; background: #fff; border-top: 1px solid #eee; }
         .utr-input { width: 90%; padding: 15px; border: 2px solid #eee; border-radius: 8px; font-size: 16px; outline: none; transition: 0.3s; }
@@ -46,42 +45,15 @@
 
     <div class="secured-by">🔒 Secured by 256-bit SSL Encryption</div>
 
-    <script type="module">
-        import { db, ref, onValue } from "./js/firebase.js";
-
-        // 1. Set Price
+    <script>
+        // 1. LocalStorage se Total Price nikalna
         const finalPrice = localStorage.getItem('finalPrice') || 0;
         const amountDisplay = document.getElementById('p-amt');
-        if (amountDisplay) amountDisplay.innerText = "₹" + finalPrice;
+        if (amountDisplay) {
+            amountDisplay.innerText = "₹" + finalPrice;
+        }
 
-        const qrImg = document.getElementById('qr-code');
-        const qrMsg = document.getElementById('qr-msg');
-
-        // 2. Load QR from Firebase
-        onValue(ref(db, 'settings/payment'), (snap) => {
-            if (snap.exists()) {
-                const data = snap.val();
-                
-                if (data.qrUrl && data.qrUrl.trim() !== "") {
-                    // Agar Direct Image Link hai toh
-                    qrImg.src = data.qrUrl;
-                    qrMsg.innerText = "Scan QR to complete payment";
-                } else if (data.upiId && data.upiId.trim() !== "") {
-                    // 🔥 FIX: UPI String ko encode kiya hai
-                    const upiString = `upi://pay?pa=${data.upiId}&pn=AarushFashion&am=${finalPrice}&cu=INR`;
-                    const encodedUpi = encodeURIComponent(upiString);
-                    
-                    qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodedUpi}`;
-                    qrMsg.innerText = "Scan QR to complete payment";
-                } else {
-                    qrMsg.innerText = "Please update UPI ID in Admin Panel.";
-                }
-            } else {
-                qrMsg.innerText = "QR Setup is incomplete. Check Admin Panel.";
-            }
-        });
-
-        // 3. UTR Button Logic
+        // 2. UTR check karna (12 digits)
         window.checkUTR = function() {
             const val = document.getElementById('utr').value;
             const btn = document.getElementById('pay-btn');
@@ -92,7 +64,9 @@
                 btn.disabled = true;
                 btn.style.background = "#ccc";
             }
-        }
+        };
     </script>
+
+    <script type="module" src="js/payment.js"></script>
 </body>
 </html>
