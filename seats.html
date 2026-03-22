@@ -3,31 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Select Seat Type</title>
+    <title>Select Seats</title>
     <link rel="stylesheet" href="css/style.css">
     <style>
-        .seats-container { padding: 15px; background: #fff; font-family: 'Inter', sans-serif; }
+        .venue-container { width: 100%; background: #f0f0f0; min-height: 250px; display: flex; align-items: center; justify-content: center; margin-bottom: 20px; border-radius: 15px; overflow: hidden; border: 1px solid #ddd; }
+        #venue-img { width: 100%; height: auto; max-height: 300px; object-fit: contain; display: none; }
         
-        /* 🔥 STADIUM IMAGE BRACKET STYLE */
-        .venue-frame {
-            position: relative;
-            padding: 10px;
-            background: #fff;
-            border: 1px solid #ddd;
-            border-radius: 15px;
-            margin-bottom: 25px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-        }
-        .venue-frame::before, .venue-frame::after {
-            content: ''; position: absolute; width: 15px; height: 15px; border: 3px solid #f84464;
-        }
-        .venue-frame::before { top: -4px; left: -4px; border-right: 0; border-bottom: 0; border-radius: 6px 0 0 0; }
-        .venue-frame::after { bottom: -4px; right: -4px; border-left: 0; border-top: 0; border-radius: 0 0 6px 0; }
+        /* Select Seat Type Styles */
+        .seat-selection-area { padding: 15px; padding-bottom: 120px; }
+        .section-title { font-size: 18px; font-weight: 700; margin-bottom: 15px; color: #333; }
         
-        #venue-img { width: 100%; height: auto; border-radius: 10px; display: none; }
-
-        /* SEAT CARDS (Gray Style) */
-        .section-title { font-size: 19px; font-weight: 700; margin-bottom: 15px; color: #222; }
         .type-card {
             background: #efefef; /* Grey color like your screenshot */
             border-radius: 12px;
@@ -36,82 +21,137 @@
             margin-bottom: 12px;
             cursor: pointer;
             border: 2px solid transparent;
+            transition: 0.3s;
         }
         .type-card.selected { border-color: #f84464; background: #fff5f7; }
         .type-card h3 { margin: 0; font-size: 16px; color: #444; }
         .type-card p { margin: 5px 0 0; font-weight: 700; color: #333; }
 
-        /* SUMMARY BOX */
-        .summary-card { background: #f8f8f8; border-radius: 12px; padding: 15px; margin-top: 20px; }
-        .row { display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 15px; }
-        .total-row { border-top: 1px solid #ddd; padding-top: 10px; margin-top: 10px; color: #f84464; font-weight: 700; font-size: 17px; }
+        /* Summary Box */
+        .summary-card { background: #f9f9f9; border-radius: 12px; padding: 15px; margin-top: 20px; border: 1px solid #eee; }
+        .sum-row { display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 14px; color: #555; }
+        .sum-val { font-weight: 600; color: #222; }
         
-        /* QTY CONTROLS */
-        .qty-box { display: flex; align-items: center; gap: 12px; }
-        .q-btn { width: 30px; height: 30px; border-radius: 50%; border: none; background: #ddd; font-weight: bold; cursor: pointer; }
+        /* Quantity Controls */
+        .qty-box { display: flex; align-items: center; gap: 15px; }
+        .q-btn { width: 32px; height: 32px; border-radius: 50%; border: none; background: #ddd; font-weight: bold; cursor: pointer; }
+        .q-btn:active { background: #ccc; }
         
-        .proceed-btn {
-            width: 100%; padding: 15px; border-radius: 10px; border: none;
-            background: #ccc; color: #fff; font-weight: 700; margin-top: 20px; cursor: not-allowed;
-        }
-        .proceed-btn.active { background: #f84464; cursor: pointer; }
+        .total-row { border-top: 1px solid #ddd; padding-top: 10px; margin-top: 10px; color: #f84464; font-weight: 700; font-size: 18px; }
+
+        .book-now-btn { position: fixed; bottom: 20px; left: 5%; width: 90%; padding: 15px; background: #ccc; color: #fff; border: none; border-radius: 10px; font-weight: 700; cursor: not-allowed; }
+        .book-now-btn.active { background: #f84464; cursor: pointer; }
     </style>
 </head>
-<body class="seats-container">
+<body class="mobile-layout bg-white">
 
-    <header class="bms-header" style="margin-bottom: 15px;">
-        <span class="back-icon" onclick="window.history.back()">&#8249;</span>
-        <h1 id="match-title" style="margin-left:10px; font-size:17px;">Loading...</h1>
+    <header class="bms-header">
+        <div class="header-left">
+            <span class="back-icon" onclick="window.history.back()">&#8249;</span>
+            <h1 id="match-title">Loading...</h1>
+        </div>
     </header>
 
-    <div class="venue-frame">
-        <img id="venue-img" src="" alt="Stadium Map">
-    </div>
+    <div class="seat-selection-area">
+        <div class="venue-container">
+            <img id="venue-img" src="" alt="Stadium Layout">
+        </div>
 
-    <h2 class="section-title">Select Seat Type</h2>
+        <h2 class="section-title">Select Seat Type</h2>
 
-    <div class="seat-types">
-        <div class="type-card" onclick="setSeat('General Stand', 800, this)">
-            <h3>General Stand</h3>
-            <p>₹800</p>
-        </div>
-        <div class="type-card" onclick="setSeat('Upper Tier', 1200, this)">
-            <h3>Upper Tier</h3>
-            <p>₹1200</p>
-        </div>
-        <div class="type-card" onclick="setSeat('Premium Stand', 2500, this)">
-            <h3>Premium Stand</h3>
-            <p>₹2500</p>
-        </div>
-        <div class="type-card" onclick="setSeat('VIP Box', 5000, this)">
-            <h3>VIP Box</h3>
-            <p>₹5000</p>
-        </div>
-        <div class="type-card" onclick="setSeat('Club Lounge', 8000, this)">
-            <h3>Club Lounge</h3>
-            <p>₹8000</p>
-        </div>
-    </div>
-
-    <div class="summary-card">
-        <div class="row"><span>Seat Type:</span> <span id="res-type">None</span></div>
-        <div class="row"><span>Price per Ticket:</span> <span id="res-price">₹0</span></div>
-        <div class="row">
-            <span>Quantity:</span>
-            <div class="qty-box">
-                <button class="q-btn" onclick="updateQty(-1)">-</button>
-                <span id="res-qty" style="font-weight:700;">1</span>
-                <button class="q-btn" onclick="updateQty(1)">+</button>
+        <div class="seat-types">
+            <div class="type-card" onclick="setSeat('General Stand', 800, this)">
+                <h3>General Stand</h3>
+                <p>₹800</p>
+            </div>
+            <div class="type-card" onclick="setSeat('Upper Tier', 1200, this)">
+                <h3>Upper Tier</h3>
+                <p>₹1200</p>
+            </div>
+            <div class="type-card" onclick="setSeat('Premium Stand', 2500, this)">
+                <h3>Premium Stand</h3>
+                <p>₹2500</p>
+            </div>
+            <div class="type-card" onclick="setSeat('VIP Box', 5000, this)">
+                <h3>VIP Box</h3>
+            </div>
+            <div class="type-card" onclick="setSeat('Club Lounge', 8000, this)">
+                <h3>Club Lounge</h3>
+                <p>₹8000</p>
             </div>
         </div>
-        <div class="row total-row">
-            <span>Total Payable:</span>
-            <span id="res-total">₹0</span>
+
+        <div class="summary-card">
+            <div class="sum-row"><span>Seat Type:</span> <span id="res-type" class="sum-val">None</span></div>
+            <div class="sum-row"><span>Price per Ticket:</span> <span id="res-price" class="sum-val">₹0</span></div>
+            <div class="sum-row">
+                <span>Quantity:</span>
+                <div class="qty-box">
+                    <button class="q-btn" onclick="updateQty(-1)">-</button>
+                    <span id="res-qty" class="sum-val">1</span>
+                    <button class="q-btn" onclick="updateQty(1)">+</button>
+                </div>
+            </div>
+            <div class="sum-row total-row">
+                <span>Total Payable:</span>
+                <span id="res-total">₹0</span>
+            </div>
         </div>
     </div>
 
-    <button id="final-btn" class="proceed-btn" disabled onclick="goNext()">Select a Seat to Continue</button>
+    <button id="final-btn" class="book-now-btn" disabled onclick="goNext()">Select a Seat to Continue</button>
+
+    <script>
+        const rawData = localStorage.getItem('selectedMatch');
+        if (rawData) {
+            const match = JSON.parse(rawData);
+            document.getElementById('match-title').innerText = match.title || "Match Details";
+            
+            const imgEl = document.getElementById('venue-img');
+            const imageUrl = match.venue_img || match.banner;
+            if (imageUrl) {
+                imgEl.src = imageUrl;
+                imgEl.style.display = 'block';
+            }
+        }
+
+        // --- NAYA CALCULATION LOGIC ---
+        window.sPrice = 0;
+        window.sQty = 1;
+
+        window.setSeat = (name, price, el) => {
+            document.querySelectorAll('.type-card').forEach(c => c.classList.remove('selected'));
+            el.classList.add('selected');
+            window.sPrice = price;
+            document.getElementById('res-type').innerText = name;
+            document.getElementById('res-price').innerText = `₹${price}`;
+            
+            const btn = document.getElementById('final-btn');
+            btn.disabled = false;
+            btn.classList.add('active');
+            btn.innerText = "Continue to Payment";
+            refreshTotal();
+        };
+
+        window.updateQty = (val) => {
+            let n = window.sQty + val;
+            if (n >= 1 && n <= 10) {
+                window.sQty = n;
+                document.getElementById('res-qty').innerText = n;
+                refreshTotal();
+            }
+        };
+
+        function refreshTotal() {
+            const total = window.sQty * window.sPrice;
+            document.getElementById('res-total').innerText = `₹${total}`;
+            localStorage.setItem("finalPrice", total); 
+        }
+
+        window.goNext = () => { window.location.href = "payment.html"; };
+    </script>
 
     <script type="module" src="js/seats.js"></script>
+
 </body>
 </html>
