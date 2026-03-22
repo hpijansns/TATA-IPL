@@ -1,6 +1,8 @@
 import { db, ref, get } from "./firebase.js";
 
-document.addEventListener("DOMContentLoaded", async () => {
+document.addEventListener("DOMContentLoaded", () => {
+    console.log("Seats Page Initialized...");
+
     const matchTitleEl = document.getElementById('match-title');
     const venueImgEl = document.getElementById('venue-img');
     const priceEl = document.getElementById('display-price');
@@ -16,17 +18,38 @@ document.addEventListener("DOMContentLoaded", async () => {
         6: "https://in.bmscdn.com/webin/common/icons/suv-car.png"
     };
 
-    // 1. LocalStorage se ID nikaalo
+    // ==========================================
+    // 🟢 STEP 1: LOAD FROM LOCALSTORAGE (IMMEDIATE)
+    // ==========================================
+    const rawData = localStorage.getItem('selectedMatch');
     const matchId = localStorage.getItem('matchId');
 
-    if (!matchId) {
-        console.error("No Match ID found!");
-        window.location.href = 'index.html';
-        return;
+    if (rawData) {
+        try {
+            const match = JSON.parse(rawData);
+            
+            // Title & Price Update
+            if (matchTitleEl) matchTitleEl.innerText = match.title || "Match Details";
+            if (priceEl) priceEl.innerText = `₹${match.price || 0} onwards`;
+
+            // 🔥 VENUE IMAGE LOAD (Jo test page par chal raha tha)
+            if (venueImgEl) {
+                const imageUrl = match.venue_img || match.banner;
+                if (imageUrl) {
+                    venueImgEl.src = imageUrl;
+                    venueImgEl.style.display = 'block';
+                }
+            }
+        } catch (e) {
+            console.error("Local Storage Error:", e);
+        }
     }
 
-    // 2. Numbers turant bana do (Bina wait kiye)
+    // ==========================================
+    // 🔵 STEP 2: GENERATE BUBBLES (1-10)
+    // ==========================================
     if (bubblesContainer) {
+        bubblesContainer.innerHTML = ""; 
         for (let i = 1; i <= 10; i++) {
             const btn = document.createElement('div');
             btn.className = 'qty-bubble';
@@ -43,30 +66,23 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
     // ==========================================
-    // 🟢 DIRECT FIREBASE FETCH (Bulletproof)
+    // 🔴 STEP 3: FIREBASE SYNC (OPTIONAL/BACKGROUND)
     // ==========================================
-    try {
-        const matchRef = ref(db, `matches/${matchId}`);
-        const snapshot = await get(matchRef);
-
-        if (snapshot.exists()) {
-            const data = snapshot.val();
-            
-            // UI Update karein
-            if (matchTitleEl) matchTitleEl.innerText = data.title || "IPL Match";
-            if (priceEl) priceEl.innerText = `₹${data.price || 0} onwards`;
-            
-            // 🔥 VENUE IMAGE: Database se direct load
-            if (venueImgEl && data.venue_img) {
-                venueImgEl.src = data.venue_img;
-                venueImgEl.style.display = 'block'; // Image dikhao
-                
-                venueImgEl.onerror = () => {
-                    venueImgEl.src = data.banner; // Backup agar map na mile
-                };
-            }
+    // Ise try-catch mein rakha hai taaki error aane par image gayab na ho
+    if (matchId && db) {
+        try {
+            get(ref(db, `matches/${matchId}`)).then(snapshot => {
+                if (snapshot.exists()) {
+                    const data = snapshot.val();
+                    // Sirf agar database mein nayi image hai toh hi update karein
+                    if (venueImgEl && data.venue_img) {
+                        venueImgEl.src = data.venue_img;
+                        venueImgEl.style.display = 'block';
+                    }
+                }
+            }).catch(err => console.log("Firebase sync skipped, showing local image."));
+        } catch (err) {
+            console.log("Firebase not connected.");
         }
-    } catch (error) {
-        console.error("Firebase fetch failed:", error);
     }
 });
