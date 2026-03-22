@@ -3,9 +3,38 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Select Seats - IPL 2026</title>
+    <title>Select Seats</title>
     <link rel="stylesheet" href="css/style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Bubbles ko dikhane ke liye emergency CSS */
+        .qty-bubbles { 
+            display: flex !important; 
+            justify-content: center !important; 
+            gap: 12px !important; 
+            margin: 25px 0 !important; 
+            flex-wrap: wrap;
+            min-height: 40px;
+        }
+        .qty-bubble { 
+            width: 38px !important; 
+            height: 38px !important; 
+            border: 1px solid #ddd; 
+            border-radius: 50% !important; 
+            display: flex !important; 
+            align-items: center !important; 
+            justify-content: center !important; 
+            font-size: 15px; 
+            font-weight: 700; 
+            cursor: pointer; 
+            background: #fff;
+            color: #333;
+        }
+        .qty-bubble.active { 
+            background: #f84464 !important; 
+            color: #fff !important; 
+            border-color: #f84464 !important; 
+        }
+    </style>
 </head>
 <body class="mobile-layout bg-white">
 
@@ -16,7 +45,7 @@
         </div>
     </header>
 
-    <div class="venue-container" style="background: #f0f0f0; min-height: 250px; display: flex; align-items: center; justify-content: center; overflow: hidden;">
+    <div class="venue-container" style="background: #f0f0f0; min-height: 250px; display: flex; align-items: center; justify-content: center;">
         <img id="venue-img" src="" alt="Stadium Layout" style="width:100%; height:auto; display: none; object-fit: contain;">
     </div>
 
@@ -32,9 +61,9 @@
         <div class="popup-content">
             <div class="timer-banner">You have approximately 4 minutes to select your seats.</div>
             
-            <h2 style="margin: 25px 0 15px 0; font-size: 18px;">How many seats?</h2>
+            <h2 style="margin: 25px 0 10px 0; font-size: 19px;">How many seats?</h2>
             
-            <div id="qty-bubbles" class="qty-bubbles" style="margin-bottom: 20px;"></div>
+            <div id="qty-bubbles" class="qty-bubbles"></div>
 
             <div class="info-pill">You can add up to 10 tickets.</div>
 
