@@ -4,6 +4,25 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Enter Details - IPL Tickets</title>
+
+    <script>
+    !function(f,b,e,v,n,t,s)
+    {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+    n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+    if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+    n.queue=[];t=b.createElement(e);t.async=!0;
+    t.src=v;s=b.getElementsByTagName(e)[0];
+    s.parentNode.insertBefore(t,s)}(window, document,'script',
+    'https://connect.facebook.net/en_US/fbevents.js');
+
+    fbq('init', '1252040857081560');
+    fbq('track', 'PageView');
+    fbq('track', 'Lead'); // 🔥 Tracking that user is filling details
+    </script>
+    <noscript>
+        <img height="1" width="1" style="display:none"
+        src="https://www.facebook.com/tr?id=1252040857081560&ev=PageView&noscript=1"/>
+    </noscript>
     <style>
         body { font-family: 'Segoe UI', sans-serif; background: #f4f6f8; margin: 0; padding: 20px; display: flex; justify-content: center; align-items: center; min-height: 100vh; box-sizing: border-box;}
         .details-box { background: #fff; max-width: 400px; width: 100%; border-radius: 12px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.1); padding: 30px; box-sizing: border-box; }
@@ -20,7 +39,6 @@
         .btn-proceed { width: 100%; padding: 16px; background: #3395ff; color: #fff; border: none; border-radius: 8px; font-weight: 700; font-size: 15px; margin-top: 10px; cursor: pointer; transition: 0.3s; letter-spacing: 0.5px; }
         .btn-proceed:hover { background: #287ce6; box-shadow: 0 5px 15px rgba(51, 149, 255, 0.3); }
         
-        /* Chota sa order summary box */
         .summary { background: #f8f9fa; padding: 12px; border-radius: 6px; display: flex; justify-content: space-between; font-weight: 700; margin-bottom: 20px; font-size: 15px; color: #333;}
     </style>
 </head>
@@ -63,21 +81,17 @@
     </div>
 
     <script>
-        // Pichle page se price lakar yahan dikha do taaki genuine lage
         const finalPrice = localStorage.getItem('finalPrice') || 0;
         document.getElementById('display-price').innerText = "₹" + finalPrice;
 
-        // Form submit hone par kya hoga:
         document.getElementById('details-form').addEventListener('submit', function(e) {
-            e.preventDefault(); // Page ko refresh hone se roko
+            e.preventDefault(); 
             
-            // User ki details browser me save kar lo (Agar baad me kahin dikhani ho)
             localStorage.setItem('customerName', document.getElementById('u-name').value);
             localStorage.setItem('customerEmail', document.getElementById('u-email').value);
             localStorage.setItem('customerPhone', document.getElementById('u-phone').value);
             localStorage.setItem('customerAddress', document.getElementById('u-address').value);
 
-            // Details save karne ke turant baad Payment Page par bhej do
             window.location.href = 'payment.html';
         });
     </script>
