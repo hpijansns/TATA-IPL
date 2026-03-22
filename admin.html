@@ -8,7 +8,6 @@
     <link rel="stylesheet" href="css/style.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
-    <!-- Meta Pixel -->
     <script>
     !function(f,b,e,v,n,t,s)
     {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
@@ -34,7 +33,6 @@
 
 <div class="container admin-container">
 
-    <!-- FORM -->
     <div class="admin-card form-section">
         <h3 id="form-title">Add New Match</h3>
 
@@ -42,25 +40,25 @@
             <input type="hidden" id="edit-id">
 
             <div class="form-group">
-                <label>Match Title</label>
+                <label>Match Title (e.g. GT vs KKR)</label>
                 <input type="text" id="m-title" required>
             </div>
 
-            <div class="form-row">
-                <div class="form-group">
+            <div class="form-row" style="display: flex; gap: 10px;">
+                <div class="form-group" style="flex: 1;">
                     <label>Date</label>
                     <input type="date" id="m-date" required>
                 </div>
 
-                <div class="form-group">
+                <div class="form-group" style="flex: 1;">
                     <label>Time</label>
                     <input type="time" id="m-time" required>
                 </div>
             </div>
 
             <div class="form-group">
-                <label>Venue</label>
-                <input type="text" id="m-venue" required>
+                <label>Venue (City: Stadium)</label>
+                <input type="text" id="m-venue" placeholder="Jaipur: Sawai Mansingh Stadium" required>
             </div>
 
             <div class="form-group">
@@ -68,52 +66,63 @@
                 <input type="number" id="m-price" required>
             </div>
 
+            <div class="form-row" style="display: flex; gap: 10px;">
+                <div class="form-group" style="flex: 1;">
+                    <label>Team 1 Logo URL</label>
+                    <input type="url" id="m-team1" placeholder="https://..." required>
+                </div>
+
+                <div class="form-group" style="flex: 1;">
+                    <label>Team 2 Logo URL</label>
+                    <input type="url" id="m-team2" placeholder="https://..." required>
+                </div>
+            </div>
+
+            <hr style="margin: 20px 0; border: 0; border-top: 1px solid #eee;">
+
             <div class="form-group">
-                <label>Team 1 Logo</label>
-                <input type="url" id="m-team1" required>
+                <label>Banner Image URL (Main Poster - Event Page)</label>
+                <input type="url" id="m-banner" placeholder="Paste Poster URL here" required>
+                <img id="banner-preview" 
+                     style="width:100px; height:60px; object-fit:cover; margin-top:10px; border-radius:4px; display:none; border:1px solid #ddd;">
             </div>
 
             <div class="form-group">
-                <label>Team 2 Logo</label>
-                <input type="url" id="m-team2" required>
+                <label>Venue Image URL (Stadium Map - Seats Page)</label>
+                <input type="url" id="m-venue-img" placeholder="Paste Stadium Map URL here" required>
+                <p style="font-size: 11px; color: #666; margin-top: 4px;">* Yeh image sirf Seats select karte waqt dikhegi.</p>
+                <img id="venue-preview" 
+                     style="width:100px; height:60px; object-fit:cover; margin-top:10px; border-radius:4px; display:none; border:1px solid #ddd;">
             </div>
 
-            <!-- 🔥 UPDATED BANNER WITH PREVIEW -->
-            <div class="form-group">
-                <label>Venue / Banner Image URL</label>
-                <input type="url" id="m-banner" placeholder="https://..." required>
+            <div style="display: flex; gap: 10px;">
+                <button type="submit" id="save-btn" class="btn-primary" style="flex: 2; margin-top:20px;">
+                    Save Match
+                </button>
 
-                <!-- 🔥 PREVIEW -->
-                <img id="banner-preview"
-                     style="width:100%; margin-top:10px; border-radius:8px; display:none;">
+                <button type="button" id="cancel-btn" class="btn-secondary" style="flex: 1; margin-top:20px; display:none; background: #666;">
+                    Cancel Edit
+                </button>
             </div>
-
-            <button type="submit" id="save-btn" class="btn-primary" style="margin-top:20px;">
-                Save Match
-            </button>
-
-            <button type="button" id="cancel-btn" class="btn-secondary" style="margin-top:20px; display:none;">
-                Cancel Edit
-            </button>
         </form>
     </div>
 
-    <!-- TABLE -->
     <div class="admin-card table-section">
         <h3>Manage Matches</h3>
 
         <div class="table-responsive">
-            <table id="admin-table">
+            <table id="admin-table" style="width: 100%; border-collapse: collapse;">
                 <thead>
-                    <tr>
-                        <th>Title</th>
-                        <th>Date</th>
-                        <th>Price</th>
-                        <th>Actions</th>
+                    <tr style="background: #f8f9fa;">
+                        <th style="padding: 12px; border: 1px solid #eee;">Title</th>
+                        <th style="padding: 12px; border: 1px solid #eee;">Date</th>
+                        <th style="padding: 12px; border: 1px solid #eee;">Price</th>
+                        <th style="padding: 12px; border: 1px solid #eee;">Actions</th>
                     </tr>
                 </thead>
 
-                <tbody id="admin-match-list"></tbody>
+                <tbody id="admin-match-list">
+                    </tbody>
             </table>
         </div>
     </div>
