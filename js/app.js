@@ -84,6 +84,23 @@ document.addEventListener('DOMContentLoaded', () => {
             const month = date.toLocaleString('default', { month: 'short' });  
             const week = date.toLocaleString('default', { weekday: 'short' });  
 
+            // 🔥 Venue Split Logic (Stadium vs City)
+            const venueString = match.venue || '';
+            let stadiumName = venueString;
+            let cityName = '';
+            
+            // Check agar comma hai (e.g., "Wankhede Stadium, Mumbai")
+            if (venueString.includes(',')) {
+                const parts = venueString.split(',');
+                stadiumName = parts[0].trim();
+                cityName = parts[1].trim();
+            } else if (venueString.includes(':')) {
+                 // Purana fallback agar colon use hota tha
+                const parts = venueString.split(':');
+                stadiumName = parts[0] ? parts[0].trim() : '';
+                cityName = parts[1] ? parts[1].trim() : '';
+            }
+
             const div = document.createElement('div');  
             div.className = 'timeline-row';  
 
@@ -92,7 +109,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     <div class="date-val">${day}</div>  
                     <div class="month-val">${month}</div>  
                     <div class="day-val">${week}</div>  
-                    <div class="city-val">${(match.venue || '').split(':')[1] || ''}</div>  
+                    <div class="city-val" style="font-size: 11px; color: #888; margin-top: 4px; font-weight: 500;">${cityName}</div>  
                 </div>  
 
                 <div class="timeline-right">  
@@ -112,11 +129,11 @@ document.addEventListener('DOMContentLoaded', () => {
                         </div>  
                     </div>  
 
-                    <div class="venue-time">  
-                        ${match.time || ''} • ${match.venue || ''}  
+                    <div class="venue-time" style="font-size: 12px; color: #555; margin-top: 10px;">  
+                        ${match.time || ''} • ${stadiumName}  
                     </div>  
 
-                    <div class="action-link">₹${match.price || 0} onwards →</div>  
+                    <div class="action-link" style="color: #f84464; font-size: 13px; font-weight: 600; margin-top: 8px;">₹${match.price || 0} onwards →</div>  
                 </div>  
             `;  
 
