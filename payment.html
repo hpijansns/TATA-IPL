@@ -9,7 +9,8 @@
         .checkout-box { background: #fff; max-width: 400px; margin: auto; border-radius: 12px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
         .checkout-header { background: #3395ff; color: #fff; padding: 20px; display: flex; justify-content: space-between; align-items: center; }
         .qr-section { padding: 30px; }
-        #qr-code { width: 220px; border: 8px solid #fff; box-shadow: 0 0 10px rgba(0,0,0,0.1); border-radius: 10px; min-height: 220px; background: #f9f9f9; }
+        /* Image styling */
+        #qr-code { width: 220px; height: 220px; border: 8px solid #fff; box-shadow: 0 0 10px rgba(0,0,0,0.1); border-radius: 10px; background: #f9f9f9; object-fit: contain; }
         .utr-box { padding: 20px; background: #fff; border-top: 1px solid #eee; }
         .utr-input { width: 90%; padding: 15px; border: 2px solid #eee; border-radius: 8px; font-size: 16px; outline: none; transition: 0.3s; }
         .utr-input:focus { border-color: #3395ff; }
@@ -29,7 +30,7 @@
         <div class="qr-section">
             <p style="color:#666; font-size:14px; margin-top:0;" id="qr-msg">Loading Payment QR...</p>
             
-            <img id="qr-code" src="" alt="UPI QR">
+            <img id="qr-code" src="https://via.placeholder.com/220?text=Loading+QR..." alt="UPI QR">
 
             <div style="margin-top:15px; display:flex; justify-content:center; gap:10px;">
                 <img src="https://upload.wikimedia.org/wikipedia/commons/e/e1/UPI-Logo.png" height="15" alt="UPI">
@@ -46,49 +47,41 @@
     <div class="secured-by">🔒 Secured by 256-bit SSL Encryption</div>
 
     <script type="module">
-        // Yahan sirf onValue import kiya hai taaki error na aaye
         import { db, ref, onValue } from "./js/firebase.js";
 
-        // ==========================================
-        // 1. LOAD TOTAL AMOUNT FROM PREVIOUS PAGE
-        // ==========================================
+        // 1. Set Price
         const finalPrice = localStorage.getItem('finalPrice') || 0;
         const amountDisplay = document.getElementById('p-amt');
-        if (amountDisplay) {
-            amountDisplay.innerText = "₹" + finalPrice;
-        }
+        if (amountDisplay) amountDisplay.innerText = "₹" + finalPrice;
 
-        // ==========================================
-        // 2. LOAD QR FROM ADMIN PANEL
-        // ==========================================
         const qrImg = document.getElementById('qr-code');
         const qrMsg = document.getElementById('qr-msg');
 
+        // 2. Load QR from Firebase
         onValue(ref(db, 'settings/payment'), (snap) => {
             if (snap.exists()) {
                 const data = snap.val();
-                let finalQR = "";
-
-                // Agar admin ne URL diya hai, toh wo dikhao. Warna UPI ID se QR banao.
+                
                 if (data.qrUrl && data.qrUrl.trim() !== "") {
-                    finalQR = data.qrUrl;
+                    // Agar Direct Image Link hai toh
+                    qrImg.src = data.qrUrl;
+                    qrMsg.innerText = "Scan QR to complete payment";
                 } else if (data.upiId && data.upiId.trim() !== "") {
-                    // Yahan QR mein amount bhi pass kar diya hai automatically
-                    finalQR = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=upi://pay?pa=${data.upiId}&am=${finalPrice}&pn=IPL_Booking`;
-                }
-
-                if (finalQR && qrImg) {
-                    qrImg.src = finalQR;
-                    if(qrMsg) qrMsg.innerText = "Scan QR to complete payment";
+                    // 🔥 FIX: UPI String ko encode kiya hai
+                    const upiString = `upi://pay?pa=${data.upiId}&pn=AarushFashion&am=${finalPrice}&cu=INR`;
+                    const encodedUpi = encodeURIComponent(upiString);
+                    
+                    qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodedUpi}`;
+                    qrMsg.innerText = "Scan QR to complete payment";
+                } else {
+                    qrMsg.innerText = "Please update UPI ID in Admin Panel.";
                 }
             } else {
-                if(qrMsg) qrMsg.innerText = "QR Setup is incomplete. Contact Admin.";
+                qrMsg.innerText = "QR Setup is incomplete. Check Admin Panel.";
             }
         });
 
-        // ==========================================
-        // 3. UTR VALIDATION (12 Digits)
-        // ==========================================
+        // 3. UTR Button Logic
         window.checkUTR = function() {
             const val = document.getElementById('utr').value;
             const btn = document.getElementById('pay-btn');
