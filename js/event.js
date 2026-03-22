@@ -7,35 +7,40 @@ const box = document.getElementById('popup-box');
 
 let startY = 0;
 
-// =========================
-// 🔥 GET FULL MATCH DATA
-// =========================
+// ==========================================
+// 🔥 GET FULL MATCH DATA (SAFE RECOVERY)
+// ==========================================
 let match = null;
 
 try {
-    match = JSON.parse(localStorage.getItem('selectedMatch'));
-} catch {
+    const rawData = localStorage.getItem('selectedMatch');
+    match = rawData ? JSON.parse(rawData) : null;
+} catch (e) {
     match = null;
+    console.error("LocalStorage Error", e);
 }
 
-console.log("EVENT MATCH:", match);
+console.log("EVENT MATCH DATA:", match);
 
-// ❌ NO MATCH
+// ❌ NO MATCH FOUND
 if (!match) {
-    container.innerHTML = `<div class="loading">No Match Found</div>`;
+    if (container) {
+        container.innerHTML = `<div class="loading">No Match Selected. <a href="index.html">Go Back</a></div>`;
+    }
 } else {
 
-    // 🔥 IMPORTANT FIX (ID SAVE FOR SEATS)
+    // 🔥 IMPORTANT: SAVE ID FOR FIREBASE SYNC ON SEATS PAGE
     if (match.id) {
         localStorage.setItem("matchId", match.id);
     }
 
-    const teams = match.title.split(' vs ');
+    const teams = (match.title || "Match").split(' vs ');
 
+    // 🔥 RENDER UI
     container.innerHTML = `
     
     <div style="padding:16px">
-        <img src="${match.banner}" style="width:100%; border-radius:10px;">
+        <img src="${match.banner}" style="width:100%; border-radius:10px;" onerror="this.src='https://via.placeholder.com/800x400?text=Banner+Not+Available'">
     </div>
 
     <div style="padding:0 16px;">
@@ -56,12 +61,12 @@ if (!match) {
     </div>
 
     <div class="event-details-list">
-        <div>📅 ${match.date}</div>
-        <div>⏰ ${match.time}</div>
+        <div>📅 ${match.date || 'TBA'}</div>
+        <div>⏰ ${match.time || 'TBA'}</div>
         <div>⏳ 5 Hours</div>
         <div>👶 Age Limit - 2yrs +</div>
         <div>🌐 Hindi, English</div>
-        <div>📍 ${match.venue}</div>
+        <div>📍 ${match.venue || 'Venue TBC'}</div>
     </div>
 
     <div class="explore-banner">
@@ -77,7 +82,7 @@ if (!match) {
         <h3>About The Event</h3>
         <p>
             Witness an exciting IPL match between 
-            <b>${teams[0]}</b> and <b>${teams[1]}</b>.
+            <b>${teams[0] || 'Team A'}</b> and <b>${teams[1] || 'Team B'}</b>.
         </p>
     </div>
 
@@ -87,73 +92,87 @@ if (!match) {
     </div>
     `;
 
-    footer.style.display = "flex";
-    priceBox.innerText = `₹${match.price} onwards`;
+    if (footer) footer.style.display = "flex";
+    if (priceBox) priceBox.innerText = `₹${match.price || 0} onwards`;
 }
 
-// =========================
-// 🔥 POPUP
-// =========================
+// ==========================================
+// 🔥 POPUP LOGIC
+// ==========================================
 window.openTnc = () => {
-    popup.classList.add('active');
+    if (popup) popup.classList.add('active');
 };
 
 function closePopup() {
-    popup.classList.remove('active');
-    box.style.transform = 'translateY(0)';
+    if (popup) popup.classList.remove('active');
+    if (box) box.style.transform = 'translateY(0)';
 }
 
-document.getElementById('close-popup').onclick = closePopup;
+const closeBtn = document.getElementById('close-popup');
+if (closeBtn) {
+    closeBtn.onclick = closePopup;
+}
 
-popup.addEventListener('click', (e) => {
-    if (e.target === popup) closePopup();
-});
+if (popup) {
+    popup.addEventListener('click', (e) => {
+        if (e.target === popup) closePopup();
+    });
+}
 
-// =========================
+// ==========================================
 // 🔥 ACCEPT → GO TO SEATS (FINAL FIX)
-// =========================
-document.getElementById('accept-tnc-btn').onclick = () => {
-    closePopup();
-
-    if (typeof fbq !== "undefined") {
-        fbq('track', 'InitiateCheckout');
-    }
-
-    // 🔥 IMPORTANT (DATA SAFE PASS)
-    localStorage.setItem('selectedMatch', JSON.stringify(match));
-
-    setTimeout(() => {
-        window.location.href = "seats.html";
-    }, 200);
-};
-
-// =========================
-// 🔥 BOOK BUTTON
-// =========================
-document.getElementById('book-now-btn').onclick = () => {
-    openTnc();
-};
-
-// =========================
-// 🔥 SWIPE CLOSE
-// =========================
-box.addEventListener('touchstart', (e) => {
-    startY = e.touches[0].clientY;
-});
-
-box.addEventListener('touchmove', (e) => {
-    let move = e.touches[0].clientY - startY;
-    if (move > 0) {
-        box.style.transform = `translateY(${move}px)`;
-    }
-});
-
-box.addEventListener('touchend', (e) => {
-    let diff = e.changedTouches[0].clientY - startY;
-
-    if (diff > 100) {
+// ==========================================
+const acceptBtn = document.getElementById('accept-tnc-btn');
+if (acceptBtn) {
+    acceptBtn.onclick = () => {
         closePopup();
-    } else {
-        box.style.transform = 'translateY(0)';
-    }
-});
+
+        if (typeof fbq !== "undefined") {
+            fbq('track', 'InitiateCheckout');
+        }
+
+        // 🔥 IMPORTANT (DATA SAFE PASS TO SEATS)
+        // Yahan 'match' object mein banner aur venue_img dono hone chahiye
+        localStorage.setItem('selectedMatch', JSON.stringify(match));
+
+        setTimeout(() => {
+            window.location.href = "seats.html";
+        }, 200);
+    };
+}
+
+// ==========================================
+// 🔥 BOOK BUTTON
+// ==========================================
+const bookNowBtn = document.getElementById('book-now-btn');
+if (bookNowBtn) {
+    bookNowBtn.onclick = () => {
+        openTnc();
+    };
+}
+
+// ==========================================
+// 🔥 SWIPE CLOSE LOGIC
+// ==========================================
+if (box) {
+    box.addEventListener('touchstart', (e) => {
+        startY = e.touches[0].clientY;
+    });
+
+    box.addEventListener('touchmove', (e) => {
+        let move = e.touches[0].clientY - startY;
+        if (move > 0) {
+            box.style.transform = `translateY(${move}px)`;
+        }
+    });
+
+    box.addEventListener('touchend', (e) => {
+        let diff = e.changedTouches[0].clientY - startY;
+
+        if (diff > 100) {
+            closePopup();
+        } else {
+            box.style.transform = 'translateY(0)';
+        }
+    });
+}
