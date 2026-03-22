@@ -3,120 +3,114 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Select Seats - TATA IPL 2026</title>
+    <title>Select Seat Type</title>
     <link rel="stylesheet" href="css/style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
-        /* शानदार Brackets & Image Styling */
-        .venue-wrapper {
-            padding: 20px;
-            background: #f8f9fa;
-            display: flex;
-            justify-content: center;
-        }
-        .venue-bracket {
+        .seats-container { padding: 15px; background: #fff; font-family: 'Inter', sans-serif; }
+        
+        /* 🔥 STADIUM IMAGE BRACKET STYLE */
+        .venue-frame {
             position: relative;
             padding: 10px;
-            border: 2px solid #e0e0e0;
-            border-radius: 15px;
             background: #fff;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
-            max-width: 90%;
+            border: 1px solid #ddd;
+            border-radius: 15px;
+            margin-bottom: 25px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
         }
-        /* Corner Brackets Effect */
-        .venue-bracket::before, .venue-bracket::after {
-            content: '';
-            position: absolute;
-            width: 20px;
-            height: 20px;
-            border: 3px solid #f84464;
+        .venue-frame::before, .venue-frame::after {
+            content: ''; position: absolute; width: 15px; height: 15px; border: 3px solid #f84464;
         }
-        .venue-bracket::before { top: -5px; left: -5px; border-right: 0; border-bottom: 0; border-radius: 8px 0 0 0; }
-        .venue-bracket::after { bottom: -5px; right: -5px; border-left: 0; border-top: 0; border-radius: 0 0 8px 0; }
+        .venue-frame::before { top: -4px; left: -4px; border-right: 0; border-bottom: 0; border-radius: 6px 0 0 0; }
+        .venue-frame::after { bottom: -4px; right: -4px; border-left: 0; border-top: 0; border-radius: 0 0 6px 0; }
+        
+        #venue-img { width: 100%; height: auto; border-radius: 10px; display: none; }
 
-        #venue-img { width: 100%; height: auto; border-radius: 10px; display: block; }
-
-        /* Seat Categories Styling */
-        .category-container { padding: 20px; margin-bottom: 100px; }
-        .cat-card {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 15px;
-            border: 1px solid #eee;
+        /* SEAT CARDS (Gray Style) */
+        .section-title { font-size: 19px; font-weight: 700; margin-bottom: 15px; color: #222; }
+        .type-card {
+            background: #efefef; /* Grey color like your screenshot */
             border-radius: 12px;
+            padding: 15px;
+            text-align: center;
             margin-bottom: 12px;
-            transition: 0.3s;
             cursor: pointer;
+            border: 2px solid transparent;
         }
-        .cat-card:hover { border-color: #f84464; background: #fff5f7; }
-        .cat-card.selected { border: 2px solid #f84464; background: #fff5f7; }
-        .cat-info h3 { margin: 0; font-size: 15px; color: #333; }
-        .cat-info p { margin: 4px 0 0; font-size: 12px; color: #888; }
-        .cat-price { font-weight: 700; color: #333; font-size: 15px; }
+        .type-card.selected { border-color: #f84464; background: #fff5f7; }
+        .type-card h3 { margin: 0; font-size: 16px; color: #444; }
+        .type-card p { margin: 5px 0 0; font-weight: 700; color: #333; }
+
+        /* SUMMARY BOX */
+        .summary-card { background: #f8f8f8; border-radius: 12px; padding: 15px; margin-top: 20px; }
+        .row { display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 15px; }
+        .total-row { border-top: 1px solid #ddd; padding-top: 10px; margin-top: 10px; color: #f84464; font-weight: 700; font-size: 17px; }
+        
+        /* QTY CONTROLS */
+        .qty-box { display: flex; align-items: center; gap: 12px; }
+        .q-btn { width: 30px; height: 30px; border-radius: 50%; border: none; background: #ddd; font-weight: bold; cursor: pointer; }
+        
+        .proceed-btn {
+            width: 100%; padding: 15px; border-radius: 10px; border: none;
+            background: #ccc; color: #fff; font-weight: 700; margin-top: 20px; cursor: not-allowed;
+        }
+        .proceed-btn.active { background: #f84464; cursor: pointer; }
     </style>
 </head>
-<body class="mobile-layout">
+<body class="seats-container">
 
-    <header class="bms-header">
-        <div class="header-left">
-            <span class="back-icon" onclick="window.history.back()">&#8249;</span>
-            <h1 id="match-title">Loading...</h1>
-        </div>
+    <header class="bms-header" style="margin-bottom: 15px;">
+        <span class="back-icon" onclick="window.history.back()">&#8249;</span>
+        <h1 id="match-title" style="margin-left:10px; font-size:17px;">Loading...</h1>
     </header>
 
-    <div class="venue-wrapper">
-        <div class="venue-bracket">
-            <img id="venue-img" src="" alt="Stadium Layout">
+    <div class="venue-frame">
+        <img id="venue-img" src="" alt="Stadium Map">
+    </div>
+
+    <h2 class="section-title">Select Seat Type</h2>
+
+    <div class="seat-types">
+        <div class="type-card" onclick="setSeat('General Stand', 800, this)">
+            <h3>General Stand</h3>
+            <p>₹800</p>
+        </div>
+        <div class="type-card" onclick="setSeat('Upper Tier', 1200, this)">
+            <h3>Upper Tier</h3>
+            <p>₹1200</p>
+        </div>
+        <div class="type-card" onclick="setSeat('Premium Stand', 2500, this)">
+            <h3>Premium Stand</h3>
+            <p>₹2500</p>
+        </div>
+        <div class="type-card" onclick="setSeat('VIP Box', 5000, this)">
+            <h3>VIP Box</h3>
+            <p>₹5000</p>
+        </div>
+        <div class="type-card" onclick="setSeat('Club Lounge', 8000, this)">
+            <h3>Club Lounge</h3>
+            <p>₹8000</p>
         </div>
     </div>
 
-    <div class="category-container">
-        <h2 style="font-size: 14px; color: #666; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 15px;">Select Category</h2>
-        
-        <div class="cat-card" onclick="selectCat(this, 5000, 'Premium - South Stand')">
-            <div class="cat-info">
-                <h3>PREMIUM (South Stand)</h3>
-                <p>Best view of the pitch</p>
+    <div class="summary-card">
+        <div class="row"><span>Seat Type:</span> <span id="res-type">None</span></div>
+        <div class="row"><span>Price per Ticket:</span> <span id="res-price">₹0</span></div>
+        <div class="row">
+            <span>Quantity:</span>
+            <div class="qty-box">
+                <button class="q-btn" onclick="updateQty(-1)">-</button>
+                <span id="res-qty" style="font-weight:700;">1</span>
+                <button class="q-btn" onclick="updateQty(1)">+</button>
             </div>
-            <div class="cat-price">₹5,000</div>
         </div>
-
-        <div class="cat-card" onclick="selectCat(this, 2500, 'Platinum - East Stand')">
-            <div class="cat-info">
-                <h3>PLATINUM (East/West)</h3>
-                <p>Comfortable long-view seats</p>
-            </div>
-            <div class="cat-price">₹2,500</div>
-        </div>
-
-        <div class="cat-card selected" onclick="selectCat(this, 1200, 'Gold - North Stand')">
-            <div class="cat-info">
-                <h3>GOLD (North Stand)</h3>
-                <p>Value for money seats</p>
-            </div>
-            <div class="cat-price">₹1,200</div>
+        <div class="row total-row">
+            <span>Total Payable:</span>
+            <span id="res-total">₹0</span>
         </div>
     </div>
 
-    <div id="seat-popup" class="seat-popup active">
-        <div class="popup-content">
-            <div class="timer-banner">Select number of tickets</div>
-            <h2 style="margin: 20px 0 10px;">How many seats?</h2>
-            <div id="qty-bubbles" class="qty-bubbles"></div>
-            <button class="btn-primary" onclick="document.getElementById('seat-popup').classList.remove('active')" style="margin-top: 20px;">
-                Continue
-            </button>
-        </div>
-    </div>
-
-    <div class="sticky-footer">
-        <div class="price-info">
-            <div id="total-price-display" class="price">₹1,200</div>
-            <div id="selected-summary" style="font-size: 11px; color: #888;">1 Ticket • Gold</div>
-        </div>
-        <button class="book-now-btn" onclick="proceedToFinal()">Proceed</button>
-    </div>
+    <button id="final-btn" class="proceed-btn" disabled onclick="goNext()">Select a Seat to Continue</button>
 
     <script type="module" src="js/seats.js"></script>
 </body>
