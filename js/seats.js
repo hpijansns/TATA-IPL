@@ -6,12 +6,12 @@ document.addEventListener("DOMContentLoaded", async () => {
     const vehicleImg = document.getElementById('vehicle-img');
     const popup = document.getElementById('seat-popup');
     const matchTitle = document.getElementById('match-title');
-    const venueImg = document.getElementById('venue-img');
+    const venueImg = document.getElementById('venue-img'); // 🔥 Stadium Layout Image
 
     let selectedSeats = 1;
 
     // ==========================================
-    // 🚲 VEHICLE ICONS (1 to 10) 
+    // 🚲 VEHICLE ICONS (BookMyShow Style)
     // ==========================================
     const vehicles = {
         1: "https://in.bmscdn.com/webin/common/icons/bicycle.png",
@@ -27,44 +27,58 @@ document.addEventListener("DOMContentLoaded", async () => {
     };
 
     // ==========================================
-    // 1. LOAD DATA FIRST (IMAGE & TITLE)
+    // 1. LOAD DATA FIRST (LOCAL STORAGE)
     // ==========================================
     const rawData = localStorage.getItem('selectedMatch');
-    if (rawData) {
-        const match = JSON.parse(rawData);
-        if (matchTitle) matchTitle.innerText = match.title || "Match Details";
-        if (venueImg) venueImg.src = match.banner || "";
+    if (!rawData) {
+        window.location.href = "index.html";
+        return;
+    }
+
+    const match = JSON.parse(rawData);
+
+    // Title Update
+    if (matchTitle) {
+        matchTitle.innerText = match.title || "Select Seats";
+    }
+
+    // 🔥 VENUE IMAGE FIX: Banner ki jagah Venue Map dikhao
+    if (venueImg) {
+        // Agar Firebase se venue_img aayi hai toh wo, nahi toh placeholder
+        venueImg.src = match.venue_img || "https://via.placeholder.com/800x400?text=Stadium+Seating+Layout";
+        
+        venueImg.onerror = () => {
+            venueImg.src = "https://via.placeholder.com/800x400?text=Venue+Map+Not+Available";
+        };
     }
 
     // ==========================================
     // 2. GENERATE WORKING SEAT BUBBLES
     // ==========================================
     if (bubbles) {
-        bubbles.innerHTML = ""; // Pehle purana saaf karein
+        bubbles.innerHTML = ""; // Purana clear karein
         
         for (let i = 1; i <= 10; i++) {
             const btn = document.createElement('div');
             btn.className = 'qty-bubble';
-            if (i === 1) btn.classList.add('active'); // By default 1 active
+            if (i === 1) btn.classList.add('active'); // 1st bubble default active
             btn.innerText = i;
 
-            // 🔥 CLICK LOGIC FIXED
+            // 🔥 CLICK LOGIC
             btn.addEventListener('click', () => {
-                // Saare bubbles se active class hatao
-                document.querySelectorAll('.qty-bubble').forEach(b => {
-                    b.classList.remove('active');
-                });
+                // Remove active from all
+                document.querySelectorAll('.qty-bubble').forEach(b => b.classList.remove('active'));
 
-                // Sirf clicked bubble ko active karo
+                // Add active to current
                 btn.classList.add('active');
 
-                // Image change logic
+                // Update Vehicle Image based on number
                 if (vehicleImg && vehicles[i]) {
                     vehicleImg.src = vehicles[i];
                 }
 
                 selectedSeats = i;
-                console.log("Selected Seats:", selectedSeats);
+                console.log("Seats Selected:", selectedSeats);
             });
 
             bubbles.appendChild(btn);
@@ -72,28 +86,45 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
     // ==========================================
-    // 3. CONFIRM BUTTON WORKING
+    // 3. CONFIRM & OPEN BUTTONS
     // ==========================================
     const confirmBtn = document.getElementById('confirm-btn');
     if (confirmBtn) {
         confirmBtn.onclick = () => {
-            // Save quantity for next page
+            // Save quantity for next steps
             localStorage.setItem("seatQty", selectedSeats);
             
-            // Popup band karein
+            // Popup close karein
             if (popup) popup.classList.remove('active');
             
-            // Yahan se aap next page (Seat Layout) par bhej sakte hain
-            console.log("Proceeding with seats:", selectedSeats);
-            // window.location.href = "layout.html"; 
+            console.log("Proceeding with:", selectedSeats, "seats");
+            // window.location.href = "checkout.html"; // Aap yahan redirection daal sakte hain
         };
     }
 
-    // Book Now button agar page par hai toh popup kholne ke liye
+    // Book Now button functionality
     const openBtn = document.getElementById('open-seat-popup');
     if (openBtn) {
         openBtn.onclick = () => {
             if (popup) popup.classList.add('active');
+        };
+    }
+
+    // ==========================================
+    // 4. OPTIONAL: RE-FETCH FROM FIREBASE (SYNC)
+    // ==========================================
+    const matchId = localStorage.getItem("matchId");
+    if (matchId) {
+        try {
+            const snapshot = await get(ref(db, 'matches/' + matchId));
+            if (snapshot.exists()) {
+                const data = snapshot.val();
+                // Agar Firebase mein venue_img hai toh use update karein
+                if (data.venue_img && venueImg) venueImg.src = data.venue_img;
+                if (data.title && matchTitle) matchTitle.innerText = data.title;
+            }
+        } catch (err) {
+            console.log("Firebase sync failed, using LocalStorage data.");
         }
     }
 });
