@@ -10,17 +10,17 @@ document.addEventListener("DOMContentLoaded", async () => {
     const openBtn = document.getElementById('open-seat-popup');
     const confirmBtn = document.getElementById('confirm-btn');
 
-    // 1. LocalStorage se sirf ID uthao (Jo index.js ne save ki thi)
+    // 1. LocalStorage se sirf ID nikaalo
     const matchId = localStorage.getItem('matchId');
 
     if (!matchId) {
-        console.error("Match ID missing! Going back to home.");
+        console.error("Match ID nahi mila! Redirecting...");
         window.location.href = "index.html";
         return;
     }
 
     // ==========================================
-    // 🟢 STEP 1: DIRECT FIREBASE FETCH
+    // 🟢 DIRECT FIREBASE FETCH LOGIC
     // ==========================================
     try {
         const matchRef = ref(db, `matches/${matchId}`);
@@ -28,27 +28,26 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         if (snapshot.exists()) {
             const data = snapshot.val();
-            console.log("Firebase Data Received:", data);
-
-            // Title aur Price set karo
+            
+            // Title & Price Set Karo
             if (matchTitleEl) matchTitleEl.innerText = data.title || "Match Details";
             if (priceEl) priceEl.innerText = `₹${data.price || 0} onwards`;
 
-            // 🔥 VENUE IMAGE: Direct load
+            // 🔥 VENUE IMAGE: Sirf is page par dikhegi
             if (venueImgEl && data.venue_img) {
                 venueImgEl.src = data.venue_img;
-                venueImgEl.style.display = 'block'; // Ab show karo
-            } else if (venueImgEl) {
-                venueImgEl.src = data.banner; // Fallback to banner if map missing
-                venueImgEl.style.display = 'block';
+                venueImgEl.style.display = 'block'; // Hide se Show kar do
+                venueImgEl.onerror = () => { venueImgEl.src = data.banner; }; // Backup
             }
+        } else {
+            console.log("No data found for this ID in Firebase.");
         }
     } catch (error) {
-        console.error("Firebase Error:", error);
+        console.error("Firebase Fetch Error:", error);
     }
 
     // ==========================================
-    // 🔵 STEP 2: GENERATE BUBBLES (1-10)
+    // 🔵 BUBBLES GENERATION (1 to 10)
     // ==========================================
     if (bubblesContainer) {
         for (let i = 1; i <= 10; i++) {
@@ -66,14 +65,15 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
     // ==========================================
-    // 🔴 STEP 3: CONTROLS
+    // 🔴 POPUP CONTROLS
     // ==========================================
     if (openBtn) openBtn.onclick = () => popup.classList.add('active');
+    
     if (confirmBtn) {
         confirmBtn.onclick = () => {
             popup.classList.remove('active');
-            // Agla page layout wala yahan connect karein
-            // window.location.href = "layout.html"; 
+            // Yahan se Seat Layout wale page par bhej sakte hain
+            // window.location.href = "seat-layout.html"; 
         };
     }
 });
