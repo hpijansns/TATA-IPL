@@ -35,7 +35,7 @@
             <img id="qr-code" src="" alt="UPI QR">
 
             <div style="margin-top:15px; display:flex; justify-content:center; gap:10px;">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/e/e1/UPI-Logo.png" height="15" alt="UPI">
+                <img src="https://logodix.com/logo/1763538.png" height="15" alt="UPI">
                 <img src="https://upload.wikimedia.org/wikipedia/commons/2/24/Paytm_Logo_%28standalone%29.svg" height="15" alt="Paytm">
             </div>
         </div>
@@ -81,8 +81,13 @@
                 const data = snap.val();
                 
                 if (data.qrUrl && data.qrUrl.trim() !== "") {
-                    // Agar direct image link hai
-                    qrImg.src = data.qrUrl;
+                    // 🔥 Database ki 'qhttps' wali galti ko theek karne ka auto-fix
+                    let cleanUrl = data.qrUrl.trim();
+                    if (cleanUrl.startsWith("qhttp")) {
+                        cleanUrl = cleanUrl.replace("qhttp", "http"); 
+                    }
+                    
+                    qrImg.src = cleanUrl;
                     qrImg.style.display = 'block'; // Image dikhao
                     qrMsg.innerText = "Scan QR to complete payment";
                 } 
@@ -98,6 +103,8 @@
             }
         }).catch(err => {
             console.log("Firebase QR Error: ", err);
+            // 🔥 Agar koi error aaya toh ab wo console ki jagah screen par dikhega
+            qrMsg.innerText = "Error: " + err.message; 
         });
     </script>
 
