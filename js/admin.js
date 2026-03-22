@@ -19,14 +19,18 @@ document.addEventListener('DOMContentLoaded', () => {
   const mTeam2 = document.getElementById('m-team2');
   
   // 🔥 Do alag images ke fields
-  const mBanner = document.getElementById('m-banner');      // Poster Image
-  const mVenueImg = document.getElementById('m-venue-img'); // Stadium Map Image
+  const mBanner = document.getElementById('m-banner');      
+  const mVenueImg = document.getElementById('m-venue-img'); 
+
+  // 🔥 Naye QR/UPI Fields (Form ke andar)
+  const upiInp = document.getElementById('admin-upi-id');
+  const urlInp = document.getElementById('admin-qr-url');
 
   const saveBtn = document.getElementById('save-btn');
   const cancelBtn = document.getElementById('cancel-btn');
   const formTitle = document.getElementById('form-title');
 
-  // 🔥 Preview Elements
+  // Preview Elements
   const bannerPreview = document.getElementById('banner-preview');
   const venuePreview = document.getElementById('venue-preview');
 
@@ -48,9 +52,19 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  // Input hote hi preview dikhao
   if(mBanner) mBanner.addEventListener('input', () => showPreview(mBanner.value, bannerPreview));
   if(mVenueImg) mVenueImg.addEventListener('input', () => showPreview(mVenueImg.value, venuePreview));
+
+  // ==========================================
+  // 🔥 AUTO-LOAD GLOBAL QR (Form me hamesha bhara aayega)
+  // ==========================================
+  onValue(ref(db, 'settings/payment'), (snap) => {
+    if (snap.exists()) {
+      const data = snap.val();
+      if (upiInp && document.activeElement !== upiInp) upiInp.value = data.upiId || '';
+      if (urlInp && document.activeElement !== urlInp) urlInp.value = data.qrUrl || '';
+    }
+  });
 
   // ==========================================
   // 🔥 FETCH MATCHES (DISPLAY IN TABLE)
@@ -80,7 +94,7 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   // ==========================================
-  // 🔥 SAVE / UPDATE FUNCTION
+  // 🔥 SAVE / UPDATE FUNCTION (MATCH + QR)
   // ==========================================
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
@@ -93,25 +107,38 @@ document.addEventListener('DOMContentLoaded', () => {
       price: Number(mPrice.value || 0),
       team1: mTeam1.value.trim(),
       team2: mTeam2.value.trim(),
-      banner: mBanner.value.trim(),     // Poster URL
-      venue_img: mVenueImg.value.trim() // 🔥 Stadium Map URL
+      banner: mBanner.value.trim(),     
+      venue_img: mVenueImg.value.trim() 
+    };
+
+    const paymentData = {
+      upiId: upiInp ? upiInp.value.trim() : '',
+      qrUrl: urlInp ? urlInp.value.trim() : ''
     };
 
     try {
+      saveBtn.innerText = "Saving...";
+      
       if (isEditing && editIdInput.value) {
-        // Update existing match
+        // Match update
         await set(ref(db, 'matches/' + editIdInput.value), data);
-        alert('Match Updated Successfully ✅');
+        // Global QR update
+        await set(ref(db, 'settings/payment'), paymentData);
+        alert('Match & QR Updated Successfully ✅');
       } else {
-        // Add new match
+        // Naya match save
         await push(ref(db, 'matches'), data);
-        alert('Match Saved Successfully ✅');
+        // Global QR update
+        await set(ref(db, 'settings/payment'), paymentData);
+        alert('Match & QR Saved Successfully ✅');
       }
 
       cancelEdit(); // Reset form
     } catch (err) {
       console.error(err);
       alert('Error: ' + err.message);
+    } finally {
+      saveBtn.innerText = isEditing ? "Update Match" : "Save Match";
     }
   });
 
@@ -131,9 +158,8 @@ document.addEventListener('DOMContentLoaded', () => {
     mTeam1.value = m.team1 || '';
     mTeam2.value = m.team2 || '';
     mBanner.value = m.banner || '';
-    mVenueImg.value = m.venue_img || ''; // 🔥 Map URL Load karo
+    mVenueImg.value = m.venue_img || ''; 
 
-    // Previews update
     showPreview(m.banner, bannerPreview);
     showPreview(m.venue_img, venuePreview);
 
@@ -142,7 +168,6 @@ document.addEventListener('DOMContentLoaded', () => {
     if(saveBtn) saveBtn.innerText = 'Update Match';
     if(cancelBtn) cancelBtn.style.display = 'inline-block';
     
-    // Scroll to top of form
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
@@ -164,9 +189,17 @@ document.addEventListener('DOMContentLoaded', () => {
   function cancelEdit() {
     isEditing = false;
     editIdInput.value = '';
-    form.reset();
+    // Hum match details form reset karenge, par QR wahi rehne denge kyunki wo global hai
+    mTitle.value = '';
+    mDate.value = '';
+    mTime.value = '';
+    mVenue.value = '';
+    mPrice.value = '';
+    mTeam1.value = '';
+    mTeam2.value = '';
+    mBanner.value = '';
+    mVenueImg.value = '';
     
-    // Clear previews
     if(bannerPreview) bannerPreview.style.display = 'none';
     if(venuePreview) venuePreview.style.display = 'none';
 
@@ -176,56 +209,6 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   if(cancelBtn) cancelBtn.addEventListener('click', cancelEdit);
-
-
-  // =========================================================
-  // 💳 PAYMENT SETTINGS (QR CONTROL) - 100% SAFE LOGIC
-  // =========================================================
-  const upiInp = document.getElementById('admin-upi-id');
-  const urlInp = document.getElementById('admin-qr-url');
-  const savePaymentBtn = document.getElementById('save-payment-btn');
-
-  if (savePaymentBtn) {
-    // 1. Data Load karne ke liye aapka purana 'onValue' use kiya hai (Error nahi aayega)
-    onValue(ref(db, 'settings/payment'), (snap) => {
-      if (snap.exists()) {
-        const data = snap.val();
-        // Check kiya hai ki typing ke dauran value overwrite na ho
-        if (upiInp && document.activeElement !== upiInp) upiInp.value = data.upiId || '';
-        if (urlInp && document.activeElement !== urlInp) urlInp.value = data.qrUrl || '';
-      }
-    });
-
-    // 2. Data Save karne ka logic
-    savePaymentBtn.addEventListener('click', async (e) => {
-      e.preventDefault();
-      
-      const upi = upiInp ? upiInp.value.trim() : '';
-      const qr = urlInp ? urlInp.value.trim() : '';
-
-      if (!upi && !qr) {
-        alert("Bhai, kam se kam UPI ID toh daal do!");
-        return;
-      }
-
-      savePaymentBtn.innerText = "Saving... ⏳";
-      savePaymentBtn.disabled = true;
-
-      try {
-        await set(ref(db, 'settings/payment'), {
-          upiId: upi,
-          qrUrl: qr
-        });
-        alert("Payment QR Successfully Updated! 🚀");
-      } catch (err) {
-        console.error("Save Error:", err);
-        alert("Error: " + err.message);
-      } finally {
-        savePaymentBtn.innerText = "Update QR Details";
-        savePaymentBtn.disabled = false;
-      }
-    });
-  }
 
 });
       
