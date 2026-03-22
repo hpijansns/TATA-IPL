@@ -1,7 +1,6 @@
 import { db, ref, get } from "./firebase.js";
 
-// Yeh function page load hote hi sabse pehle chalega
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", async () => {
 
     const bubblesContainer = document.getElementById('qty-bubbles');
     const vehicleImg = document.getElementById('vehicle-img');
@@ -9,7 +8,9 @@ document.addEventListener("DOMContentLoaded", () => {
     const venueImg = document.getElementById('venue-img');
     const popup = document.getElementById('seat-popup');
 
-    // 🚲 Vehicle Icons Links
+    let selectedSeats = 1;
+
+    // 🚲 Vehicle Icons
     const vehicles = {
         1: "https://in.bmscdn.com/webin/common/icons/bicycle.png",
         2: "https://in.bmscdn.com/webin/common/icons/scooter.png",
@@ -24,79 +25,63 @@ document.addEventListener("DOMContentLoaded", () => {
     };
 
     // ==========================================
-    // 1. 🟢 NUMBERS (BUBBLES) GENERATION
+    // 1. 🟢 GENERATE BUBBLES IMMEDIATELY
     // ==========================================
-    // Yeh part sabse pehle chalna chahiye
+    // Bina kisi data ka wait kiye sabse pehle numbers load karo
     if (bubblesContainer) {
-        bubblesContainer.innerHTML = ""; // Clear existing
+        bubblesContainer.innerHTML = ""; 
         for (let i = 1; i <= 10; i++) {
             const btn = document.createElement('div');
             btn.className = 'qty-bubble';
-            if (i === 1) btn.classList.add('active');
+            if (i === 1) btn.classList.add('active'); 
             btn.innerText = i;
 
             btn.onclick = () => {
-                // Sabse active class hatao
                 document.querySelectorAll('.qty-bubble').forEach(b => b.classList.remove('active'));
-                // Clicked wale par active class lagao
                 btn.classList.add('active');
-
-                // Image change logic
-                if (vehicleImg && vehicles[i]) {
-                    vehicleImg.src = vehicles[i];
-                }
+                if (vehicleImg) vehicleImg.src = vehicles[i];
+                selectedSeats = i;
                 localStorage.setItem("seatQty", i);
             };
             bubblesContainer.appendChild(btn);
         }
-        console.log("Bubbles Generated ✅");
     }
 
     // ==========================================
-    // 2. 🔵 LOCAL DATA LOAD (Title & Image)
+    // 2. 🔵 LOAD DATA (LOCAL + FIREBASE SYNC)
     // ==========================================
     const rawData = localStorage.getItem('selectedMatch');
     const matchId = localStorage.getItem("matchId");
 
+    // LocalStorage se data uthao (Immediate)
     if (rawData) {
         const match = JSON.parse(rawData);
         if (matchTitle) matchTitle.innerText = match.title || "Select Seats";
-        
-        // Venue Image Setting
-        if (venueImg) {
-            venueImg.src = match.venue_img || match.banner || "";
-            venueImg.onerror = () => {
-                venueImg.src = "https://via.placeholder.com/800x400?text=Venue+Map+Not+Available";
-            };
+        if (venueImg) venueImg.src = match.venue_img || match.banner || "";
+    }
+
+    // Firebase se Fresh Data Sync karo (Background mein)
+    if (matchId) {
+        try {
+            const snapshot = await get(ref(db, `matches/${matchId}`));
+            if (snapshot.exists()) {
+                const data = snapshot.val();
+                if (venueImg && data.venue_img) venueImg.src = data.venue_img;
+                if (matchTitle && data.title) matchTitle.innerText = data.title;
+            }
+        } catch (err) {
+            console.error("Firebase Sync Fail:", err);
         }
     }
 
     // ==========================================
-    // 3. 🔴 FIREBASE SYNC (Background)
-    // ==========================================
-    if (matchId) {
-        // Direct promise based get taaki code block na ho
-        get(ref(db, `matches/${matchId}`)).then((snapshot) => {
-            if (snapshot.exists()) {
-                const data = snapshot.val();
-                if (venueImg && data.venue_img) {
-                    venueImg.src = data.venue_img;
-                }
-                if (matchTitle && data.title) {
-                    matchTitle.innerText = data.title;
-                }
-            }
-        }).catch(err => console.log("Firebase Sync Error", err));
-    }
-
-    // ==========================================
-    // 4. 🟡 BUTTON LOGIC
+    // 3. 🟡 BUTTONS LOGIC
     // ==========================================
     const confirmBtn = document.getElementById('confirm-btn');
     if (confirmBtn) {
         confirmBtn.onclick = () => {
             if (popup) popup.classList.remove('active');
-            alert("Seats selected successfully!");
+            console.log("Seats Selected:", selectedSeats);
         };
     }
 });
