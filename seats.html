@@ -3,45 +3,107 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Select Seats</title>
+    <title>Select Seats - TATA IPL 2026</title>
+
     <link rel="stylesheet" href="css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
     <style>
-        .qty-bubbles { display: flex; justify-content: center; gap: 8px; flex-wrap: wrap; margin: 20px 0; min-height: 40px; }
-        .qty-bubble { width: 35px; height: 35px; border: 1px solid #ddd; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; font-weight: bold; color: #333; }
-        .qty-bubble.active { background: #f84464; color: white; border-color: #f84464; }
-        .venue-container { width: 100%; height: 200px; background: #f0f0f0; display: flex; align-items: center; justify-content: center; }
-        #venue-img { max-width: 100%; max-height: 100%; object-fit: contain; }
+        .qty-bubbles { 
+            display: flex !important; 
+            justify-content: center !important; 
+            gap: 10px !important; 
+            margin: 20px 0 !important; 
+            flex-wrap: wrap;
+            min-height: 40px;
+        }
+        .qty-bubble { 
+            width: 38px !important; 
+            height: 38px !important; 
+            border: 1px solid #ddd; 
+            border-radius: 50% !important; 
+            display: flex !important; 
+            align-items: center !important; 
+            justify-content: center !important; 
+            font-size: 14px; 
+            font-weight: 700; 
+            cursor: pointer; 
+            background: #fff;
+        }
+        .qty-bubble.active { 
+            background: #f84464 !important; 
+            color: #fff !important; 
+            border-color: #f84464 !important; 
+        }
+        .venue-container {
+            width: 100%;
+            background: #f0f0f0;
+            min-height: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        #venue-img {
+            width: 100%;
+            max-height: 250px;
+            object-fit: contain;
+        }
     </style>
 </head>
+
 <body class="mobile-layout bg-white">
 
     <header class="bms-header">
         <div class="header-left">
             <span class="back-icon" onclick="window.history.back()">&#8249;</span>
-            <h1 id="match-title">Select Seats</h1>
+            <h1 id="match-title" class="truncate-title">Loading Match...</h1>
         </div>
     </header>
 
     <div class="venue-container">
-        <img id="venue-img" src="" alt="Venue Layout">
+        <img id="venue-img" src="" alt="Stadium Layout">
     </div>
 
-    <div id="seat-popup" class="seat-popup active" style="position: relative; padding: 20px; text-align: center;">
-        <div class="timer-banner" style="background: #fff8e1; padding: 10px; border-radius: 5px; margin-bottom: 15px; font-size: 12px;">
-            You have <strong>approximately 4 minutes</strong> to select your seats.
+    <div class="sticky-footer">
+        <div class="price-info">
+            <div class="price">₹1200 onwards</div>
+            <div class="status">Filling Fast</div>
         </div>
+        <button id="open-seat-popup" class="book-now-btn">Book Now</button>
+    </div>
 
-        <h2>How many seats?</h2>
+    <div id="seat-popup" class="seat-popup active">
 
-        <img id="vehicle-img" src="https://in.bmscdn.com/webin/common/icons/bicycle.png" style="width:100px; margin: 20px auto; display:block;">
+        <div class="popup-content">
+            <div class="timer-banner">
+                You have <strong>approximately 4 minutes</strong> to select your seats.
+            </div>
 
-        <div id="qty-bubbles" class="qty-bubbles"></div>
+            <div class="popup-inner">
+                <h2>How many seats?</h2>
 
-        <button id="confirm-btn" class="btn-primary" style="width: 100%; background: #f84464; color: white; border: none; padding: 15px; border-radius: 8px; font-weight: bold; margin-top: 20px;">
-            Select Seats
-        </button>
+                <div class="vehicle-box">
+                    <img id="vehicle-img" 
+                         src="https://in.bmscdn.com/webin/common/icons/bicycle.png" 
+                         alt="Vehicle" class="popup-img">
+                </div>
+
+                <div id="qty-bubbles" class="qty-bubbles">
+                    </div>
+
+                <div class="info-pill">
+                    You can add upto 10 tickets.
+                </div>
+
+                <button id="confirm-btn" class="btn-primary">
+                    Select Seats
+                </button>
+            </div>
+
+        </div>
     </div>
 
     <script type="module" src="js/seats.js"></script>
+
 </body>
 </html>
