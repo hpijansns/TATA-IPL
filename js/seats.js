@@ -1,18 +1,17 @@
 import { db, ref, get } from "./firebase.js";
 
-document.addEventListener("DOMContentLoaded", async () => {
-
-    // 1. Elements ko target karna
-    const bubblesContainer = document.getElementById('qty-bubbles');
+document.addEventListener("DOMContentLoaded", () => {
+    // 1. Elements
+    const bubbles = document.getElementById('qty-bubbles');
     const vehicleImg = document.getElementById('vehicle-img');
-    const popup = document.getElementById('seat-popup');
     const matchTitle = document.getElementById('match-title');
     const venueImg = document.getElementById('venue-img');
+    const popup = document.getElementById('seat-popup');
+    const confirmBtn = document.getElementById('confirm-btn');
+    const openBtn = document.getElementById('open-seat-popup');
 
-    // Default selection
     let selectedSeats = 1;
 
-    // 🚲 Vehicles Mapping (Standard BMS Icons)
     const vehicles = {
         1: "https://in.bmscdn.com/webin/common/icons/bicycle.png",
         2: "https://in.bmscdn.com/webin/common/icons/scooter.png",
@@ -27,11 +26,10 @@ document.addEventListener("DOMContentLoaded", async () => {
     };
 
     // ==========================================
-    // 🟢 STEP 1: GENERATE BUBBLES IMMEDIATELY
+    // 🟢 STEP 1: RENDER BUBBLES IMMEDIATELY
     // ==========================================
-    // Yeh part bina kisi delay ke 1 to 10 numbers generate karega
-    if (bubblesContainer) {
-        bubblesContainer.innerHTML = ""; // Purana clear karein
+    if (bubbles) {
+        bubbles.innerHTML = ""; 
         for (let i = 1; i <= 10; i++) {
             const btn = document.createElement('div');
             btn.className = 'qty-bubble';
@@ -39,96 +37,49 @@ document.addEventListener("DOMContentLoaded", async () => {
             btn.innerText = i;
 
             btn.onclick = () => {
-                // Active class toggle logic
                 document.querySelectorAll('.qty-bubble').forEach(b => b.classList.remove('active'));
                 btn.classList.add('active');
-
-                // Vehicle Image change logic
-                if (vehicleImg && vehicles[i]) {
-                    vehicleImg.src = vehicles[i];
-                }
-
+                if (vehicleImg) vehicleImg.src = vehicles[i] || vehicles[6];
                 selectedSeats = i;
                 localStorage.setItem("seatQty", i);
             };
-            bubblesContainer.appendChild(btn);
+            bubbles.appendChild(btn);
         }
-        console.log("Bubbles loaded successfully ✅");
     }
 
     // ==========================================
-    // 🔵 STEP 2: LOAD LOCAL STORAGE DATA
+    // 🔵 STEP 2: LOAD DATA FROM LOCAL STORAGE
     // ==========================================
     const rawData = localStorage.getItem('selectedMatch');
     const matchId = localStorage.getItem("matchId");
 
     if (rawData) {
-        try {
-            const match = JSON.parse(rawData);
-            if (matchTitle) matchTitle.innerText = match.title || "Select Seats";
-            
-            // 🔥 Venue Image priority: venue_img (Map) -> banner (Poster)
-            if (venueImg) {
-                const mapSource = match.venue_img || match.banner || "";
-                venueImg.src = mapSource;
-                
-                venueImg.onerror = () => {
-                    venueImg.src = "https://via.placeholder.com/800x400?text=Stadium+Layout+Not+Available";
-                };
+        const match = JSON.parse(rawData);
+        if (matchTitle) matchTitle.innerText = match.title || "Select Seats";
+        if (venueImg) venueImg.src = match.venue_img || match.banner || "";
+    }
+
+    // ==========================================
+    // 🔴 STEP 3: FIREBASE SYNC (BACKGROUND)
+    // ==========================================
+    if (matchId && db) {
+        get(ref(db, `matches/${matchId}`)).then(snap => {
+            if (snap.exists()) {
+                const data = snap.val();
+                if (venueImg && data.venue_img) venueImg.src = data.venue_img;
+                if (matchTitle && data.title) matchTitle.innerText = data.title;
             }
-        } catch (e) {
-            console.error("Local Data Error:", e);
-        }
+        }).catch(err => console.log("Firebase Sync Fail:", err));
     }
 
     // ==========================================
-    // 🔴 STEP 3: FIREBASE SYNC (Background)
+    // 🟡 STEP 4: BUTTONS LOGIC
     // ==========================================
-    if (matchId) {
-        try {
-            const snapshot = await get(ref(db, `matches/${matchId}`));
-            if (snapshot.exists()) {
-                const data = snapshot.val();
-                
-                // Update Venue Map from Firebase
-                if (venueImg && data.venue_img) {
-                    venueImg.src = data.venue_img;
-                }
-                
-                if (matchTitle && data.title) {
-                    matchTitle.innerText = data.title;
-                }
-
-                // Update Local Cache
-                localStorage.setItem('selectedMatch', JSON.stringify({ ...data, id: matchId }));
-            }
-        } catch (err) {
-            console.error("Firebase Sync Fail:", err);
-        }
-    } else if (!rawData) {
-        // Agar kuch nahi milta toh wapas bhej do
-        window.location.href = "index.html";
-    }
-
-    // ==========================================
-    // 🟡 STEP 4: POPUP & CONFIRM BUTTONS
-    // ==========================================
-    const openBtn = document.getElementById('open-seat-popup');
-    if (openBtn) {
-        openBtn.onclick = () => {
-            if (popup) popup.classList.add('active');
-        }
-    }
-
-    const confirmBtn = document.getElementById('confirm-btn');
+    if (openBtn) openBtn.onclick = () => popup.classList.add('active');
     if (confirmBtn) {
         confirmBtn.onclick = () => {
             localStorage.setItem("seatQty", selectedSeats);
-            if (popup) popup.classList.remove('active');
-            
-            // Alert for testing
-            console.log("Proceeding with:", selectedSeats, "seats");
-            // window.location.href = "checkout.html";
+            popup.classList.remove('active');
         };
     }
 });
