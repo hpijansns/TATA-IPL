@@ -11,7 +11,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let matchesData = [];  
 
     // ==========================================
-    // 🔥 FETCH FROM FIREBASE (Realtime)
+    // 🔥 FETCH FROM FIREBASE (Realtime + Auto-Filter & Sort)
     // ==========================================
     onValue(ref(db, 'matches'), (snapshot) => {  
 
@@ -24,13 +24,29 @@ document.addEventListener('DOMContentLoaded', () => {
             return;  
         }  
 
-        // Object ko Array mein convert karna IDs ke saath
-        matchesData = Object.keys(data).map(id => ({  
+        // 1. Data ko Array mein convert kiya
+        let allMatches = Object.keys(data).map(id => ({  
             id,  
             ...data[id]  
         }));  
 
-        renderMatches(matchesData);  
+        // 2. 🔥 AUTO-HIDE LOGIC: Purane matches chhupao
+        const today = new Date();
+        today.setHours(0, 0, 0, 0); // Aaj ka din (Standard Time)
+
+        const upcomingMatches = allMatches.filter(match => {
+            const matchDate = new Date(match.date);
+            matchDate.setHours(0, 0, 0, 0);
+            return matchDate >= today; // Sirf aaj aur aane wale matches rakhega
+        });
+
+        // 3. 🔥 AUTO-SORT LOGIC: Jo match pehle hone wala hai wo TOP par dikhega
+        upcomingMatches.sort((a, b) => new Date(a.date) - new Date(b.date));
+
+        // Global variable ko update kiya taaki Filter isi filtered data par chale
+        matchesData = upcomingMatches;  
+
+        renderMatches(upcomingMatches);  
     });
 
     // ==========================================
@@ -44,7 +60,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 // Price Low to High
                 sorted.sort((a, b) => (Number(a.price) || 0) - (Number(b.price) || 0));  
             } else {  
-                // Latest by Date
+                // Latest by Date (Upcoming Matches Order)
                 sorted.sort((a, b) => new Date(a.date) - new Date(b.date));  
             }  
 
@@ -114,7 +130,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     id: match.id || "",
                     title: match.title || "TBC vs TBC",
                     banner: match.banner || "",        // Poster Image
-                    venue_img: match.venue_img || "",  // 🔥 Stadium Map Image (Fixed)
+                    venue_img: match.venue_img || "",  // Stadium Map Image
                     date: match.date || "",
                     time: match.time || "",
                     venue: match.venue || "",
