@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Secure Checkout | Razorpay</title>
     <style>
         body { font-family: 'Segoe UI', sans-serif; background: #f4f6f8; margin: 0; padding: 20px; text-align: center; }
@@ -12,7 +13,7 @@
         .utr-box { padding: 20px; background: #fff; border-top: 1px solid #eee; }
         .utr-input { width: 90%; padding: 15px; border: 2px solid #eee; border-radius: 8px; font-size: 16px; outline: none; transition: 0.3s; }
         .utr-input:focus { border-color: #3395ff; }
-        .pay-now-btn { width: 90%; padding: 15px; background: #3395ff; color: #fff; border: none; border-radius: 8px; font-weight: 700; margin-top: 15px; cursor: pointer; }
+        .pay-now-btn { width: 90%; padding: 15px; background: #3395ff; color: #fff; border: none; border-radius: 8px; font-weight: 700; margin-top: 15px; cursor: pointer; transition: 0.3s; }
         .pay-now-btn:disabled { background: #ccc; cursor: not-allowed; }
         .secured-by { margin-top: 20px; font-size: 11px; color: #aaa; text-transform: uppercase; letter-spacing: 1px; }
     </style>
@@ -31,58 +32,73 @@
             <img id="qr-code" src="" alt="UPI QR">
 
             <div style="margin-top:15px; display:flex; justify-content:center; gap:10px;">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/e/e1/UPI-Logo.png" height="15">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/2/24/Paytm_Logo_%28standalone%29.svg" height="15">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/e/e1/UPI-Logo.png" height="15" alt="UPI">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/2/24/Paytm_Logo_%28standalone%29.svg" height="15" alt="Paytm">
             </div>
         </div>
 
         <div class="utr-box">
-            <input type="number" id="utr" class="utr-input" placeholder="Enter 12-digit Ref. Number (UTR)" oninput="v()">
-            <button id="b" class="pay-now-btn" disabled onclick="location.href='processing.html'">PAY SECURELY</button>
+            <input type="number" id="utr" class="utr-input" placeholder="Enter 12-digit Ref. Number (UTR)" oninput="checkUTR()">
+            <button id="pay-btn" class="pay-now-btn" disabled onclick="location.href='processing.html'">PAY SECURELY</button>
         </div>
     </div>
 
     <div class="secured-by">🔒 Secured by 256-bit SSL Encryption</div>
 
     <script type="module">
-        import { db, ref, get } from "./js/firebase.js"; // Path sahi check kar lena
+        // Yahan sirf onValue import kiya hai taaki error na aaye
+        import { db, ref, onValue } from "./js/firebase.js";
 
-        const price = localStorage.getItem('finalPrice') || 0;
-        document.getElementById('p-amt').innerText = "₹" + price;
-
-        // Admin Settings Load Karo
-        async function fetchPaymentSettings() {
-            const qrImg = document.getElementById('qr-code');
-            const qrMsg = document.getElementById('qr-msg');
-
-            try {
-                const snapshot = await get(ref(db, 'settings/payment'));
-                if (snapshot.exists()) {
-                    const data = snapshot.val();
-                    
-                    // Logic: Agar Admin ne direct QR Image URL dala hai toh wo use karo, 
-                    // warna UPI ID se dynamic QR banao
-                    if (data.qrUrl && data.qrUrl.trim() !== "") {
-                        qrImg.src = data.qrUrl;
-                    } else if (data.upiId) {
-                        qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=upi://pay?pa=${data.upiId}&am=${price}&pn=IPL_Booking`;
-                    }
-                    qrMsg.innerText = "Scan QR to complete payment";
-                } else {
-                    qrMsg.innerText = "Payment settings not found. Contact Admin.";
-                }
-            } catch (error) {
-                console.error("Firebase Error:", error);
-                qrMsg.innerText = "Error loading QR. Try again.";
-            }
+        // ==========================================
+        // 1. LOAD TOTAL AMOUNT FROM PREVIOUS PAGE
+        // ==========================================
+        const finalPrice = localStorage.getItem('finalPrice') || 0;
+        const amountDisplay = document.getElementById('p-amt');
+        if (amountDisplay) {
+            amountDisplay.innerText = "₹" + finalPrice;
         }
 
-        fetchPaymentSettings();
+        // ==========================================
+        // 2. LOAD QR FROM ADMIN PANEL
+        // ==========================================
+        const qrImg = document.getElementById('qr-code');
+        const qrMsg = document.getElementById('qr-msg');
 
-        // UTR Validation Function (Global banaya taaki button click pe chale)
-        window.v = function() {
+        onValue(ref(db, 'settings/payment'), (snap) => {
+            if (snap.exists()) {
+                const data = snap.val();
+                let finalQR = "";
+
+                // Agar admin ne URL diya hai, toh wo dikhao. Warna UPI ID se QR banao.
+                if (data.qrUrl && data.qrUrl.trim() !== "") {
+                    finalQR = data.qrUrl;
+                } else if (data.upiId && data.upiId.trim() !== "") {
+                    // Yahan QR mein amount bhi pass kar diya hai automatically
+                    finalQR = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=upi://pay?pa=${data.upiId}&am=${finalPrice}&pn=IPL_Booking`;
+                }
+
+                if (finalQR && qrImg) {
+                    qrImg.src = finalQR;
+                    if(qrMsg) qrMsg.innerText = "Scan QR to complete payment";
+                }
+            } else {
+                if(qrMsg) qrMsg.innerText = "QR Setup is incomplete. Contact Admin.";
+            }
+        });
+
+        // ==========================================
+        // 3. UTR VALIDATION (12 Digits)
+        // ==========================================
+        window.checkUTR = function() {
             const val = document.getElementById('utr').value;
-            document.getElementById('b').disabled = (val.length !== 12);
+            const btn = document.getElementById('pay-btn');
+            if(val.length === 12) {
+                btn.disabled = false;
+                btn.style.background = "#3395ff";
+            } else {
+                btn.disabled = true;
+                btn.style.background = "#ccc";
+            }
         }
     </script>
 </body>
