@@ -27,58 +27,85 @@ document.addEventListener("DOMContentLoaded", async () => {
     };
 
     // ==========================================
-    // 1. LOAD DATA FIRST (LOCAL STORAGE)
+    // 1. 🔥 LOAD DATA FROM LOCAL STORAGE
     // ==========================================
     const rawData = localStorage.getItem('selectedMatch');
-    if (!rawData) {
-        window.location.href = "index.html";
-        return;
-    }
+    const matchId = localStorage.getItem("matchId");
 
-    const match = JSON.parse(rawData);
+    if (rawData) {
+        const match = JSON.parse(rawData);
 
-    // Title Update
-    if (matchTitle) {
-        matchTitle.innerText = match.title || "Select Seats";
-    }
+        // Title Update
+        if (matchTitle) {
+            matchTitle.innerText = match.title || "Select Seats";
+        }
 
-    // 🔥 VENUE IMAGE FIX: Banner ki jagah Venue Map dikhao
-    if (venueImg) {
-        // Agar Firebase se venue_img aayi hai toh wo, nahi toh placeholder
-        venueImg.src = match.venue_img || "https://via.placeholder.com/800x400?text=Stadium+Seating+Layout";
-        
-        venueImg.onerror = () => {
-            venueImg.src = "https://via.placeholder.com/800x400?text=Venue+Map+Not+Available";
-        };
+        // Venue Image Load (Priority: venue_img)
+        if (venueImg) {
+            // Agar Admin panel se 'venue_img' aayi hai toh wo, warna fallback banner par
+            const finalImg = match.venue_img || match.banner || "";
+            venueImg.src = finalImg;
+            
+            venueImg.onerror = () => {
+                venueImg.src = "https://via.placeholder.com/800x400?text=Venue+Map+Not+Available";
+            };
+        }
     }
 
     // ==========================================
-    // 2. GENERATE WORKING SEAT BUBBLES
+    // 2. 🔥 FIREBASE SYNC (In case image is missing)
+    // ==========================================
+    if (matchId) {
+        try {
+            const snapshot = await get(ref(db, `matches/${matchId}`));
+            if (snapshot.exists()) {
+                const data = snapshot.val();
+                
+                // Update Title if changed
+                if (matchTitle && data.title) matchTitle.innerText = data.title;
+
+                // 🔥 CRITICAL: Update Venue Image from Firebase
+                if (venueImg) {
+                    const dbVenueImg = data.venue_img || data.banner;
+                    if (dbVenueImg) {
+                        venueImg.src = dbVenueImg;
+                    }
+                }
+                
+                // Keep LocalStorage updated for next steps
+                localStorage.setItem('selectedMatch', JSON.stringify({ ...data, id: matchId }));
+            }
+        } catch (err) {
+            console.error("Firebase Sync Error:", err);
+        }
+    } else if (!rawData) {
+        // Agar kuch bhi nahi mila toh wapas bhej do
+        window.location.href = "index.html";
+    }
+
+    // ==========================================
+    // 3. GENERATE WORKING SEAT BUBBLES
     // ==========================================
     if (bubbles) {
-        bubbles.innerHTML = ""; // Purana clear karein
+        bubbles.innerHTML = ""; 
         
         for (let i = 1; i <= 10; i++) {
             const btn = document.createElement('div');
             btn.className = 'qty-bubble';
-            if (i === 1) btn.classList.add('active'); // 1st bubble default active
+            if (i === 1) btn.classList.add('active'); 
             btn.innerText = i;
 
-            // 🔥 CLICK LOGIC
             btn.addEventListener('click', () => {
-                // Remove active from all
+                // Active class switch
                 document.querySelectorAll('.qty-bubble').forEach(b => b.classList.remove('active'));
-
-                // Add active to current
                 btn.classList.add('active');
 
-                // Update Vehicle Image based on number
+                // Vehicle Image update
                 if (vehicleImg && vehicles[i]) {
                     vehicleImg.src = vehicles[i];
                 }
 
                 selectedSeats = i;
-                console.log("Seats Selected:", selectedSeats);
             });
 
             bubbles.appendChild(btn);
@@ -86,45 +113,23 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
     // ==========================================
-    // 3. CONFIRM & OPEN BUTTONS
+    // 4. CONFIRM & POPUP LOGIC
     // ==========================================
     const confirmBtn = document.getElementById('confirm-btn');
     if (confirmBtn) {
         confirmBtn.onclick = () => {
-            // Save quantity for next steps
             localStorage.setItem("seatQty", selectedSeats);
-            
-            // Popup close karein
             if (popup) popup.classList.remove('active');
             
-            console.log("Proceeding with:", selectedSeats, "seats");
-            // window.location.href = "checkout.html"; // Aap yahan redirection daal sakte hain
+            // Proceed to layout or payment
+            // window.location.href = "layout.html"; 
         };
     }
 
-    // Book Now button functionality
     const openBtn = document.getElementById('open-seat-popup');
     if (openBtn) {
         openBtn.onclick = () => {
             if (popup) popup.classList.add('active');
         };
-    }
-
-    // ==========================================
-    // 4. OPTIONAL: RE-FETCH FROM FIREBASE (SYNC)
-    // ==========================================
-    const matchId = localStorage.getItem("matchId");
-    if (matchId) {
-        try {
-            const snapshot = await get(ref(db, 'matches/' + matchId));
-            if (snapshot.exists()) {
-                const data = snapshot.val();
-                // Agar Firebase mein venue_img hai toh use update karein
-                if (data.venue_img && venueImg) venueImg.src = data.venue_img;
-                if (data.title && matchTitle) matchTitle.innerText = data.title;
-            }
-        } catch (err) {
-            console.log("Firebase sync failed, using LocalStorage data.");
-        }
     }
 });
