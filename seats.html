@@ -1,70 +1,111 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Select Seats</title>
+import { db, ref, get } from "./firebase.js";
 
-<link rel="stylesheet" href="css/style.css">
-</head>
+document.addEventListener("DOMContentLoaded", async () => {
 
-<body class="mobile-layout bg-white">
+    const bubbles = document.getElementById('qty-bubbles');
+    const vehicleImg = document.getElementById('vehicle-img');
+    const popup = document.getElementById('seat-popup');
+    const matchTitle = document.getElementById('match-title');
+    const venueImg = document.getElementById('venue-img');
 
-<!-- HEADER -->
-<header class="bms-header">
-    <div class="header-left">
-        <span class="back-icon" onclick="window.history.back()">&#8249;</span>
-        <h1 id="match-title">Loading...</h1>
-    </div>
-</header>
+    // Default selection
+    let selectedSeats = 1;
 
-<!-- VENUE IMAGE -->
-<div class="venue-container">
-    <img id="venue-img" src="" alt="Venue"
-    style="width:100%; height:180px; object-fit:cover;">
-</div>
+    // ==========================================
+    // 🚲 VEHICLE ICONS (Standard BMS Links)
+    // ==========================================
+    const vehicles = {
+        1: "https://in.bmscdn.com/webin/common/icons/bicycle.png",
+        2: "https://in.bmscdn.com/webin/common/icons/scooter.png",
+        3: "https://in.bmscdn.com/webin/common/icons/auto.png",
+        4: "https://in.bmscdn.com/webin/common/icons/mini-car.png",
+        5: "https://in.bmscdn.com/webin/common/icons/sedan-car.png",
+        6: "https://in.bmscdn.com/webin/common/icons/suv-car.png",
+        7: "https://in.bmscdn.com/webin/common/icons/suv-car.png",
+        8: "https://in.bmscdn.com/webin/common/icons/suv-car.png",
+        9: "https://in.bmscdn.com/webin/common/icons/suv-car.png",
+        10: "https://in.bmscdn.com/webin/common/icons/suv-car.png"
+    };
 
-<!-- 🔥 BOOK BUTTON (POPUP OPEN) -->
-<div class="sticky-footer">
-    <div class="price-info">
-        <div class="price">₹1200 onwards</div>
-        <div class="status">Filling Fast</div>
-    </div>
-    <button id="open-seat-popup" class="book-now-btn">Book Now</button>
-</div>
+    // ==========================================
+    // 1. 🔥 GENERATE BUBBLES FIRST (Taaki Numbers dikhein)
+    // ==========================================
+    function createBubbles() {
+        if (!bubbles) return;
+        bubbles.innerHTML = ""; 
+        
+        for (let i = 1; i <= 10; i++) {
+            const btn = document.createElement('div');
+            btn.className = 'qty-bubble';
+            if (i === 1) btn.classList.add('active'); 
+            btn.innerText = i;
 
-<!-- POPUP -->
-<div id="seat-popup" class="seat-popup active">
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.qty-bubble').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
 
-    <div class="popup-content">
+                if (vehicleImg && vehicles[i]) {
+                    vehicleImg.src = vehicles[i];
+                }
+                selectedSeats = i;
+                localStorage.setItem("seatQty", selectedSeats);
+            });
+            bubbles.appendChild(btn);
+        }
+    }
 
-        <div class="timer-banner">
-            You have <strong>approximately 4 minutes</strong> to select your seats.
-        </div>
+    // Pehle bubbles bana do taaki screen khali na dikhe
+    createBubbles();
 
-        <h2>How many seats?</h2>
+    // ==========================================
+    // 2. 🔥 LOAD DATA (LOCAL + FIREBASE SYNC)
+    // ==========================================
+    const rawData = localStorage.getItem('selectedMatch');
+    const matchId = localStorage.getItem("matchId");
 
-        <!-- VEHICLE IMAGE -->
-        <img id="vehicle-img"
-        src="https://in.bmscdn.com/webin/common/icons/bicycle.png"
-        class="popup-img"
-        style="width:180px; display:block; margin:20px auto;">
+    if (rawData) {
+        const match = JSON.parse(rawData);
+        if (matchTitle) matchTitle.innerText = match.title || "Select Seats";
+        
+        // Venue Image Setting
+        if (venueImg) {
+            venueImg.src = match.venue_img || match.banner || "https://via.placeholder.com/800x400?text=Loading+Layout...";
+        }
+    }
 
-        <!-- SEAT BUTTONS -->
-        <div id="qty-bubbles" class="qty-bubbles"></div>
+    // Agar ID hai toh Firebase se fresh data uthao (Venue Image ke liye)
+    if (matchId) {
+        try {
+            const snapshot = await get(ref(db, `matches/${matchId}`));
+            if (snapshot.exists()) {
+                const data = snapshot.val();
+                if (matchTitle) matchTitle.innerText = data.title;
+                if (venueImg) {
+                    // Priority: venue_img -> banner -> placeholder
+                    venueImg.src = data.venue_img || data.banner || "";
+                }
+            }
+        } catch (err) {
+            console.error("Firebase Sync Error:", err);
+        }
+    }
 
-        <div class="info-pill">
-            You can add upto 10 tickets.
-        </div>
+    // ==========================================
+    // 3. POPUP & CONFIRM LOGIC
+    // ==========================================
+    const confirmBtn = document.getElementById('confirm-btn');
+    if (confirmBtn) {
+        confirmBtn.onclick = () => {
+            if (popup) popup.classList.remove('active');
+            // Redirect to layout or next step
+        };
+    }
 
-        <button id="confirm-btn" class="btn-primary">
-            Select Seats
-        </button>
-
-    </div>
-</div>
-
-<script type="module" src="js/seats.js"></script>
-
-</body>
-</html>
+    const openBtn = document.getElementById('open-seat-popup');
+    if (openBtn) {
+        openBtn.onclick = () => {
+            if (popup) popup.classList.add('active');
+        };
+    }
+});
+            
