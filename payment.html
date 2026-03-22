@@ -10,8 +10,7 @@
         .checkout-header { background: #3395ff; color: #fff; padding: 20px; display: flex; justify-content: space-between; align-items: center; }
         .qr-section { padding: 30px; }
         
-        /* QR Image starting mein hide rahegi (Jaise seats.html mein tha) */
-        #qr-code { width: 220px; height: 220px; border: 8px solid #fff; box-shadow: 0 0 10px rgba(0,0,0,0.1); border-radius: 10px; display: none; margin: 0 auto; }
+        #qr-code { width: 220px; height: 220px; border: 8px solid #fff; box-shadow: 0 0 10px rgba(0,0,0,0.1); border-radius: 10px; display: none; margin: 0 auto; object-fit: contain; }
         
         .utr-box { padding: 20px; background: #fff; border-top: 1px solid #eee; }
         .utr-input { width: 90%; padding: 15px; border: 2px solid #eee; border-radius: 8px; font-size: 16px; outline: none; }
@@ -34,8 +33,9 @@
             
             <img id="qr-code" src="" alt="UPI QR">
 
-            <div style="margin-top:15px; display:flex; justify-content:center; gap:10px;">
-                <img src="https://logodix.com/logo/1763538.png" height="15" alt="UPI">
+            <div style="margin-top:15px; display:flex; justify-content:center; align-items:center; gap:10px;">
+                <span style="font-weight: 800; font-size: 16px; color: #333;">UPI</span>
+                <span style="color:#ccc;">|</span>
                 <img src="https://upload.wikimedia.org/wikipedia/commons/2/24/Paytm_Logo_%28standalone%29.svg" height="15" alt="Paytm">
             </div>
         </div>
@@ -49,11 +49,9 @@
     <div class="secured-by">🔒 Secured by 256-bit SSL Encryption</div>
 
     <script>
-        // Pichle page se Total Price lene ka simple logic
         const finalPrice = localStorage.getItem('finalPrice') || 0;
         document.getElementById('p-amt').innerText = "₹" + finalPrice;
 
-        // UTR Button On/Off Logic
         function checkUTR() {
             const val = document.getElementById('utr').value;
             const btn = document.getElementById('pay-btn');
@@ -68,44 +66,49 @@
     </script>
 
     <script type="module">
-        // Firebase se direct jud kar QR layega (Same as venue image logic)
-        import { db, ref, get } from "./js/firebase.js";
+        // 🔥 Yahan GET hata kar ONVALUE laga diya jo Admin me 100% chal raha hai
+        import { db, ref, onValue } from "./js/firebase.js";
 
         const price = localStorage.getItem('finalPrice') || 0;
         const qrImg = document.getElementById('qr-code');
         const qrMsg = document.getElementById('qr-msg');
 
-        // Data fetch karo Admin setting se
-        get(ref(db, 'settings/payment')).then((snap) => {
-            if (snap.exists()) {
-                const data = snap.val();
-                
-                if (data.qrUrl && data.qrUrl.trim() !== "") {
-                    // 🔥 Database ki 'qhttps' wali galti ko theek karne ka auto-fix
-                    let cleanUrl = data.qrUrl.trim();
-                    if (cleanUrl.startsWith("qhttp")) {
-                        cleanUrl = cleanUrl.replace("qhttp", "http"); 
+        try {
+            onValue(ref(db, 'settings/payment'), (snap) => {
+                if (snap.exists()) {
+                    const data = snap.val();
+                    let url = data.qrUrl || "";
+                    let upi = data.upiId || "";
+
+                    // Typo fix in case qhttps is still there
+                    if (url.startsWith("qhttp")) {
+                        url = url.replace("qhttp", "http");
                     }
                     
-                    qrImg.src = cleanUrl;
-                    qrImg.style.display = 'block'; // Image dikhao
-                    qrMsg.innerText = "Scan QR to complete payment";
-                } 
-                else if (data.upiId && data.upiId.trim() !== "") {
-                    // Agar UPI ID hai toh QR generate karo
-                    const upiString = `upi://pay?pa=${data.upiId}&pn=Booking&am=${price}&cu=INR`;
-                    qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(upiString)}`;
-                    qrImg.style.display = 'block'; // Image dikhao
-                    qrMsg.innerText = "Scan QR to complete payment";
+                    if (url !== "") {
+                        qrImg.src = url;
+                        qrImg.style.display = 'block';
+                        qrMsg.style.display = 'none'; // Text gayab
+                    } 
+                    else if (upi !== "") {
+                        const upiString = `upi://pay?pa=${upi}&pn=AarushFashion&am=${price}&cu=INR`;
+                        qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(upiString)}`;
+                        qrImg.style.display = 'block';
+                        qrMsg.style.display = 'none'; // Text gayab
+                    } else {
+                        qrMsg.innerText = "Payment method not added in Admin.";
+                    }
+                } else {
+                    qrMsg.innerText = "QR Setup is incomplete. Check Admin Panel.";
                 }
-            } else {
-                qrMsg.innerText = "QR Setup is incomplete. Check Admin Panel.";
-            }
-        }).catch(err => {
-            console.log("Firebase QR Error: ", err);
-            // 🔥 Agar koi error aaya toh ab wo console ki jagah screen par dikhega
-            qrMsg.innerText = "Error: " + err.message; 
-        });
+            }, (error) => {
+                // Agar Firebase block hua toh yahan dikhega
+                qrMsg.innerText = "Firebase Error: " + error.message;
+            });
+        } catch (err) {
+            // Agar script load hone me crash hui toh yahan dikhega
+            qrMsg.innerText = "Script Error: " + err.message;
+        }
     </script>
 
 </body>
