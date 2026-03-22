@@ -95,12 +95,27 @@
                      style="width:100px; height:60px; object-fit:cover; margin-top:10px; border-radius:4px; display:none; border:1px solid #ddd;">
             </div>
 
+            <hr style="margin: 30px 0 20px; border: 0; border-top: 2px dashed #3395ff;">
+            <h4 style="margin-top: 0; margin-bottom: 5px; color: #3395ff;">💳 Global Payment Settings (QR Control)</h4>
+            <p style="font-size: 11px; color: #666; margin-top: 0; margin-bottom: 15px;">* Ise change karte hi sabhi matches ka QR automatically change ho jayega.</p>
+            
+            <div class="form-group">
+                <label>Your UPI ID (e.g. pintu@upi)</label>
+                <input type="text" id="admin-upi-id" placeholder="Enter your UPI ID" style="width:100%; padding:12px; border:1px solid #ddd; border-radius:8px; box-sizing: border-box;">
+            </div>
+
+            <div class="form-group" style="margin-bottom: 25px;">
+                <label>OR QR Image URL (Optional)</label>
+                <input type="text" id="admin-qr-url" placeholder="Paste Direct QR Image Link here" style="width:100%; padding:12px; border:1px solid #ddd; border-radius:8px; box-sizing: border-box;">
+                <p style="font-size: 11px; color: #888; margin-top: 5px;">* Agar image URL nahi dalenge toh UPI ID se apne aap QR ban jayega.</p>
+            </div>
+
             <div style="display: flex; gap: 10px;">
-                <button type="submit" id="save-btn" class="btn-primary" style="flex: 2; margin-top:20px;">
-                    Save Match
+                <button type="submit" id="save-btn" class="btn-primary" style="flex: 2; margin-top:10px;">
+                    Save Match & QR
                 </button>
 
-                <button type="button" id="cancel-btn" class="btn-secondary" style="flex: 1; margin-top:20px; display:none; background: #666;">
+                <button type="button" id="cancel-btn" class="btn-secondary" style="flex: 1; margin-top:10px; display:none; background: #666;">
                     Cancel Edit
                 </button>
             </div>
@@ -125,26 +140,6 @@
                     </tbody>
             </table>
         </div>
-    </div>
-
-    <div class="admin-card payment-section" style="margin-top: 30px; border-top: 4px solid #3395ff;">
-        <h3>💳 Payment Settings (QR Control)</h3>
-        <p style="font-size: 12px; color: #666; margin-bottom: 20px;">Yahan se aap apne Payment Page ka UPI QR badal sakte hain.</p>
-        
-        <div class="form-group">
-            <label>Your UPI ID (e.g. pintu@upi)</label>
-            <input type="text" id="admin-upi-id" placeholder="Enter your UPI ID" style="width:100%; padding:12px; border:1px solid #ddd; border-radius:8px; box-sizing: border-box;">
-        </div>
-
-        <div class="form-group">
-            <label>OR QR Image URL (Optional)</label>
-            <input type="text" id="admin-qr-url" placeholder="Paste Direct QR Image Link here" style="width:100%; padding:12px; border:1px solid #ddd; border-radius:8px; box-sizing: border-box;">
-            <p style="font-size: 11px; color: #888; margin-top: 5px;">* Agar image URL nahi dalenge toh UPI ID se apne aap QR ban jayega.</p>
-        </div>
-
-        <button id="save-payment-btn" class="btn-primary" style="background: #3395ff; width: 100%; margin-top: 10px; padding: 15px; border-radius: 8px; border: none; color: #fff; font-weight: bold; cursor: pointer;">
-            Update QR Details
-        </button>
     </div>
 
 </div>
