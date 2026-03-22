@@ -1,73 +1,69 @@
 import { db, ref, get } from "./firebase.js";
 
 document.addEventListener("DOMContentLoaded", async () => {
-    const bubblesContainer = document.getElementById('qty-bubbles');
-    const venueImgEl = document.getElementById('venue-img');
-    const matchTitleEl = document.getElementById('match-title');
-    const matchId = localStorage.getItem('matchId');
+    const venueImg = document.getElementById('venue-img');
+    const titleEl = document.getElementById('match-title');
+    const mId = localStorage.getItem('matchId');
 
-    // Default Values
-    window.currentQty = 1;
-    window.currentBasePrice = 1200;
-    window.currentCatName = "Gold - North Stand";
+    // Global variables for calculations
+    window.sPrice = 0;
+    window.sQty = 1;
+    window.sType = "None";
 
-    // 1. Generate Bubbles (1 to 10)
-    if (bubblesContainer) {
-        bubblesContainer.innerHTML = "";
-        for (let i = 1; i <= 10; i++) {
-            const btn = document.createElement('div');
-            btn.className = 'qty-bubble';
-            if (i === 1) btn.classList.add('active');
-            btn.innerText = i;
-            btn.onclick = () => {
-                document.querySelectorAll('.qty-bubble').forEach(b => b.classList.remove('active'));
-                btn.classList.add('active');
-                window.currentQty = i;
-                updateFooter();
-            };
-            bubblesContainer.appendChild(btn);
-        }
-    }
-
-    // 2. Firebase Sync
-    if (matchId && db) {
+    if (mId) {
         try {
-            const snapshot = await get(ref(db, `matches/${matchId}`));
-            if (snapshot.exists()) {
-                const data = snapshot.val();
-                if (matchTitleEl) matchTitleEl.innerText = data.title || "IPL 2026";
-                if (venueImgEl && data.venue_img) {
-                    venueImgEl.src = data.venue_img;
-                    venueImgEl.style.display = 'block';
+            const snap = await get(ref(db, `matches/${mId}`));
+            if (snap.exists()) {
+                const data = snap.val();
+                if (titleEl) titleEl.innerText = data.title || "Match Details";
+                
+                // 🔥 STADIUM IMAGE LOAD
+                if (venueImg && data.venue_img) {
+                    venueImg.src = data.venue_img;
+                    venueImg.style.display = 'block';
                 }
             }
         } catch (e) { console.log("Firebase Error", e); }
     }
 });
 
-// Category Selection Logic
-window.selectCat = function(element, price, name) {
-    document.querySelectorAll('.cat-card').forEach(c => c.classList.remove('selected'));
-    element.classList.add('selected');
-    window.currentBasePrice = price;
-    window.currentCatName = name;
-    updateFooter();
-}
+// Selection logic
+window.setSeat = (name, price, el) => {
+    document.querySelectorAll('.type-card').forEach(c => c.classList.remove('selected'));
+    el.classList.add('selected');
 
-// Footer Price Update Logic
-function updateFooter() {
-    const total = window.currentQty * window.currentBasePrice;
-    document.getElementById('total-price-display').innerText = `₹${total.toLocaleString()}`;
-    document.getElementById('selected-summary').innerText = `${window.currentQty} Ticket(s) • ${window.currentCatName}`;
+    window.sType = name;
+    window.sPrice = price;
     
-    // Save for next page
-    localStorage.setItem("seatQty", window.currentQty);
+    document.getElementById('res-type').innerText = name;
+    document.getElementById('res-price').innerText = `₹${price}`;
+    
+    const btn = document.getElementById('final-btn');
+    btn.disabled = false;
+    btn.classList.add('active');
+    btn.innerText = "Continue to Payment";
+
+    refreshTotal();
+};
+
+window.updateQty = (val) => {
+    let n = window.sQty + val;
+    if (n >= 1 && n <= 10) {
+        window.sQty = n;
+        document.getElementById('res-qty').innerText = n;
+        refreshTotal();
+    }
+};
+
+function refreshTotal() {
+    const total = window.sQty * window.sPrice;
+    document.getElementById('res-total').innerText = `₹${total}`;
+    
+    // Save data
     localStorage.setItem("totalAmount", total);
-    localStorage.setItem("selectedCategory", window.currentCatName);
+    localStorage.setItem("seatQty", window.sQty);
 }
 
-window.proceedToFinal = function() {
-    // Next page path yahan dalo
-    alert("Proceeding to Seat Selection for: " + window.currentCatName);
-    // window.location.href = "final-grid.html";
-}
+window.goNext = () => {
+    window.location.href = "payment.html";
+};
