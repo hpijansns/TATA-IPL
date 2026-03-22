@@ -7,58 +7,97 @@
 
     <link rel="stylesheet" href="css/style.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        /* CSS for Bubbles (Agar style.css mein na ho toh) */
+        .qty-bubbles {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin: 20px 0;
+        }
+        .qty-bubble {
+            width: 35px;
+            height: 35px;
+            border: 1px solid #ccc;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-weight: 600;
+            transition: 0.3s;
+        }
+        .qty-bubble.active {
+            background-color: #f84464;
+            color: white;
+            border-color: #f84464;
+        }
+        .seat-popup {
+            display: none; /* Hidden by default */
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            z-index: 1000;
+            border-top-left-radius: 20px;
+            border-top-right-radius: 20px;
+            box-shadow: 0 -5px 15px rgba(0,0,0,0.1);
+        }
+        .seat-popup.active {
+            display: block;
+        }
+    </style>
 </head>
 
 <body class="mobile-layout bg-white">
 
     <header class="bms-header">
         <div class="header-left">
-            <span class="back-icon" onclick="window.history.back()">&#8249;</span>
-            <h1 id="match-title">Loading Match...</h1>
+            <span class="back-icon" onclick="window.history.back()" style="cursor:pointer; font-size: 24px; padding: 10px;">&#8249;</span>
+            <h1 id="match-title" style="display: inline-block; margin-left: 10px;">Loading Match...</h1>
         </div>
     </header>
 
-    <div class="venue-container" style="background: #f4f4f4; min-height: 180px; display: flex; align-items: center; justify-content: center;">
-        <img id="venue-img" src="" alt="Stadium Layout"
-             style="width:100%; height:auto; max-height:250px; object-fit: contain; display: block;">
+    <div class="venue-container" style="width: 100%; overflow: hidden; background: #eee; min-height: 200px;">
+        <img id="venue-img" src="" alt="Stadium Layout" 
+             style="width:100%; height:auto; display: block; object-fit: contain;">
     </div>
 
-    <div class="sticky-footer">
+    <div class="sticky-footer" style="position: fixed; bottom: 0; width: 100%; background: white; padding: 15px; box-shadow: 0 -2px 10px rgba(0,0,0,0.1); display: flex; justify-content: space-between; align-items: center; z-index: 99;">
         <div class="price-info">
-            <div class="price" id="display-price">₹1200 onwards</div>
-            <div class="status">Filling Fast</div>
+            <div class="price" style="font-weight: 700; font-size: 18px;">₹1200 onwards</div>
+            <div class="status" style="color: #4caf50; font-size: 12px;">Filling Fast</div>
         </div>
-        <button id="open-seat-popup" class="book-now-btn">Book Now</button>
+        <button id="open-seat-popup" class="book-now-btn" style="background: #f84464; color: white; border: none; padding: 12px 25px; border-radius: 8px; font-weight: 600;">Book Now</button>
     </div>
 
     <div id="seat-popup" class="seat-popup active">
-
-        <div class="popup-content">
-            <div class="timer-banner">
+        <div class="popup-content" style="padding: 20px; text-align: center;">
+            
+            <div class="timer-banner" style="background: #fff8e1; padding: 10px; font-size: 12px; border-radius: 5px; margin-bottom: 15px;">
                 You have <strong>approximately 4 minutes</strong> to select your seats.
             </div>
 
-            <div class="popup-inner">
-                <h2>How many seats?</h2>
+            <h2 style="font-size: 20px; margin-bottom: 10px;">How many seats?</h2>
 
-                <div class="vehicle-box">
-                    <img id="vehicle-img" 
-                         src="https://in.bmscdn.com/webin/common/icons/bicycle.png" 
-                         alt="Vehicle" class="popup-img">
+            <img id="vehicle-img" 
+                 src="https://in.bmscdn.com/webin/common/icons/bicycle.png" 
+                 alt="Vehicle" 
+                 style="width:120px; margin: 20px auto; display: block;">
+
+            <div id="qty-bubbles" class="qty-bubbles">
                 </div>
 
-                <div id="qty-bubbles" class="qty-bubbles">
-                    </div>
-
-                <div class="info-pill">
-                    You can add upto 10 tickets.
-                </div>
-
-                <button id="confirm-btn" class="btn-primary">
-                    Select Seats
-                </button>
+            <div class="info-pill" style="color: #666; font-size: 13px; margin: 15px 0;">
+                You can add up to 10 tickets.
             </div>
 
+            <button id="confirm-btn" class="btn-primary" style="width: 100%; background: #f84464; color: white; border: none; padding: 15px; border-radius: 10px; font-size: 16px; font-weight: 700;">
+                Select Seats
+            </button>
         </div>
     </div>
 
