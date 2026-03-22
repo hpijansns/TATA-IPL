@@ -3,17 +3,60 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Select Seats</title>
+    <title>Select Seats - TATA IPL 2026</title>
     <link rel="stylesheet" href="css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
-        .venue-container { width: 100%; background: #f0f0f0; min-height: 250px; display: flex; align-items: center; justify-content: center; }
-        #venue-img { width: 100%; height: auto; max-height: 300px; object-fit: contain; display: none; }
-        .qty-bubbles { display: flex; justify-content: center; gap: 10px; margin: 20px 0; flex-wrap: wrap; }
-        .qty-bubble { width: 40px; height: 40px; border: 1px solid #ddd; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; cursor: pointer; }
-        .qty-bubble.active { background: #f84464; color: #fff; border-color: #f84464; }
+        /* शानदार Brackets & Image Styling */
+        .venue-wrapper {
+            padding: 20px;
+            background: #f8f9fa;
+            display: flex;
+            justify-content: center;
+        }
+        .venue-bracket {
+            position: relative;
+            padding: 10px;
+            border: 2px solid #e0e0e0;
+            border-radius: 15px;
+            background: #fff;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+            max-width: 90%;
+        }
+        /* Corner Brackets Effect */
+        .venue-bracket::before, .venue-bracket::after {
+            content: '';
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f84464;
+        }
+        .venue-bracket::before { top: -5px; left: -5px; border-right: 0; border-bottom: 0; border-radius: 8px 0 0 0; }
+        .venue-bracket::after { bottom: -5px; right: -5px; border-left: 0; border-top: 0; border-radius: 0 0 8px 0; }
+
+        #venue-img { width: 100%; height: auto; border-radius: 10px; display: block; }
+
+        /* Seat Categories Styling */
+        .category-container { padding: 20px; margin-bottom: 100px; }
+        .cat-card {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            border: 1px solid #eee;
+            border-radius: 12px;
+            margin-bottom: 12px;
+            transition: 0.3s;
+            cursor: pointer;
+        }
+        .cat-card:hover { border-color: #f84464; background: #fff5f7; }
+        .cat-card.selected { border: 2px solid #f84464; background: #fff5f7; }
+        .cat-info h3 { margin: 0; font-size: 15px; color: #333; }
+        .cat-info p { margin: 4px 0 0; font-size: 12px; color: #888; }
+        .cat-price { font-weight: 700; color: #333; font-size: 15px; }
     </style>
 </head>
-<body class="mobile-layout bg-white">
+<body class="mobile-layout">
 
     <header class="bms-header">
         <div class="header-left">
@@ -22,43 +65,59 @@
         </div>
     </header>
 
-    <div class="venue-container">
-        <img id="venue-img" src="" alt="Stadium Layout">
+    <div class="venue-wrapper">
+        <div class="venue-bracket">
+            <img id="venue-img" src="" alt="Stadium Layout">
+        </div>
+    </div>
+
+    <div class="category-container">
+        <h2 style="font-size: 14px; color: #666; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 15px;">Select Category</h2>
+        
+        <div class="cat-card" onclick="selectCat(this, 5000, 'Premium - South Stand')">
+            <div class="cat-info">
+                <h3>PREMIUM (South Stand)</h3>
+                <p>Best view of the pitch</p>
+            </div>
+            <div class="cat-price">₹5,000</div>
+        </div>
+
+        <div class="cat-card" onclick="selectCat(this, 2500, 'Platinum - East Stand')">
+            <div class="cat-info">
+                <h3>PLATINUM (East/West)</h3>
+                <p>Comfortable long-view seats</p>
+            </div>
+            <div class="cat-price">₹2,500</div>
+        </div>
+
+        <div class="cat-card selected" onclick="selectCat(this, 1200, 'Gold - North Stand')">
+            <div class="cat-info">
+                <h3>GOLD (North Stand)</h3>
+                <p>Value for money seats</p>
+            </div>
+            <div class="cat-price">₹1,200</div>
+        </div>
+    </div>
+
+    <div id="seat-popup" class="seat-popup active">
+        <div class="popup-content">
+            <div class="timer-banner">Select number of tickets</div>
+            <h2 style="margin: 20px 0 10px;">How many seats?</h2>
+            <div id="qty-bubbles" class="qty-bubbles"></div>
+            <button class="btn-primary" onclick="document.getElementById('seat-popup').classList.remove('active')" style="margin-top: 20px;">
+                Continue
+            </button>
+        </div>
     </div>
 
     <div class="sticky-footer">
         <div class="price-info">
-            <div id="display-price" class="price">₹0 onwards</div>
-            <div class="status">Filling Fast</div>
+            <div id="total-price-display" class="price">₹1,200</div>
+            <div id="selected-summary" style="font-size: 11px; color: #888;">1 Ticket • Gold</div>
         </div>
-        <button class="book-now-btn" onclick="document.getElementById('seat-popup').classList.add('active')">Select Seats</button>
+        <button class="book-now-btn" onclick="proceedToFinal()">Proceed</button>
     </div>
-
-    <div id="seat-popup" class="seat-popup">
-        <div class="popup-content">
-            <h2>How many seats?</h2>
-            <div id="qty-bubbles" class="qty-bubbles"></div>
-            <button class="btn-primary" onclick="document.getElementById('seat-popup').classList.remove('active')">Continue</button>
-        </div>
-    </div>
-
-    <script>
-        const rawData = localStorage.getItem('selectedMatch');
-        if (rawData) {
-            const match = JSON.parse(rawData);
-            document.getElementById('match-title').innerText = match.title || "Match Details";
-            document.getElementById('display-price').innerText = `₹${match.price || 0} onwards`;
-            
-            const imgEl = document.getElementById('venue-img');
-            const imageUrl = match.venue_img || match.banner;
-            if (imageUrl) {
-                imgEl.src = imageUrl;
-                imgEl.style.display = 'block';
-            }
-        }
-    </script>
 
     <script type="module" src="js/seats.js"></script>
-
 </body>
 </html>
