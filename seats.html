@@ -43,10 +43,9 @@
 
         .seat-selection-area { padding: 15px; padding-bottom: 140px; max-width: 500px; margin: auto; }
         
-        .venue-container { width: 100%; background: #fff; border-radius: 16px; overflow: hidden; border: 1px solid #e2e8f0; box-shadow: 0 4px 15px rgba(0,0,0,0.03); margin-bottom: 25px; padding: 15px; box-sizing: border-box; text-align: center;}
-        
-        /* 🔥 THE MAGIC SVG CONTAINER 🔥 */
-        #stadium { width: 100%; max-width: 450px; height: auto; margin: 0 auto; display: block; }
+        /* 🔥 FIX FOR BLANK SCREEN: SVG STYLING 🔥 */
+        .venue-container { width: 100%; background: #fff; border-radius: 16px; overflow: hidden; border: 1px solid #e2e8f0; box-shadow: 0 4px 15px rgba(0,0,0,0.03); margin-bottom: 25px; padding: 15px; box-sizing: border-box; text-align: center; }
+        #stadium { width: 100%; max-width: 500px; height: auto; display: block; margin: 0 auto; }
         
         .section-title { font-size: 16px; font-weight: 800; margin-bottom: 15px; color: #0f172a; text-transform: uppercase; letter-spacing: 0.5px;}
         
@@ -59,8 +58,10 @@
         .benefits { margin: 6px 0 0 0; padding: 0; list-style: none; font-size: 11px; color: #64748b; }
         .benefits li { margin-bottom: 3px; display: flex; align-items: center; gap: 4px;}
         .benefits li::before { content: '✓'; color: #00cf7f; font-weight: bold; }
+
         .fomo-tag { position: absolute; top: -1px; right: 15px; background: #f84464; color: white; font-size: 9px; font-weight: 800; padding: 4px 8px; border-radius: 0 0 6px 6px; text-transform: uppercase; letter-spacing: 0.5px; box-shadow: 0 2px 5px rgba(248, 68, 100, 0.3); }
         .tag-orange { background: #f59e0b; box-shadow: 0 2px 5px rgba(245, 158, 11, 0.3); }
+        
         .card-vip { background: linear-gradient(145deg, #111827 0%, #1f2937 100%); border: 2px solid #374151; color: white; }
         .card-vip h3 { color: #fbbf24; }
         .card-vip p { color: #f84464; } 
@@ -71,9 +72,11 @@
         .sum-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; font-size: 14px; color: #475569; }
         .sum-val { font-weight: 700; color: #0f172a; }
         .fee-row { font-size: 12px; color: #64748b; }
+        
         .qty-box { display: flex; align-items: center; gap: 15px; background: #f1f5f9; padding: 5px 10px; border-radius: 50px; border: 1px solid #e2e8f0;}
         .q-btn { width: 28px; height: 28px; border-radius: 50%; border: none; background: #fff; color: #0f172a; font-weight: bold; font-size: 16px; cursor: pointer; display: flex; justify-content: center; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.05); transition: 0.2s;}
         .q-btn:active { transform: scale(0.9); background: #e2e8f0; }
+        
         .total-row { border-top: 2px dashed #e2e8f0; padding-top: 15px; margin-top: 5px; color: #1e293b; font-weight: 800; font-size: 18px; }
 
         .trust-footer { margin-top: 25px; display: flex; justify-content: space-around; font-size: 10px; color: #64748b; font-weight: 600; text-transform: uppercase; }
@@ -122,7 +125,6 @@
                 </div>
                 <p>₹599</p>
             </div>
-            
             <div class="type-card" onclick="setSeat('Premium Stand', 999, this)">
                 <div class="fomo-tag tag-orange">🎟️ Best Seller</div>
                 <div class="card-left">
@@ -131,7 +133,6 @@
                 </div>
                 <p>₹999</p>
             </div>
-            
             <div class="type-card" onclick="setSeat('Pavilion Stand', 1599, this)">
                 <div class="card-left">
                     <h3>🛋️ Pavilion Stand</h3>
@@ -139,7 +140,6 @@
                 </div>
                 <p>₹1,599</p>
             </div>
-
             <div class="type-card card-vip" onclick="setSeat('VIP Stand', 1999, this)">
                 <div class="fomo-tag">🔥 Fast Filling</div>
                 <div class="card-left">
@@ -148,28 +148,25 @@
                 </div>
                 <p>₹1,999</p>
             </div>
-
             <div class="type-card card-vip" onclick="setSeat('Corporate Box', 2599, this)">
                 <div class="card-left">
                     <h3>🏢 Corporate Box</h3>
-                    <ul class="benefits"><li>Air-Conditioned seating</li><li>Complimentary light snacks</li></ul>
+                    <ul class="benefits"><li>Air-Conditioned seating</li><li>Complimentary snacks</li></ul>
                 </div>
                 <p>₹2,599</p>
             </div>
-
             <div class="type-card card-vip" onclick="setSeat('Hospitality Box', 2999, this)">
                 <div class="card-left">
                     <h3>🥂 Hospitality Box</h3>
-                    <ul class="benefits"><li>Luxury dining experience</li><li>Dedicated hospitality service</li></ul>
+                    <ul class="benefits"><li>Luxury dining experience</li><li>Dedicated service</li></ul>
                 </div>
                 <p>₹2,999</p>
             </div>
-
             <div class="type-card card-vip" onclick="setSeat('Skybox/Lounge', 3999, this)">
                 <div class="fomo-tag tag-orange">⚡ Only Few Left</div>
                 <div class="card-left">
                     <h3>💎 Skybox/Lounge</h3>
-                    <ul class="benefits"><li>Ultimate luxury panoramic view</li><li>Exclusive VIP Lounge</li></ul>
+                    <ul class="benefits"><li>Ultimate panoramic view</li><li>Exclusive VIP Lounge</li></ul>
                 </div>
                 <p>₹3,999</p>
             </div>
@@ -190,7 +187,6 @@
                 <span>Platform Fee:</span>
                 <span style="color:#10b981; font-weight:700;"><del style="color:#94a3b8; font-weight:500;">₹150</del> Waived</span>
             </div>
-            
             <div class="sum-row total-row">
                 <span>Total Payable:</span>
                 <span id="res-total" style="font-size: 22px;">₹0</span>
@@ -202,7 +198,6 @@
             <div><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg><span>M-Ticket</span></div>
             <div><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg><span>Verified</span></div>
         </div>
-
     </div>
 
     <div class="bottom-bar">
@@ -214,7 +209,6 @@
         if (rawData) {
             const match = JSON.parse(rawData);
             document.getElementById('match-title').innerText = match.title || "Match Details";
-            // IMAGE LOAD KARNE WALA CODE MAIN YAHAN SE HATA DIYA HAI.
         }
 
         window.sPrice = 0;
@@ -234,31 +228,28 @@
             btn.disabled = false;
             btn.classList.add('active');
             btn.innerText = "Continue to Payment";
-            
-            if(window.refreshTotal) window.refreshTotal();
+            refreshTotal();
         };
 
         window.updateQty = (val) => {
             let n = window.sQty + val;
-            if(n > 10) { alert("Maximum 10 seats allowed per transaction."); return; }
+            if(n > 10) { alert("Maximum 10 seats allowed per transaction for security reasons."); return; }
             if(n < 1) return; 
             window.sQty = n;
             document.getElementById('res-qty').innerText = n;
-            if(window.refreshTotal) window.refreshTotal();
+            refreshTotal();
         };
 
-        window.refreshTotal = function() {
+        function refreshTotal() {
             const total = window.sQty * window.sPrice;
             document.getElementById('res-total').innerText = `₹${total.toLocaleString('en-IN')}`;
             localStorage.setItem("finalPrice", total); 
-            localStorage.setItem("selectedSeatType", window.sType);
-            localStorage.setItem("seatQuantity", window.sQty);
         }
 
-        window.goNext = () => { window.location.href = "payment.html"; }; // Yahan main payment.html set kar diya hu, details me tha pichle me.
+        window.goNext = () => { window.location.href = "payment.html"; };
     </script>
 
-    <script type="module" src="js/seats.js"></script>
+    <script src="js/seats.js"></script>
 
 </body>
 </html>
