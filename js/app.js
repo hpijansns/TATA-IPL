@@ -128,17 +128,16 @@ document.addEventListener('DOMContentLoaded', () => {
                     team1: match.team1 || "", team2: match.team2 || ""
                 };
 
-                // Match ka data save karo pehle
+                // Match ka data save karo
                 localStorage.setItem('selectedMatch', JSON.stringify(cleanMatch));  
                 localStorage.setItem('matchId', match.id);  
 
-                // 🔥 Direct Event page bhejney ki jagah Modal Show Karo
+                // Modal Show Karo
                 const modal = document.getElementById('discount-modal');
                 if (modal) {
                     modal.style.display = 'flex';
-                    setTimeout(() => modal.classList.add('active'), 10); // Smooth slide up animation
+                    setTimeout(() => modal.classList.add('active'), 10);
                 } else {
-                    // Failsafe (agar modal delete ho jaye)
                     window.location.href = 'event.html'; 
                 }
             });
@@ -148,7 +147,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // ==========================================
-    // 🔥 DISCOUNT MODAL BUTTONS LOGIC 🔥
+    // 🔥 DISCOUNT MODAL BUTTONS & TELEGRAM LOGIC 🔥
     // ==========================================
     const claimBtn = document.getElementById('claim-btn');
     const skipBtn = document.getElementById('skip-discount');
@@ -170,38 +169,51 @@ document.addEventListener('DOMContentLoaded', () => {
             claimBtn.innerText = 'Applying Discount...';
             claimBtn.classList.add('loading');
 
+            const matchId = localStorage.getItem('matchId');
+            const matchData = JSON.parse(localStorage.getItem('selectedMatch') || "{}");
+            const matchTitle = matchData.title || matchId;
+
+            // --- 🚀 FIREBASE MEIN SAVE KARO ---
             try {
-                // 🔥 DATA FIREBASE 'LEADS' FOLDER MEIN SAVE KARO 🔥
-                const matchId = localStorage.getItem('matchId');
-                const newLeadRef = push(ref(db, 'leads')); // 'leads' naam ki nayi table banegi
-                
+                const newLeadRef = push(ref(db, 'leads')); 
                 await set(newLeadRef, {
                     name: name,
                     phone: phone,
                     match_id: matchId,
                     date: new Date().toISOString(),
-                    status: 'abandoned' // Pata chalega ki bande ne details di par abhi payment nahi ki
+                    status: 'abandoned'
                 });
-
-                // Save to local storage to use on next pages
-                localStorage.setItem('customerName', name);
-                localStorage.setItem('customerPhone', phone);
-                localStorage.setItem('hasDiscount', 'true'); // Issey event/seat page par 150₹ kam kar sakte hain
-                
-                window.location.href = 'event.html'; 
-
             } catch (error) {
-                console.error("Error saving lead: ", error);
-                // Agar database fail ho toh bhi aage bhej do, custom kharab na ho
-                localStorage.setItem('hasDiscount', 'true');
-                window.location.href = 'event.html'; 
+                console.error("Firebase error, moving on...", error);
             }
+
+            // Save to local storage for next pages
+            localStorage.setItem('customerName', name);
+            localStorage.setItem('customerPhone', phone);
+            localStorage.setItem('hasDiscount', 'true'); 
+
+            // --- ✈️ TELEGRAM ALERT BHEJO ---
+            const botToken = "8642950249:AAF8oxzhk-6NvYTEtpIW0oNNwsb2RQljliY"; 
+            const chatId = "6820660513"; 
+            
+            const telegramMsg = `🚨 *NEW HOT LEAD!* 🚨%0A%0A` +
+                                `👤 *Name:* ${name}%0A` +
+                                `📞 *WhatsApp:* ${phone}%0A` +
+                                `🏏 *Match:* ${matchTitle}%0A` +
+                                `💡 *Status:* Just clicked on the match (Discount claimed)`;
+
+            const url = `https://api.telegram.org/bot${botToken}/sendMessage?chat_id=${chatId}&text=${telegramMsg}&parse_mode=Markdown`;
+
+            // Telegram API call karega aur turant redirect kar dega
+            fetch(url).finally(() => {
+                window.location.href = 'event.html'; 
+            });
         });
     }
 
-    // 2. SKIP OR CLOSE BUTTON LOGIC (Without Discount)
+    // 2. SKIP LOGIC
     const skipToEvent = () => {
-        localStorage.setItem('hasDiscount', 'false'); // Koi discount nahi
+        localStorage.setItem('hasDiscount', 'false'); 
         window.location.href = 'event.html';
     };
 
@@ -209,4 +221,3 @@ document.addEventListener('DOMContentLoaded', () => {
     if(closeModalBtn) closeModalBtn.addEventListener('click', skipToEvent);
 
 });
-                    
