@@ -56,8 +56,8 @@
         .type-card.selected { border-color: #00cf7f; background: #f0fdf4; box-shadow: 0 8px 20px rgba(0, 207, 127, 0.15); }
         
         .card-left { text-align: left; }
-        .type-card h3 { margin: 0; font-size: 16px; color: #1e293b; font-weight: 700; display: flex; align-items: center; gap: 8px;}
-        .type-card p { margin: 0; font-weight: 800; color: #0052FF; font-size: 18px; }
+        .type-card h3 { margin: 0; font-size: 15px; color: #1e293b; font-weight: 700; display: flex; align-items: center; gap: 8px;}
+        .type-card p { margin: 0; font-weight: 800; color: #f84464; font-size: 18px; } /* Set color to match screenshot */
         
         /* Features/Benefits List */
         .benefits { margin: 6px 0 0 0; padding: 0; list-style: none; font-size: 11px; color: #64748b; }
@@ -71,7 +71,7 @@
         /* 👑 VIP Cards Styling */
         .card-vip { background: linear-gradient(145deg, #111827 0%, #1f2937 100%); border: 2px solid #374151; color: white; }
         .card-vip h3 { color: #fbbf24; }
-        .card-vip p { color: #fff; }
+        .card-vip p { color: #f84464; } 
         .card-vip .benefits { color: #9ca3af; }
         .card-vip.selected { border-color: #fbbf24; background: linear-gradient(145deg, #111827 0%, #374151 100%); box-shadow: 0 8px 25px rgba(251, 191, 36, 0.2); }
 
@@ -127,66 +127,87 @@
         <h2 class="section-title">Select Seat Category</h2>
 
         <div class="seat-types">
-            <div class="type-card" onclick="setSeat('General Stand', 800, this)">
-                <div class="fomo-tag tag-orange">🎟️ Best Seller</div>
+            
+            <div class="type-card" onclick="setSeat('General Stand', 599, this)">
                 <div class="card-left">
-                    <h3>General Stand</h3>
+                    <h3>🪑 General Stand</h3>
                     <ul class="benefits">
-                        <li>Standard seating</li>
+                        <li>Standard stadium seating</li>
                         <li>Good view of the ground</li>
                     </ul>
                 </div>
-                <p>₹800</p>
+                <p>₹599</p>
             </div>
             
-            <div class="type-card" onclick="setSeat('Upper Tier', 1200, this)">
+            <div class="type-card" onclick="setSeat('Premium Stand', 999, this)">
+                <div class="fomo-tag tag-orange">🎟️ Best Seller</div>
                 <div class="card-left">
-                    <h3>Upper Tier</h3>
+                    <h3>⭐ Premium Stand</h3>
                     <ul class="benefits">
-                        <li>Elevated panoramic view</li>
-                        <li>Comfortable seating</li>
+                        <li>Comfortable seating area</li>
+                        <li>Better view angle</li>
                     </ul>
                 </div>
-                <p>₹1200</p>
+                <p>₹999</p>
             </div>
             
-            <div class="type-card" onclick="setSeat('Premium Stand', 2500, this)">
-                <div class="fomo-tag">🔥 Fast Filling</div>
+            <div class="type-card" onclick="setSeat('Pavilion Stand', 1599, this)">
                 <div class="card-left">
-                    <h3>Premium Stand</h3>
+                    <h3>🛋️ Pavilion Stand</h3>
                     <ul class="benefits">
                         <li>Closer to the pitch</li>
-                        <li>Fast-track entry</li>
-                        <li>Exclusive food stalls</li>
+                        <li>Exclusive entry access</li>
                     </ul>
                 </div>
-                <p>₹2500</p>
+                <p>₹1,599</p>
             </div>
-            
-            <div class="type-card card-vip" onclick="setSeat('VIP Box', 5000, this)">
+
+            <div class="type-card card-vip" onclick="setSeat('VIP Stand', 1999, this)">
+                <div class="fomo-tag">🔥 Fast Filling</div>
                 <div class="card-left">
-                    <h3>👑 VIP Box</h3>
+                    <h3>👑 VIP Stand</h3>
                     <ul class="benefits">
-                        <li>Air-Conditioned lounge</li>
-                        <li>Complimentary snacks</li>
                         <li>Premium cushioned seats</li>
+                        <li>Fast-track VIP entry</li>
                     </ul>
                 </div>
-                <p>₹5000</p>
+                <p>₹1,999</p>
             </div>
-            
-            <div class="type-card card-vip" onclick="setSeat('Club Lounge', 8000, this)">
-                <div class="fomo-tag tag-orange">⚡ Only 4 Left</div>
+
+            <div class="type-card card-vip" onclick="setSeat('Corporate Box', 2599, this)">
                 <div class="card-left">
-                    <h3>💎 Club Lounge</h3>
+                    <h3>🏢 Corporate Box</h3>
                     <ul class="benefits">
-                        <li>Full luxury buffet & drinks</li>
-                        <li>VIP Parking access</li>
-                        <li>Meet & Greet chance</li>
+                        <li>Air-Conditioned seating</li>
+                        <li>Complimentary light snacks</li>
                     </ul>
                 </div>
-                <p>₹8000</p>
+                <p>₹2,599</p>
             </div>
+
+            <div class="type-card card-vip" onclick="setSeat('Hospitality Box', 2999, this)">
+                <div class="card-left">
+                    <h3>🥂 Hospitality Box</h3>
+                    <ul class="benefits">
+                        <li>Luxury dining experience</li>
+                        <li>Dedicated hospitality service</li>
+                    </ul>
+                </div>
+                <p>₹2,999</p>
+            </div>
+
+            <div class="type-card card-vip" onclick="setSeat('Skybox/Lounge', 3999, this)">
+                <div class="fomo-tag tag-orange">⚡ Only Few Left</div>
+                <div class="card-left">
+                    <h3>💎 Skybox/Lounge</h3>
+                    <ul class="benefits">
+                        <li>Ultimate luxury panoramic view</li>
+                        <li>Exclusive VIP Lounge & Parking</li>
+                    </ul>
+                </div>
+                <p>₹3,999</p>
+            </div>
+
         </div>
 
         <div class="summary-card">
@@ -254,7 +275,9 @@
             el.classList.add('selected');
             window.sPrice = price;
             document.getElementById('res-type').innerText = name;
-            document.getElementById('res-price').innerText = `₹${price}`;
+            
+            // Format price with comma properly
+            document.getElementById('res-price').innerText = `₹${price.toLocaleString('en-IN')}`;
             
             const btn = document.getElementById('final-btn');
             btn.disabled = false;
@@ -280,7 +303,7 @@
 
         function refreshTotal() {
             const total = window.sQty * window.sPrice;
-            document.getElementById('res-total').innerText = `₹${total}`;
+            document.getElementById('res-total').innerText = `₹${total.toLocaleString('en-IN')}`;
             localStorage.setItem("finalPrice", total); 
         }
 
