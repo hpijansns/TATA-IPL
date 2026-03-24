@@ -44,12 +44,14 @@
 
         .seat-selection-area { padding: 15px; padding-bottom: 140px; max-width: 500px; margin: auto; }
         
-        .venue-container { width: 100%; background: #fff; border-radius: 16px; overflow: hidden; border: 1px solid #e2e8f0; box-shadow: 0 4px 15px rgba(0,0,0,0.03); margin-bottom: 25px; padding: 10px; box-sizing: border-box;}
+        /* 🔥 Venue Container Updated for SVG 100% Fit */
+        .venue-container { width: 100%; background: #fff; border-radius: 16px; overflow: hidden; border: 1px solid #e2e8f0; box-shadow: 0 4px 15px rgba(0,0,0,0.03); margin-bottom: 25px; padding: 10px; box-sizing: border-box; text-align: center; }
         #venue-img { width: 100%; height: auto; max-height: 250px; object-fit: contain; display: none; border-radius: 10px;}
+        #stadium { width: 100%; max-width: 450px; height: auto; margin: 0 auto; display: block; }
         
         .section-title { font-size: 16px; font-weight: 800; margin-bottom: 15px; color: #0f172a; text-transform: uppercase; letter-spacing: 0.5px;}
         
-        /* 🔥 Ultra Premium Seat Cards */
+        /* Ultra Premium Seat Cards */
         .type-card { position: relative; background: #fff; border-radius: 14px; padding: 18px 20px; margin-bottom: 15px; cursor: pointer; border: 2px solid #e2e8f0; transition: all 0.3s ease; box-shadow: 0 4px 10px rgba(0,0,0,0.02); display: flex; justify-content: space-between; align-items: center; overflow: hidden;}
         
         .type-card:hover { border-color: #cbd5e1; transform: translateY(-2px); }
@@ -57,7 +59,7 @@
         
         .card-left { text-align: left; }
         .type-card h3 { margin: 0; font-size: 15px; color: #1e293b; font-weight: 700; display: flex; align-items: center; gap: 8px;}
-        .type-card p { margin: 0; font-weight: 800; color: #f84464; font-size: 18px; } /* Set color to match screenshot */
+        .type-card p { margin: 0; font-weight: 800; color: #f84464; font-size: 18px; } 
         
         /* Features/Benefits List */
         .benefits { margin: 6px 0 0 0; padding: 0; list-style: none; font-size: 11px; color: #64748b; }
@@ -122,6 +124,7 @@
     <div class="seat-selection-area">
         <div class="venue-container">
             <img id="venue-img" src="" alt="Stadium Layout">
+            <svg id="stadium" viewBox="0 0 500 500"></svg>
         </div>
 
         <h2 class="section-title">Select Seat Category</h2>
@@ -272,8 +275,11 @@
 
         window.setSeat = (name, price, el) => {
             document.querySelectorAll('.type-card').forEach(c => c.classList.remove('selected'));
-            el.classList.add('selected');
+            if(el) el.classList.add('selected'); // Added check if clicked from stadium map
+            
+            window.sType = name;
             window.sPrice = price;
+            
             document.getElementById('res-type').innerText = name;
             
             // Format price with comma properly
