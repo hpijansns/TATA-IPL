@@ -1,4 +1,5 @@
-import { db, ref, onValue } from './firebase.js';
+// DHYAN DEIN: Import mein 'push' aur 'set' add kiya gaya hai
+import { db, ref, onValue, push, set } from './firebase.js';
 
 document.addEventListener('DOMContentLoaded', () => {
 
@@ -24,13 +25,11 @@ document.addEventListener('DOMContentLoaded', () => {
             return;  
         }  
 
-        // 1. Data ko Array mein convert kiya
         let allMatches = Object.keys(data).map(id => ({  
             id,  
             ...data[id]  
         }));  
 
-        // 2. 🔥 AUTO-HIDE LOGIC: Purane matches chhupao
         const today = new Date();
         today.setHours(0, 0, 0, 0); 
 
@@ -40,36 +39,25 @@ document.addEventListener('DOMContentLoaded', () => {
             return matchDate >= today; 
         });
 
-        // 3. 🔥 AUTO-SORT LOGIC: Jo match pehle hone wala hai wo TOP par dikhega
         upcomingMatches.sort((a, b) => new Date(a.date) - new Date(b.date));
-
-        // Global variable ko update kiya taaki Filter isi filtered data par chale
         matchesData = upcomingMatches;  
-
         renderMatches(upcomingMatches);  
     });
 
-    // ==========================================
-    // 🔥 SORT FILTER LOGIC
-    // ==========================================
     if (sortFilter) {
         sortFilter.addEventListener('change', () => {  
             let sorted = [...matchesData];  
-
             if (sortFilter.value === 'price-asc') {  
-                // Price Low to High
                 sorted.sort((a, b) => (Number(a.price) || 0) - (Number(b.price) || 0));  
             } else {  
-                // Latest by Date
                 sorted.sort((a, b) => new Date(a.date) - new Date(b.date));  
             }  
-
             renderMatches(sorted);  
         });
     }
 
     // ==========================================
-    // 🔥 RENDER FUNCTION (Displaying Cards)
+    // 🔥 RENDER FUNCTION
     // ==========================================
     function renderMatches(matches) {  
 
@@ -78,13 +66,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
         matches.forEach(match => {  
 
-            // Date processing
             const date = new Date(match.date);  
             const day = date.getDate() || '';  
             const month = date.toLocaleString('default', { month: 'short' });  
             const week = date.toLocaleString('default', { weekday: 'short' });  
 
-            // 🔥 Venue Split Logic (Stadium vs City)
             const venueString = match.venue || '';
             let stadiumName = venueString;
             let cityName = '';
@@ -112,57 +98,115 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 <div class="timeline-right">  
                     <div class="match-label">Match</div>  
-
                     <div class="teams-vs-ui">  
                         <div class="team-ui">  
                             <img src="${match.team1 || ''}" onerror="this.src='https://via.placeholder.com/50'">
                             <span>${(match.title || '').split(' vs ')[0] || 'Team A'}</span>  
                         </div>  
-
                         <div class="vs-circle">VS</div>  
-
                         <div class="team-ui">  
                             <img src="${match.team2 || ''}" onerror="this.src='https://via.placeholder.com/50'">
                             <span>${(match.title || '').split(' vs ')[1] || 'Team B'}</span>  
                         </div>  
                     </div>  
-
                     <div class="venue-time" style="font-size: 12px; color: #555; margin-top: 10px;">  
                         ${match.time || ''} • ${stadiumName}  
                     </div>  
-
                     <div class="action-link" style="color: #f84464; font-size: 13px; font-weight: 600; margin-top: 8px;">₹${match.price || 0} Fast Filling. Book Now &gt;</div>  
                 </div>  
             `;  
 
             // ==========================================
-            // 🔥 CLICK HANDLER (Saves all Data)
+            // 🔥 MODAL OPEN & LEAD CAPTURE LOGIC 🔥
             // ==========================================
             div.addEventListener('click', () => {  
-
                 const cleanMatch = {
-                    id: match.id || "",
-                    title: match.title || "TBC vs TBC",
-                    banner: match.banner || "",        
-                    venue_img: match.venue_img || "",  
-                    date: match.date || "",
-                    time: match.time || "",
-                    venue: match.venue || "",
-                    price: match.price || 0,
-                    team1: match.team1 || "",
-                    team2: match.team2 || ""
+                    id: match.id || "", title: match.title || "TBC vs TBC",
+                    banner: match.banner || "", venue_img: match.venue_img || "",  
+                    date: match.date || "", time: match.time || "",
+                    venue: match.venue || "", price: match.price || 0,
+                    team1: match.team1 || "", team2: match.team2 || ""
                 };
 
+                // Match ka data save karo pehle
                 localStorage.setItem('selectedMatch', JSON.stringify(cleanMatch));  
                 localStorage.setItem('matchId', match.id);  
 
-                setTimeout(() => {
-                    window.location.href = 'event.html';  
-                }, 50);
+                // 🔥 Direct Event page bhejney ki jagah Modal Show Karo
+                const modal = document.getElementById('discount-modal');
+                if (modal) {
+                    modal.style.display = 'flex';
+                    setTimeout(() => modal.classList.add('active'), 10); // Smooth slide up animation
+                } else {
+                    // Failsafe (agar modal delete ho jaye)
+                    window.location.href = 'event.html'; 
+                }
             });
 
             matchList.appendChild(div);  
         });
     }
 
+    // ==========================================
+    // 🔥 DISCOUNT MODAL BUTTONS LOGIC 🔥
+    // ==========================================
+    const claimBtn = document.getElementById('claim-btn');
+    const skipBtn = document.getElementById('skip-discount');
+    const closeModalBtn = document.getElementById('close-modal');
+    const errorMsg = document.getElementById('lead-error');
+
+    // 1. CLAIM DISCOUNT BUTTON CLICK
+    if(claimBtn) {
+        claimBtn.addEventListener('click', async () => {
+            const name = document.getElementById('lead-name').value.trim();
+            const phone = document.getElementById('lead-phone').value.trim();
+
+            if (name.length < 2 || phone.length < 10) {
+                errorMsg.style.display = 'block';
+                return;
+            }
+
+            errorMsg.style.display = 'none';
+            claimBtn.innerText = 'Applying Discount...';
+            claimBtn.classList.add('loading');
+
+            try {
+                // 🔥 DATA FIREBASE 'LEADS' FOLDER MEIN SAVE KARO 🔥
+                const matchId = localStorage.getItem('matchId');
+                const newLeadRef = push(ref(db, 'leads')); // 'leads' naam ki nayi table banegi
+                
+                await set(newLeadRef, {
+                    name: name,
+                    phone: phone,
+                    match_id: matchId,
+                    date: new Date().toISOString(),
+                    status: 'abandoned' // Pata chalega ki bande ne details di par abhi payment nahi ki
+                });
+
+                // Save to local storage to use on next pages
+                localStorage.setItem('customerName', name);
+                localStorage.setItem('customerPhone', phone);
+                localStorage.setItem('hasDiscount', 'true'); // Issey event/seat page par 150₹ kam kar sakte hain
+                
+                window.location.href = 'event.html'; 
+
+            } catch (error) {
+                console.error("Error saving lead: ", error);
+                // Agar database fail ho toh bhi aage bhej do, custom kharab na ho
+                localStorage.setItem('hasDiscount', 'true');
+                window.location.href = 'event.html'; 
+            }
+        });
+    }
+
+    // 2. SKIP OR CLOSE BUTTON LOGIC (Without Discount)
+    const skipToEvent = () => {
+        localStorage.setItem('hasDiscount', 'false'); // Koi discount nahi
+        window.location.href = 'event.html';
+    };
+
+    if(skipBtn) skipBtn.addEventListener('click', skipToEvent);
+    if(closeModalBtn) closeModalBtn.addEventListener('click', skipToEvent);
+
 });
+                    
