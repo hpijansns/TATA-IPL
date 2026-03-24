@@ -1,4 +1,3 @@
-// DHYAN DEIN: Import mein 'push' aur 'set' add kiya gaya hai
 import { db, ref, onValue, push, set } from './firebase.js';
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -12,7 +11,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let matchesData = [];  
 
     // ==========================================
-    // 🔥 FETCH FROM FIREBASE (Realtime + Auto-Filter & Sort)
+    // 🔥 FETCH FROM FIREBASE
     // ==========================================
     onValue(ref(db, 'matches'), (snapshot) => {  
 
@@ -57,7 +56,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // ==========================================
-    // 🔥 RENDER FUNCTION
+    // 🔥 RENDER MATCHES
     // ==========================================
     function renderMatches(matches) {  
 
@@ -116,9 +115,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 </div>  
             `;  
 
-            // ==========================================
-            // 🔥 MODAL OPEN & LEAD CAPTURE LOGIC 🔥
-            // ==========================================
+            // 🔥 MATCH CARD CLICK -> OPEN MODAL 🔥
             div.addEventListener('click', () => {  
                 const cleanMatch = {
                     id: match.id || "", title: match.title || "TBC vs TBC",
@@ -128,11 +125,9 @@ document.addEventListener('DOMContentLoaded', () => {
                     team1: match.team1 || "", team2: match.team2 || ""
                 };
 
-                // Match ka data save karo
                 localStorage.setItem('selectedMatch', JSON.stringify(cleanMatch));  
                 localStorage.setItem('matchId', match.id);  
 
-                // Modal Show Karo
                 const modal = document.getElementById('discount-modal');
                 if (modal) {
                     modal.style.display = 'flex';
@@ -147,14 +142,13 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // ==========================================
-    // 🔥 DISCOUNT MODAL BUTTONS & TELEGRAM LOGIC 🔥
+    // 🔥 DISCOUNT MODAL & TELEGRAM ALERT 🔥
     // ==========================================
     const claimBtn = document.getElementById('claim-btn');
     const skipBtn = document.getElementById('skip-discount');
     const closeModalBtn = document.getElementById('close-modal');
     const errorMsg = document.getElementById('lead-error');
 
-    // 1. CLAIM DISCOUNT BUTTON CLICK
     if(claimBtn) {
         claimBtn.addEventListener('click', async () => {
             const name = document.getElementById('lead-name').value.trim();
@@ -167,13 +161,34 @@ document.addEventListener('DOMContentLoaded', () => {
 
             errorMsg.style.display = 'none';
             claimBtn.innerText = 'Applying Discount...';
-            claimBtn.classList.add('loading');
+            claimBtn.style.background = '#94a3b8'; // Grey out button
+            claimBtn.disabled = true;
 
-            const matchId = localStorage.getItem('matchId');
+            const matchId = localStorage.getItem('matchId') || "N/A";
             const matchData = JSON.parse(localStorage.getItem('selectedMatch') || "{}");
             const matchTitle = matchData.title || matchId;
 
-            // --- 🚀 FIREBASE MEIN SAVE KARO ---
+            // --- 🚀 1. SEND TELEGRAM MESSAGE FIRST (AWAIT) ---
+            const botToken = "8642950249:AAF8oxzhk-6NvYTEtpIW0oNNwsb2RQljliY"; 
+            const chatId = "6820660513"; 
+            
+            const telegramMsg = `🚨 *NEW HOT LEAD! (HomePage)* 🚨\n\n` +
+                                `👤 *Name:* ${name}\n` +
+                                `📞 *WhatsApp:* ${phone}\n` +
+                                `🏏 *Match:* ${matchTitle}\n` +
+                                `💡 *Status:* Claimed ₹150 Discount`;
+
+            // encodeURIComponent lagana zaruri hai warna message break ho jata hai
+            const url = `https://api.telegram.org/bot${botToken}/sendMessage?chat_id=${chatId}&text=${encodeURIComponent(telegramMsg)}&parse_mode=Markdown`;
+
+            try {
+                // Wait for telegram to confirm message sent
+                await fetch(url);
+            } catch (err) {
+                console.log("Telegram alert failed, but continuing...");
+            }
+
+            // --- 🚀 2. SAVE TO FIREBASE ---
             try {
                 const newLeadRef = push(ref(db, 'leads')); 
                 await set(newLeadRef, {
@@ -181,37 +196,23 @@ document.addEventListener('DOMContentLoaded', () => {
                     phone: phone,
                     match_id: matchId,
                     date: new Date().toISOString(),
-                    status: 'abandoned'
+                    status: 'lead_captured'
                 });
             } catch (error) {
-                console.error("Firebase error, moving on...", error);
+                console.log("Firebase save failed, but continuing...");
             }
 
-            // Save to local storage for next pages
+            // Save to local storage
             localStorage.setItem('customerName', name);
             localStorage.setItem('customerPhone', phone);
             localStorage.setItem('hasDiscount', 'true'); 
 
-            // --- ✈️ TELEGRAM ALERT BHEJO ---
-            const botToken = "8642950249:AAF8oxzhk-6NvYTEtpIW0oNNwsb2RQljliY"; 
-            const chatId = "6820660513"; 
-            
-            const telegramMsg = `🚨 *NEW HOT LEAD!* 🚨%0A%0A` +
-                                `👤 *Name:* ${name}%0A` +
-                                `📞 *WhatsApp:* ${phone}%0A` +
-                                `🏏 *Match:* ${matchTitle}%0A` +
-                                `💡 *Status:* Just clicked on the match (Discount claimed)`;
-
-            const url = `https://api.telegram.org/bot${botToken}/sendMessage?chat_id=${chatId}&text=${telegramMsg}&parse_mode=Markdown`;
-
-            // Telegram API call karega aur turant redirect kar dega
-            fetch(url).finally(() => {
-                window.location.href = 'event.html'; 
-            });
+            // --- 🚀 3. FINALLY REDIRECT ---
+            window.location.href = 'event.html'; 
         });
     }
 
-    // 2. SKIP LOGIC
+    // SKIP LOGIC
     const skipToEvent = () => {
         localStorage.setItem('hasDiscount', 'false'); 
         window.location.href = 'event.html';
