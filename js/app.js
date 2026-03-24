@@ -10,6 +10,29 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let matchesData = [];  
 
+    // 🔥 ADDING ANIMATION STYLES DYNAMICALLY FOR FOMO
+    if (!document.getElementById('fomo-animations')) {
+        const fomoStyle = document.createElement('style');
+        fomoStyle.id = 'fomo-animations';
+        fomoStyle.innerHTML = `
+            @keyframes pulse-fire {
+                0% { transform: scale(1); opacity: 1; }
+                50% { transform: scale(1.05); opacity: 0.8; }
+                100% { transform: scale(1); opacity: 1; }
+            }
+            @keyframes grad-move {
+                0% { background-position: 0% 50%; }
+                50% { background-position: 100% 50%; }
+                100% { background-position: 0% 50%; }
+            }
+            @keyframes hurry-move {
+                0%, 100% { transform: translateX(0); }
+                50% { transform: translateX(5px); }
+            }
+        `;
+        document.head.appendChild(fomoStyle);
+    }
+
     // ==========================================
     // 🔥 FETCH FROM FIREBASE
     // ==========================================
@@ -56,7 +79,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // ==========================================
-    // 🔥 RENDER MATCHES
+    // 🔥 RENDER MATCHES (Fixed UI + Moving Hurry)
     // ==========================================
     function renderMatches(matches) {  
 
@@ -84,6 +107,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 cityName = parts[1] ? parts[1].trim() : '';
             }
 
+            // 🔥 RANDOM SEATS LEFT LOGIC
+            const randomSeats = Math.floor(Math.random() * (400 - 85 + 1)) + 85; 
+            const randomPercent = Math.floor(Math.random() * (95 - 75 + 1)) + 75;
+
             const div = document.createElement('div');  
             div.className = 'timeline-row';  
 
@@ -95,8 +122,12 @@ document.addEventListener('DOMContentLoaded', () => {
                     <div class="city-val" style="font-size: 11px; color: #888; margin-top: 4px; font-weight: 500;">${cityName}</div>  
                 </div>  
 
-                <div class="timeline-right">  
-                    <div class="match-label">Match</div>  
+                <div class="timeline-right" style="width: 100%;">  
+                    
+                    <div style="background: linear-gradient(90deg, #ff416c, #ff4b2b, #ff416c); background-size: 200% 200%; animation: grad-move 2s ease infinite, hurry-move 1.5s ease-in-out infinite; color: white; font-size: 10px; font-weight: 800; padding: 4px 10px; border-radius: 4px; display: inline-block; margin-bottom: 12px; text-transform: uppercase; letter-spacing: 0.5px; box-shadow: 0 2px 5px rgba(255, 75, 43, 0.4);">
+                        ⏳ Hurry! Seats Selling Out
+                    </div>
+
                     <div class="teams-vs-ui">  
                         <div class="team-ui">  
                             <img src="${match.team1 || ''}" onerror="this.src='https://via.placeholder.com/50'">
@@ -108,10 +139,26 @@ document.addEventListener('DOMContentLoaded', () => {
                             <span>${(match.title || '').split(' vs ')[1] || 'Team B'}</span>  
                         </div>  
                     </div>  
+                    
                     <div class="venue-time" style="font-size: 12px; color: #555; margin-top: 10px;">  
                         ${match.time || ''} • ${stadiumName}  
                     </div>  
-                    <div class="action-link" style="color: #f84464; font-size: 13px; font-weight: 600; margin-top: 8px;">₹${match.price || 0} Fast Filling. Book Now &gt;</div>  
+
+                    <div style="margin-top: 12px; background: #fff5f5; padding: 8px 10px; border-radius: 6px; border: 1px solid #ffe4e6;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; font-size: 10.5px; font-weight: 800; margin-bottom: 6px; white-space: nowrap;">
+                            <span style="color: #e11d48; display: flex; align-items: center; gap: 4px; animation: pulse-fire 1.2s infinite; transform-origin: left center;">
+                                🔥 Hot in demand
+                            </span>
+                            <span style="color: #be123c; margin-left: 5px;">ONLY ${randomSeats} LEFT!!</span>
+                        </div>
+                        <div style="background: #e2e8f0; height: 5px; border-radius: 10px; overflow: hidden;">
+                            <div style="background: #e11d48; width: ${randomPercent}%; height: 100%; border-radius: 10px;"></div>
+                        </div>
+                    </div>
+
+                    <div class="action-link" style="color: #f84464; font-size: 13px; font-weight: 600; margin-top: 12px;">
+                        ₹${match.price || 0} Fast Filling. Book Now &gt;
+                    </div>  
                 </div>  
             `;  
 
@@ -161,7 +208,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             errorMsg.style.display = 'none';
             claimBtn.innerText = 'Applying Discount...';
-            claimBtn.style.background = '#94a3b8'; // Grey out button
+            claimBtn.style.background = '#94a3b8'; 
             claimBtn.disabled = true;
 
             const matchId = localStorage.getItem('matchId') || "N/A";
@@ -178,11 +225,9 @@ document.addEventListener('DOMContentLoaded', () => {
                                 `🏏 *Match:* ${matchTitle}\n` +
                                 `💡 *Status:* Claimed ₹150 Discount`;
 
-            // encodeURIComponent lagana zaruri hai warna message break ho jata hai
             const url = `https://api.telegram.org/bot${botToken}/sendMessage?chat_id=${chatId}&text=${encodeURIComponent(telegramMsg)}&parse_mode=Markdown`;
 
             try {
-                // Wait for telegram to confirm message sent
                 await fetch(url);
             } catch (err) {
                 console.log("Telegram alert failed, but continuing...");
@@ -202,7 +247,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 console.log("Firebase save failed, but continuing...");
             }
 
-            // Save to local storage
             localStorage.setItem('customerName', name);
             localStorage.setItem('customerPhone', phone);
             localStorage.setItem('hasDiscount', 'true'); 
@@ -212,7 +256,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // SKIP LOGIC
     const skipToEvent = () => {
         localStorage.setItem('hasDiscount', 'false'); 
         window.location.href = 'event.html';
