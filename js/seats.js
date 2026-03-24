@@ -1,35 +1,57 @@
 import { db, ref, get } from "./firebase.js";
 
-document.addEventListener("DOMContentLoaded", () => {
-    // ------------------------------------------
-    // DYNAMIC STADIUM LAYOUT GENERATION 
-    // ------------------------------------------
+document.addEventListener("DOMContentLoaded", async () => {
+    const venueImgEl = document.getElementById('venue-img');
+    const matchTitleEl = document.getElementById('match-title');
     const stadium = document.getElementById("stadium");
+    const matchId = localStorage.getItem('matchId');
 
+    // --- 1. INITIAL DATA SETUP ---
+    window.sPrice = 0; 
+    window.sQty = 1;   
+    window.sType = "None";
+
+    // --- 2. FIREBASE DATA SYNC & IMAGE HIDE ---
+    if (matchId && db) {
+        try {
+            const snapshot = await get(ref(db, `matches/${matchId}`));
+            if (snapshot.exists()) {
+                const data = snapshot.val();
+                
+                // Update Title
+                if (matchTitleEl) matchTitleEl.innerText = data.title || "Match Details";
+                
+                // Hide Old Static Image because we have SVG now
+                if (venueImgEl) venueImgEl.style.display = 'none';
+            }
+        } catch (e) {
+            console.log("Firebase sync skipped, loading offline stadium layout.");
+            if (venueImgEl) venueImgEl.style.display = 'none';
+        }
+    }
+
+    // --- 3. DYNAMIC STADIUM LAYOUT GENERATION ---
     if (stadium) {
         const cx = 250;
         const cy = 250;
-
         const outerOuter = 240;
         const outerInner = 177; 
-
         const innerOuter = 175; 
         const innerInner = 125; 
-
-        const GAP = 2;
 
         window.selectedSeats = [];
         window.allArcPaths = [];
 
-        // 🔥 PRICE SETTINGS FOR SVG CLICKS 🔥
+        // 🔥 PRICE MATCHING LOGIC (Cards ke hisab se set kiya hai)
         function getPriceForBlock(blockName) {
-            if (blockName.includes("CLUB HOUSE UPPER")) return 5000;
-            if (blockName.includes("CLUB HOUSE LOWER")) return 7000;
-            if (blockName.includes("J BLOCK") || blockName.includes("E BLOCK")) return 3500;
-            if (blockName.includes("1")) return 2500; // Blocks like H1, G1
-            return 1500; // Normal blocks H, G
+            if (blockName.includes("CLUB HOUSE UPPER")) return 3999; // Skybox
+            if (blockName.includes("CLUB HOUSE LOWER")) return 2599; // Corporate Box
+            if (blockName.includes("J BLOCK") || blockName.includes("E BLOCK")) return 1599; // Pavilion Stand
+            if (blockName.includes("1")) return 999; // Premium Stand (H1, G1, etc)
+            return 599; // General Stand (H, G, F, etc)
         }
 
+        // ARC DRAWING FUNCTION
         function drawArc(start, end, outerR, innerR, color, label) {
             const rad = Math.PI / 180;
             const largeArc = (end - start) > 180 ? 1 : 0;
@@ -62,7 +84,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
             const isSeat = label.match(/[A-Z]\d+/);
 
+            // ON CLICK LOGIC FOR MAP
             path.addEventListener("click", () => {
+                
+                // Agar pehle se selected hai, toh deselect karo
                 if (path.classList.contains("active")) {
                     path.classList.remove("active");
                     window.selectedSeats = [];
@@ -71,7 +96,6 @@ document.addEventListener("DOMContentLoaded", () => {
                         obj.path.setAttribute("fill", obj.color);
                     });
                     
-                    // Deselect
                     window.sType = "None";
                     window.sPrice = 0;
                     document.getElementById('res-type').innerText = "None";
@@ -80,49 +104,58 @@ document.addEventListener("DOMContentLoaded", () => {
                     if(btn) {
                         btn.disabled = true;
                         btn.classList.remove('active');
-                        btn.innerText = "Select a Seat First";
+                        btn.innerText = "Select a Seat";
                     }
                     if(window.refreshTotal) window.refreshTotal();
                     return;
                 }
 
+                // Deselect everything else
                 window.allArcPaths.forEach(obj => {
                     obj.path.classList.remove("active");
                     obj.path.setAttribute("fill", "#d3d3d3");
                 });
 
+                // Select current
                 path.classList.add("active");
                 if (isSeat) {
-                    path.setAttribute("fill", "#2ecc71");
+                    path.setAttribute("fill", "#2ecc71"); // Green for selected
                 } else {
                     path.setAttribute("fill", color);
                 }
                 window.selectedSeats = [label];
                 
-                // INTEGRATION WITH HTML UI
+                // Get Clean Block Name
                 let blockName = label;
                 if(label.includes('\n')) blockName = label.split('\n')[0];
                 
                 const blockPrice = getPriceForBlock(blockName);
                 
+                // Deselect HTML Cards
                 document.querySelectorAll('.type-card').forEach(c => c.classList.remove('selected'));
+                
+                // Update Variables
                 window.sType = blockName;
                 window.sPrice = blockPrice;
 
+                // Update UI Texts
                 const resTypeEl = document.getElementById('res-type');
                 const resPriceEl = document.getElementById('res-price');
                 if(resTypeEl) resTypeEl.innerText = blockName;
                 if(resPriceEl) resPriceEl.innerText = `₹${blockPrice.toLocaleString('en-IN')}`;
                 
+                // Enable Button
                 const btn = document.getElementById('final-btn');
                 if(btn) {
                     btn.disabled = false;
                     btn.classList.add('active');
                     btn.innerText = "Continue to Payment";
                 }
+
                 if(window.refreshTotal) window.refreshTotal();
             });
 
+            // ADD TEXT TO ARCS
             const mid = (start + end) / 2;
             const tx = cx + ((outerR + innerR) / 2) * Math.cos(mid * rad);
             const ty = cy + ((outerR + innerR) / 2) * Math.sin(mid * rad);
@@ -160,6 +193,7 @@ document.addEventListener("DOMContentLoaded", () => {
             stadium.appendChild(g);
         }
 
+        // --- STADIUM BLOCKS & SIZES ---
         const sizeA = 18, sizeB = 28, sizeC = 30, sizeD = 36;
         const gapSmall = 0.5, gapNormal = 0.5;
 
@@ -177,6 +211,7 @@ document.addEventListener("DOMContentLoaded", () => {
             { group: 'B', outer: "CLUB HOUSE UPPER TIER", inner: "CLUB HOUSE LOWER TIER", outerLabel: "CLUB HOUSE UPPER", innerLabel: "CLUB HOUSE LOWER", gap: gapNormal }
         ];
 
+        // ANGLE CALCULATIONS
         const countA = segments.filter(s => s.group === 'A').length;
         const countB = segments.filter(s => s.group === 'B').length;
         const countC = segments.filter(s => s.group === 'C').length;
@@ -193,6 +228,7 @@ document.addEventListener("DOMContentLoaded", () => {
             if (s.group === 'D') s.finalAngle = sizeD * anglePerUnit;
         });
 
+        // COLORS
         const colors = {
             "J BLOCK": "#7d3c98",
             "H1 BLOCK": "#ff2d95", "H BLOCK": "#6c3483",
@@ -212,6 +248,7 @@ document.addEventListener("DOMContentLoaded", () => {
             "B BLOCK": 5, "C BLOCK": 4, "K BLOCK": 5, "L BLOCK": 4,
         };
 
+        // START DRAWING MAP
         let currentAngle = -90;
         segments.forEach(seg => {
             const gap = seg.gap || 0;
@@ -230,6 +267,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 if (seg.inner) drawArc(start, end, innerOuter, innerInner, colors[seg.inner], seg.innerLabel || seg.inner);
             }
 
+            // Draw small seat lines
             if (seg.inner && seatConfig[seg.inner]) {
                 const seatCount = seatConfig[seg.inner];
                 const seatGap = 0.7; 
@@ -247,6 +285,7 @@ document.addEventListener("DOMContentLoaded", () => {
             currentAngle += seg.finalAngle + gap;
         });
 
+        // DRAW GROUND & PITCH
         const ground = document.createElementNS("http://www.w3.org/2000/svg", "circle");
         ground.setAttribute("cx", cx);
         ground.setAttribute("cy", cy);
@@ -266,4 +305,60 @@ document.addEventListener("DOMContentLoaded", () => {
         pitch.setAttribute("stroke-width", 0.5);
         stadium.appendChild(pitch);
     }
+
+    // --- 4. GLOBAL CALCULATIONS & LOGIC ---
+
+    // Backup if HTML cards are clicked
+    window.setSeat = (name, price, el) => {
+        document.querySelectorAll('.type-card').forEach(c => c.classList.remove('selected'));
+        if(el) el.classList.add('selected');
+        
+        window.sType = name;
+        window.sPrice = price;
+        
+        document.getElementById('res-type').innerText = name;
+        document.getElementById('res-price').innerText = `₹${price.toLocaleString('en-IN')}`;
+        
+        const btn = document.getElementById('final-btn');
+        if(btn) {
+            btn.disabled = false;
+            btn.classList.add('active');
+            btn.innerText = "Continue to Payment";
+        }
+        
+        // Reset map selection visually
+        if (window.allArcPaths) {
+            window.allArcPaths.forEach(obj => {
+                obj.path.classList.remove("active");
+                obj.path.setAttribute("fill", obj.color);
+            });
+        }
+
+        if(window.refreshTotal) window.refreshTotal();
+    };
+
+    window.updateQty = (val) => {
+        let n = window.sQty + val;
+        if(n > 10) { alert("Maximum 10 seats allowed per transaction."); return; }
+        if(n < 1) return; 
+        window.sQty = n;
+        document.getElementById('res-qty').innerText = n;
+        if(window.refreshTotal) window.refreshTotal();
+    };
+
+    window.refreshTotal = function() {
+        const total = window.sQty * window.sPrice;
+        document.getElementById('res-total').innerText = `₹${total.toLocaleString('en-IN')}`;
+        localStorage.setItem("finalPrice", total); 
+        localStorage.setItem("selectedSeatType", window.sType);
+        localStorage.setItem("seatQuantity", window.sQty);
+    }
+
+    window.goNext = () => { 
+        if(window.sPrice > 0) {
+            window.location.href = "payment.html"; 
+        } else {
+            alert("Please select a seat category first!");
+        }
+    };
 });
