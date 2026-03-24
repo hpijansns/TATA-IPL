@@ -60,6 +60,15 @@
         .qr-container { position: relative; width: 220px; height: 220px; margin: 0 auto; border-radius: 16px; border: 2px solid #e2e8f0; padding: 10px; background: #fff; box-shadow: 0 10px 25px rgba(0,0,0,0.05); overflow: hidden; display: none;}
         #qr-code { width: 100%; height: 100%; object-fit: contain; border-radius: 8px; }
 
+        /* 🔥 NEW UTILITY BUTTONS CSS (Added Safely) 🔥 */
+        .qr-actions { margin-top: 15px; display: flex; justify-content: center; gap: 10px; flex-wrap: wrap;}
+        .btn-action { background: #f1f5f9; color: #475569; border: 1px solid #e2e8f0; padding: 10px 16px; border-radius: 50px; font-size: 13px; font-weight: 700; cursor: pointer; transition: 0.2s; display: flex; align-items: center; gap: 6px; outline: none;}
+        .btn-action:hover { background: #e2e8f0; color: #1e293b; }
+        .btn-action:active { transform: scale(0.97); }
+        .btn-action svg { width: 16px; height: 16px; }
+        .btn-primary { background: #0052FF; color: white; border-color: #0052FF; }
+        .btn-primary:hover { background: #0036b3; color: white; }
+
         /* Trust Logos */
         .trust-logos { margin-top: 20px; display: flex; justify-content: center; align-items: center; gap: 18px; }
         .trust-logos img { height: 20px; filter: grayscale(100%); opacity: 0.5; transition: 0.3s; }
@@ -121,7 +130,7 @@
         </div>
 
         <div class="steps-box">
-            <div style="margin-bottom: 8px;"><span>Step 1</span> Scan QR code using any UPI App.</div>
+            <div style="margin-bottom: 8px;"><span>Step 1</span> Scan QR code or Copy UPI ID.</div>
             <div><span>Step 2</span> Pay the exact amount & copy Bank UTR.</div>
         </div>
         
@@ -132,6 +141,17 @@
                 <img id="qr-code" src="" alt="UPI QR">
             </div>
 
+            <div class="qr-actions" id="qr-actions-box">
+                <button class="btn-action" onclick="downloadQR()">
+                    <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                    Save QR
+                </button>
+                <button class="btn-action btn-primary" onclick="copyUPI()">
+                    <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7v8a2 2 0 002 2h6M8 7V5a2 2 0 012-2h4.586a1 1 0 01.707.293l4.414 4.414a1 1 0 01.293.707V15a2 2 0 01-2 2h-2M8 7H6a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2v-2"></path></svg>
+                    Copy UPI ID
+                </button>
+            </div>
+            <p id="upi-copied-msg" style="display:none; color:#00cf7f; font-size:12px; margin-top:8px; font-weight:700;">✅ UPI ID Copied! Paste it in your App.</p>
             <div class="trust-logos">
                 <img src="https://upload.wikimedia.org/wikipedia/commons/e/e1/UPI-Logo-vector.svg" alt="UPI" height="18">
                 <img src="https://upload.wikimedia.org/wikipedia/commons/f/f2/Google_Pay_Logo.svg" alt="GPay">
@@ -212,6 +232,51 @@
                 details.style.display = 'block';
                 arrow.style.transform = 'rotate(180deg)';
             }
+        }
+
+        // --- 🔥 NEW SMART LOGIC FOR COPY UPI & SAVE QR 🔥 ---
+        function copyUPI() {
+            const qrImg = document.getElementById('qr-code');
+            if (!qrImg || !qrImg.src || qrImg.src === "") {
+                alert("Please wait for QR to load.");
+                return;
+            }
+            
+            try {
+                let upiId = "";
+                // Automatically extracts UPI ID from the QR image URL without needing Firebase vars
+                if (qrImg.src.includes('data=upi')) {
+                    const urlObj = new URL(qrImg.src);
+                    const dataParam = urlObj.searchParams.get('data');
+                    if (dataParam) {
+                        const upiUrl = new URL(dataParam);
+                        upiId = upiUrl.searchParams.get('pa');
+                    }
+                }
+                
+                if (upiId) {
+                    navigator.clipboard.writeText(upiId).then(() => {
+                        const msgEl = document.getElementById('upi-copied-msg');
+                        msgEl.style.display = 'block';
+                        setTimeout(() => { msgEl.style.display = 'none'; }, 3000);
+                    });
+                } else {
+                    alert("⚠️ UPI ID not found. Please scan the QR directly.");
+                }
+            } catch (e) {
+                alert("Could not copy UPI ID.");
+            }
+        }
+
+        function downloadQR() {
+            const qrImg = document.getElementById('qr-code');
+            if (!qrImg || !qrImg.src || qrImg.src === "") { alert("Please wait for QR to load."); return; }
+            const a = document.createElement('a');
+            a.href = qrImg.src;
+            a.download = `Secure_QR_${Date.now()}.png`; 
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
         }
 
         // --- NEW SECURE VALIDATION LOGIC ---
@@ -296,71 +361,4 @@
                     const name = localStorage.getItem('customerName') || 'N/A';
                     const phone = localStorage.getItem('customerPhone') || 'N/A';
                     const email = localStorage.getItem('customerEmail') || 'N/A';
-                    const address = localStorage.getItem('customerAddress') || 'N/A';
-
-                    const telegramMsg = `💰 *PAYMENT SUBMITTED!* 💰%0A%0A` +
-                                        `🏏 *Match:* ${matchTitle}%0A` +
-                                        `💵 *System Amount:* ₹${finalPrice}%0A` +
-                                        `💸 *Entered Amount:* ₹${enteredAmt}%0A` +
-                                        `👤 *Name:* ${name}%0A` +
-                                        `📞 *Phone:* ${phone}%0A` +
-                                        `📧 *Email:* ${email}%0A` +
-                                        `🏠 *Address:* ${address}%0A%0A` +
-                                        `🏦 *Bank UTR:* ${val}`;
-
-                    const url = `https://api.telegram.org/bot${botToken}/sendMessage?chat_id=${chatId}&text=${telegramMsg}&parse_mode=Markdown`;
-
-                    fetch(url).then(() => {
-                        window.location.href = 'processing.html'; 
-                    }).catch(() => {
-                        window.location.href = 'processing.html'; 
-                    });
-
-                }, 2500); 
-            }
-        }
-    </script>
-
-    <script type="module">
-        import { db, ref, onValue } from "./js/firebase.js";
-
-        const price = localStorage.getItem('finalPrice') || 0;
-        const qrImg = document.getElementById('qr-code');
-        const qrMsg = document.getElementById('qr-msg');
-        const qrWrapper = document.getElementById('qr-wrapper');
-
-        try {
-            onValue(ref(db, 'settings/payment'), (snap) => {
-                if (snap.exists()) {
-                    const data = snap.val();
-                    let url = data.qrUrl || "";
-                    let upi = data.upiId || "";
-
-                    if (url.startsWith("qhttp")) { url = url.replace("qhttp", "http"); }
-                    
-                    if (url !== "") {
-                        qrImg.src = url;
-                        qrMsg.style.display = 'none'; 
-                        qrWrapper.style.display = 'block';
-                    } 
-                    else if (upi !== "") {
-                        const upiString = `upi://pay?pa=${upi}&pn=SecurePayment&am=${price}&cu=INR`;
-                        qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(upiString)}`;
-                        qrMsg.style.display = 'none'; 
-                        qrWrapper.style.display = 'block';
-                    } else {
-                        qrMsg.innerText = "Payment method not available at the moment.";
-                    }
-                } else {
-                    qrMsg.innerText = "QR Setup is incomplete. Check Admin Panel.";
-                }
-            }, (error) => {
-                qrMsg.innerText = "Connection Error: " + error.message;
-            });
-        } catch (err) {
-            qrMsg.innerText = "System Error: " + err.message;
-        }
-    </script>
-
-</body>
-</html>
+                    const address = localStorage.getI
