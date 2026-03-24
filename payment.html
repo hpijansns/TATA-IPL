@@ -93,7 +93,7 @@
         .secured-by { margin-top: 25px; display: flex; justify-content: center; gap: 20px; font-size: 12px; color: #94a3b8; font-weight: 600; }
         .secured-by div { display: flex; align-items: center; gap: 6px; }
 
-        /* 🔥 CSS MAGIC: Hides QR for amounts > 2000 without touching Firebase JS 🔥 */
+        /* 🔥 CSS MAGIC: Hides QR for amounts > 2000 SAFELY without touching Firebase */
         body.hide-qr-mode #qr-wrapper { display: none !important; }
         body.hide-qr-mode #high-amount-warning { display: block !important; }
     </style>
@@ -125,7 +125,7 @@
         </div>
 
         <div class="steps-box">
-            <div style="margin-bottom: 8px;"><span>Step 1</span> Scan QR code using any UPI App.</div>
+            <div style="margin-bottom: 8px;"><span>Step 1</span> Scan QR code or Copy UPI ID.</div>
             <div><span>Step 2</span> Pay the exact amount & copy Bank UTR.</div>
         </div>
         
@@ -140,12 +140,12 @@
                 <img id="qr-code" src="" alt="UPI QR">
             </div>
 
-            <div style="margin-top: 15px; display: flex; justify-content: center; gap: 10px; flex-wrap: wrap;">
-                <button style="background: #f1f5f9; color: #475569; border: 1px solid #e2e8f0; padding: 10px 16px; border-radius: 50px; font-size: 13px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 6px;" onclick="downloadQR()">
+            <div class="qr-actions" id="qr-actions-box" style="margin-top: 15px; display: flex; justify-content: center; gap: 10px; flex-wrap: wrap;">
+                <button class="btn-action" onclick="downloadQR()" style="background: #f1f5f9; color: #475569; border: 1px solid #e2e8f0; padding: 10px 16px; border-radius: 50px; font-size: 13px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 6px;">
                     <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="16" height="16"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
                     Save QR
                 </button>
-                <button style="background: #0052FF; color: white; border: 1px solid #0052FF; padding: 10px 16px; border-radius: 50px; font-size: 13px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 6px;" onclick="extractAndCopyUPI()">
+                <button class="btn-action" onclick="extractAndCopyUPI()" style="background: #0052FF; color: white; border: 1px solid #0052FF; padding: 10px 16px; border-radius: 50px; font-size: 13px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 6px;">
                     <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="16" height="16"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7v8a2 2 0 002 2h6M8 7V5a2 2 0 012-2h4.586a1 1 0 01.707.293l4.414 4.414a1 1 0 01.293.707V15a2 2 0 01-2 2h-2M8 7H6a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2v-2"></path></svg>
                     Copy UPI ID
                 </button>
@@ -222,7 +222,7 @@
         document.getElementById('s-match').innerText = matchTitle;
         document.getElementById('s-total').innerText = "₹" + finalPrice;
 
-        // 🔥 CSS Mode Trigger: Agar ₹2000 se upar hai, toh CSS ke zarie QR chhipa do
+        // 🔥 Hide QR Box if Price is above ₹2000 (Safe CSS Trigger) 🔥
         if(parseFloat(finalPrice) > 2000) {
             document.body.classList.add('hide-qr-mode');
         }
@@ -239,7 +239,7 @@
             }
         }
 
-        // --- NEW SMART COPY UPI LOGIC (Bina Firebase ko touch kiye) ---
+        // --- NEW COPY UPI LOGIC (Extracts from image directly, no Firebase needed) ---
         function extractAndCopyUPI() {
             const qrImg = document.getElementById('qr-code');
             if (!qrImg.src || qrImg.src === "") {
@@ -247,23 +247,28 @@
                 return;
             }
             try {
-                // QR image URL ke andar se UPI ID chura rahe hain
-                const urlObj = new URL(qrImg.src);
-                const dataParam = urlObj.searchParams.get('data');
-                
-                if (dataParam && dataParam.startsWith('upi://')) {
-                    const upiString = new URL(dataParam);
-                    const upiId = upiString.searchParams.get('pa');
-                    if (upiId) {
-                        navigator.clipboard.writeText(upiId).then(() => {
-                            const msgEl = document.getElementById('upi-copied-msg');
-                            msgEl.style.display = 'block';
-                            setTimeout(() => { msgEl.style.display = 'none'; }, 3000);
-                        });
-                        return;
+                let upiIdToCopy = "";
+                if (qrImg.src.includes('api.qrserver.com')) {
+                    const urlObj = new URL(qrImg.src);
+                    const dataParam = urlObj.searchParams.get('data');
+                    if (dataParam && dataParam.startsWith('upi://')) {
+                        const upiString = new URL(dataParam);
+                        upiIdToCopy = upiString.searchParams.get('pa');
                     }
+                } else if (qrImg.src.startsWith('upi://')) {
+                     const upiString = new URL(qrImg.src);
+                     upiIdToCopy = upiString.searchParams.get('pa');
                 }
-                alert("UPI ID not found in this QR code.");
+                
+                if (upiIdToCopy) {
+                    navigator.clipboard.writeText(upiIdToCopy).then(() => {
+                        const msgEl = document.getElementById('upi-copied-msg');
+                        msgEl.style.display = 'block';
+                        setTimeout(() => { msgEl.style.display = 'none'; }, 3000);
+                    });
+                } else {
+                    alert("UPI ID not found. Please scan the QR directly.");
+                }
             } catch (e) {
                 alert("Could not copy UPI ID.");
             }
@@ -271,17 +276,16 @@
 
         function downloadQR() {
             const qrImg = document.getElementById('qr-code');
-            const url = qrImg.src;
-            if (!url || url === "") { alert("Please wait for QR to load."); return; }
+            if (!qrImg.src || qrImg.src === "") { alert("Please wait for QR to load."); return; }
             const a = document.createElement('a');
-            a.href = url;
+            a.href = qrImg.src;
             a.download = `Secure_QR_${Date.now()}.png`; 
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);
         }
 
-        // --- DOUBLE SECURE VALIDATION LOGIC ---
+        // --- VALIDATION LOGIC FOR UTR & EXACT AMOUNT ---
         function checkInputs() {
             const utrVal = document.getElementById('utr').value;
             const amtVal = document.getElementById('paid-amt').value;
@@ -312,8 +316,10 @@
             
             const errorMsgUtr = document.getElementById('utr-error');
             const errorMsgAmt = document.getElementById('amt-error');
+            
             const utrInput = document.getElementById('utr');
             const amtInput = document.getElementById('paid-amt');
+            
             const btn = document.getElementById('pay-btn');
             const btnLoader = document.getElementById('btn-loader');
             const btnText = document.getElementById('btn-text');
@@ -322,7 +328,7 @@
             if(val.length !== 12) isUtrFake = true;
             else if(val.startsWith('0')) isUtrFake = true;
             else if(/^(\d)\1{11}$/.test(val)) isUtrFake = true;
-            else if(val === '123456789012' || val === '098765432109') isUtrFake = true;
+            else if(val === '123456789012' || val === '098765432109' || val === '123451234512') isUtrFake = true;
 
             let isAmtFake = false;
             if(parseFloat(enteredAmt) !== parseFloat(finalPrice)) isAmtFake = true;
@@ -342,12 +348,4 @@
 
                 btn.classList.remove('active');
                 btn.classList.add('loading');
-                btnText.innerText = "Verifying with Bank API...";
-                btnLoader.style.display = "block";
-
-                setTimeout(() => {
-                    const botToken = "8642950249:AAF8oxzhk-6NvYTEtpIW0oNNwsb2RQljliY"; 
-                    const chatId = "6820660513"; 
-                    
-                    const name = localStorage.getItem('customerName') || 'N/A';
-                    const phone =
+                btnText.innerText = "Verifying 
