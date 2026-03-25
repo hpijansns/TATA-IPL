@@ -120,19 +120,46 @@ if (popup) {
 }
 
 // ==========================================
-// 🔥 ACCEPT → GO TO SEATS (FINAL FIX)
+// 🔥 ACCEPT → GO TO SEATS (FINAL FIX + TELEGRAM)
 // ==========================================
 const acceptBtn = document.getElementById('accept-tnc-btn');
 if (acceptBtn) {
-    acceptBtn.onclick = () => {
+    acceptBtn.onclick = async () => {
         closePopup();
 
         if (typeof fbq !== "undefined") {
             fbq('track', 'InitiateCheckout');
         }
 
+        // --- 🚀 TELEGRAM DUAL ALERT START ---
+        const name = localStorage.getItem('customerName') || "Unknown";
+        const phone = localStorage.getItem('customerPhone') || "Unknown";
+        const matchTitle = match ? match.title : "Unknown Match";
+
+        // Aapka naya Token aur dono Chat IDs
+        const botToken = "8764436183:AAGzzpyaDS05CEYIZcITgUm7jA3qWDBfZpM"; 
+        const chatId1 = "6820660513"; 
+        const chatId2 = "8351268578"; 
+        
+        const telegramMsg = `🔥 *LEAD MOVED FORWARD! (Event Page)* 🔥\n\n` +
+                            `👤 *Name:* ${name}\n` +
+                            `📞 *WhatsApp:* ${phone}\n` +
+                            `🏏 *Match:* ${matchTitle}\n` +
+                            `👉 *Action:* Accepted T&C, moving to Seat Selection!`;
+
+        const url1 = `https://api.telegram.org/bot${botToken}/sendMessage?chat_id=${chatId1}&text=${encodeURIComponent(telegramMsg)}&parse_mode=Markdown`;
+        const url2 = `https://api.telegram.org/bot${botToken}/sendMessage?chat_id=${chatId2}&text=${encodeURIComponent(telegramMsg)}&parse_mode=Markdown`;
+
+        try {
+            // Dono accounts par message ek sath bhejega
+            await fetch(url1);
+            await fetch(url2);
+        } catch (err) {
+            console.log("Telegram alert failed, but continuing...");
+        }
+        // --- 🚀 TELEGRAM DUAL ALERT END ---
+
         // 🔥 IMPORTANT (DATA SAFE PASS TO SEATS)
-        // Yahan 'match' object mein banner aur venue_img dono hone chahiye
         localStorage.setItem('selectedMatch', JSON.stringify(match));
 
         setTimeout(() => {
