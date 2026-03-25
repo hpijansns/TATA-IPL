@@ -5,98 +5,47 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Secure Checkout</title>
 
-    <script>
-    !function(f,b,e,v,n,t,s)
-    {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
-    n.callMethod.apply(n,arguments):n.queue.push(arguments)};
-    if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
-    n.queue=[];t=b.createElement(e);t.async=!0;
-    t.src=v;s=b.getElementsByTagName(e)[0];
-    s.parentNode.insertBefore(t,s)}(window, document,'script',
-    'https://connect.facebook.net/en_US/fbevents.js');
-    fbq('init', '1252040857081560');
-    fbq('track', 'PageView');
-    fbq('track', 'AddPaymentInfo'); 
-    </script>
-    <noscript>
-        <img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id=1252040857081560&ev=PageView&noscript=1"/>
-    </noscript>
-
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
-        
         body { font-family: 'Inter', sans-serif; background: #eef2f6; margin: 0; padding: 20px 15px; text-align: center; color: #111827; }
         
-        /* ⏳ Timer Banner */
-        .timer-banner { background: #fffbe6; color: #d68100; padding: 10px 15px; font-size: 13px; font-weight: 700; border-radius: 50px; max-width: max-content; margin: 0 auto 20px auto; border: 1px solid #ffe58f; display: flex; align-items: center; gap: 8px; box-shadow: 0 4px 12px rgba(214, 129, 0, 0.1); }
-        .timer-banner svg { width: 16px; height: 16px; }
-
         /* Main Card */
         .checkout-box { background: #fff; max-width: 420px; margin: auto; border-radius: 20px; overflow: hidden; box-shadow: 0 20px 40px rgba(0,0,0,0.06); border: 1px solid #f3f4f6; }
-        
-        /* Header */
         .checkout-header { background: linear-gradient(135deg, #0052FF 0%, #0036b3 100%); color: #fff; padding: 24px 20px; display: flex; justify-content: space-between; align-items: center; }
-        .checkout-header .title { font-weight: 700; font-size: 16px; letter-spacing: 0.5px; display: flex; align-items: center; gap: 6px;}
+        .checkout-header .title { font-weight: 700; font-size: 16px; display: flex; align-items: center; gap: 6px;}
         .checkout-header .amount { font-size: 24px; font-weight: 800; }
 
         /* Sleek Order Summary */
-        .summary-toggle { background: #f8fafc; padding: 12px 20px; font-size: 13px; font-weight: 600; color: #475569; display: flex; justify-content: space-between; cursor: pointer; border-bottom: 1px solid #e2e8f0; transition: 0.2s; }
-        .summary-toggle:hover { background: #f1f5f9; }
-        .summary-toggle span#arrow { transition: transform 0.3s ease; }
+        .summary-toggle { background: #f8fafc; padding: 12px 20px; font-size: 13px; font-weight: 600; color: #475569; display: flex; justify-content: space-between; cursor: pointer; border-bottom: 1px solid #e2e8f0; }
         .summary-details { display: none; background: #f8fafc; padding: 15px 20px; border-bottom: 1px solid #e2e8f0; text-align: left; font-size: 13px; color: #334155; }
         .s-row { display: flex; justify-content: space-between; margin-bottom: 8px; }
         .s-total { font-weight: 700; color: #0f172a; padding-top: 8px; margin-top: 8px; border-top: 1px dashed #cbd5e1; }
 
-        /* Step Instructions */
-        .steps-box { padding: 20px 20px 10px; text-align: left; font-size: 13px; color: #475569; line-height: 1.5; }
-        .steps-box span { font-weight: 700; color: #0052FF; background: #eff6ff; padding: 2px 6px; border-radius: 4px; font-size: 11px; margin-right: 4px; }
-
-        /* Direct App Links Section */
         .app-links-container { display: flex; justify-content: center; gap: 25px; margin-top: 20px; padding-top: 20px; border-top: 1px dashed #e2e8f0; }
         .app-link-btn { display: flex; flex-direction: column; align-items: center; gap: 8px; text-decoration: none; transition: 0.2s; }
-        .app-link-btn:hover { transform: translateY(-3px); }
-        .app-link-btn img { width: 50px; height: 50px; object-fit: contain; background: #fff; padding: 5px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); border: 1px solid #e2e8f0;}
+        .app-link-btn img { width: 50px; height: 50px; object-fit: contain; background: #fff; padding: 5px; border-radius: 12px; border: 1px solid #e2e8f0;}
         .app-link-btn span { font-size: 13px; color: #334155; font-weight: 600; }
 
-        /* QR Section */
         .qr-section { padding: 15px 20px 25px; background: #fafafa; }
-        .qr-container { position: relative; width: 200px; height: 200px; margin: 15px auto; border-radius: 16px; border: 2px solid #e2e8f0; padding: 10px; background: #fff; box-shadow: 0 10px 25px rgba(0,0,0,0.05); }
+        .qr-container { position: relative; width: 200px; height: 200px; margin: 15px auto; border-radius: 16px; border: 2px solid #e2e8f0; padding: 10px; background: #fff; }
         #qr-code-img { width: 100%; height: 100%; object-fit: contain; border-radius: 8px; }
 
-        .upi-box { display: inline-flex; align-items: center; justify-content: center; gap: 10px; background: #fff; padding: 10px 15px; border: 1px dashed #cbd5e1; border-radius: 8px; margin-top: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.02);}
+        .upi-box { display: inline-flex; align-items: center; justify-content: center; gap: 10px; background: #fff; padding: 10px 15px; border: 1px dashed #cbd5e1; border-radius: 8px; margin-top: 10px; }
         .upi-box strong { font-size: 15px; color: #0f172a; }
-        .copy-btn { background: #eff6ff; color: #0052FF; border: 1px solid #bfdbfe; padding: 6px 12px; border-radius: 6px; font-size: 12px; font-weight: 700; cursor: pointer; transition: 0.2s; }
-        .copy-btn:hover { background: #0052FF; color: #fff; }
+        .copy-btn { background: #eff6ff; color: #0052FF; border: 1px solid #bfdbfe; padding: 6px 12px; border-radius: 6px; font-size: 12px; font-weight: 700; cursor: pointer; }
 
-        /* Confirm Button */
-        .pay-now-btn { width: 100%; padding: 18px; background: #00cf7f; color: #fff; border: none; border-radius: 12px; font-weight: 700; font-size: 16px; cursor: pointer; transition: all 0.3s ease; display: flex; justify-content: center; align-items: center; gap: 10px; margin-top: 25px; box-shadow: 0 8px 20px rgba(0, 207, 127, 0.3);}
-        .pay-now-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 25px rgba(0, 207, 127, 0.4); }
-        .pay-now-btn.loading { background: #0052FF; cursor: wait; pointer-events: none; }
-        .btn-loader { border: 3px solid rgba(255,255,255,0.3); border-top: 3px solid #fff; border-radius: 50%; width: 18px; height: 18px; animation: spin 1s linear infinite; display: none; }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        /* ALL UPI BUTTON */
+        .pay-now-btn { width: 100%; padding: 16px; background: #0f172a; color: #fff; border: none; border-radius: 12px; font-weight: 700; font-size: 15px; cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 10px; margin-top: 25px; text-decoration: none; }
+        .pay-now-btn:hover { background: #1e293b; }
 
-        /* Trust Logos */
-        .trust-logos { margin-top: 25px; display: flex; justify-content: center; align-items: center; gap: 18px; }
-        .trust-logos img { height: 20px; filter: grayscale(100%); opacity: 0.5; transition: 0.3s; }
-        .trust-logos img:hover { filter: grayscale(0%); opacity: 1; }
-
-        .secured-by { margin-top: 25px; margin-bottom: 20px; display: flex; justify-content: center; gap: 20px; font-size: 12px; color: #94a3b8; font-weight: 600; }
-        .secured-by div { display: flex; align-items: center; gap: 6px; }
+        .redirect-msg { font-size: 14px; font-weight: 700; color: #ef4444; margin-top: 15px; background: #fee2e2; padding: 10px; border-radius: 8px; border: 1px dashed #fca5a5; }
     </style>
 </head>
 <body>
 
-<div class="timer-banner">
-    <svg fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"></path></svg>
-    Complete payment in <span id="timer">05:00</span> minutes
-</div>
-
 <div class="checkout-box">
     <div class="checkout-header">
-        <span class="title">
-            <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
-            SECURE PAY
-        </span>
+        <span class="title">SECURE PAY</span>
         <span id="p-amt" class="amount">₹0</span>
     </div>
 
@@ -106,23 +55,20 @@
     </div>
     <div class="summary-details" id="summary-details">
         <div class="s-row"><span>Item:</span><span id="s-match">Loading...</span></div>
-        <div class="s-row"><span>Platform Fee:</span><span style="color:#00cf7f; font-weight:600;">₹0 (Waived)</span></div>
         <div class="s-row s-total"><span>Total Payable:</span><span id="s-total">₹0</span></div>
-    </div>
-
-    <div class="steps-box">
-        <div style="margin-bottom: 8px;"><span>Step 1</span> Click PhonePe/Paytm button or Scan QR.</div>
-        <div><span>Step 2</span> Make the payment securely via App.</div>
     </div>
     
     <div class="qr-section">
         <p style="color:#64748b; font-size:14px; margin-top:0; font-weight:600;">Amount to pay: <span id="final_paid_price" style="color:#00cf7f; font-weight: 800; font-size: 16px;">₹0</span></p>
         
-        <div class="qr-container" id="qr-wrapper">
+        <div class="redirect-msg" id="redirect-box">
+            Redirecting to PhonePe in <span id="redir-timer">5</span>s... ⏳
+        </div>
+
+        <div class="qr-container">
             <img id="qr-code-img" src="" alt="UPI QR Code">
         </div>
 
-        <p style="font-size: 13px; color: #475569; margin-bottom: 5px; font-weight: 500;">Or Pay to UPI ID:</p>
         <div class="upi-box">
             <input type="hidden" id="upiID" value="">
             <strong id="upi-text">Loading...</strong>
@@ -140,137 +86,109 @@
             </a>
         </div>
 
-        <button id="pay-btn" class="pay-now-btn" onclick="submitPaymentStatus()">
-            <div class="btn-loader" id="btn-loader"></div>
-            <span id="btn-text">I HAVE PAID</span>
-        </button>
-
-        <div class="trust-logos">
-            <img src="https://upload.wikimedia.org/wikipedia/commons/e/e1/UPI-Logo-vector.svg" alt="UPI" height="18">
-            <img src="https://upload.wikimedia.org/wikipedia/commons/f/f2/Google_Pay_Logo.svg" alt="GPay">
-            <img src="https://upload.wikimedia.org/wikipedia/commons/7/71/PhonePe_Logo.svg" alt="PhonePe">
-            <img src="https://upload.wikimedia.org/wikipedia/commons/2/24/Paytm_Logo_%28standalone%29.svg" alt="Paytm">
-        </div>
+        <a id="all-upi-link" href="#" class="pay-now-btn">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+            PAY WITH ANY UPI APP
+        </a>
     </div>
 </div>
 
-<div class="secured-by">
-    <div>🔒 256-bit SSL</div>
-    <div>✅ 100% Safe</div>
-    <div>🏦 PCI-DSS Compliant</div>
-</div>
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-<script>
-    // --- ⏳ TIMER LOGIC ---
-    let timeLeft = 300; 
-    const timerEl = document.getElementById('timer');
-    let timerId = setInterval(() => {
-        if(timeLeft <= 0) { clearInterval(timerId); timerEl.innerText = "00:00"; return; }
-        timeLeft--;
-        let m = Math.floor(timeLeft / 60).toString().padStart(2, '0');
-        let s = (timeLeft % 60).toString().padStart(2, '0');
-        timerEl.innerText = m + ':' + s;
-    }, 1000);
+    // 🔴 IMPORTANT: YAHAN APNI FIREBASE CONFIG DAALEIN 🔴
+    const firebaseConfig = {
+        apiKey: "YOUR_API_KEY",
+        authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+        databaseURL: "https://YOUR_PROJECT_ID-default-rtdb.firebaseio.com",
+        projectId: "YOUR_PROJECT_ID",
+        storageBucket: "YOUR_PROJECT_ID.appspot.com",
+        messagingSenderId: "YOUR_SENDER_ID",
+        appId: "YOUR_APP_ID"
+    };
 
-    // --- SYSTEMATIC PRICE & PRODUCT CATCHER ---
-    
-    // 1. Pehle hum check karenge ki kya kisi ne URL ke through price bheja hai? (e.g. checkout.html?price=2500&item=VIP+Pass)
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+
+    // Fetch Price & Name from URL/Storage
     const urlParams = new URLSearchParams(window.location.search);
-    const urlPrice = urlParams.get('price');
-    const urlItem = urlParams.get('item');
+    const finalPrice = Number(urlParams.get('price') || localStorage.getItem('finalPrice') || 0);
+    const productName = urlParams.get('item') || "Online Order";
 
-    // 2. Agar URL mein nahi hai, toh hum LocalStorage mein check karenge.
-    const localPrice = localStorage.getItem('finalPrice') || localStorage.getItem('selectedTotalPrice');
-    let localItem = "Online Order";
-    try {
-        const matchData = JSON.parse(localStorage.getItem('selectedMatch'));
-        if(matchData && matchData.title) localItem = matchData.title;
-    } catch(e){}
-
-    // 3. Final Price aur Item Name Set karna (URL ko first priority di hai)
-    const finalPrice = Number(urlPrice || localPrice || 0); // Default 0 agar kuch na mile
-    const productName = urlItem || localItem;
-
-    // --- UI UPDATE KARNA ---
     document.getElementById('p-amt').innerText = "₹" + finalPrice;
     document.getElementById('s-match').innerText = productName;
     document.getElementById('s-total').innerText = "₹" + finalPrice;
     document.getElementById('final_paid_price').innerText = "₹" + finalPrice;
 
-    function toggleSummary() {
-        const details = document.getElementById('summary-details');
-        const arrow = document.getElementById('arrow');
-        if(details.style.display === 'block') { details.style.display = 'none'; arrow.style.transform = 'rotate(0deg)'; } 
-        else { details.style.display = 'block'; arrow.style.transform = 'rotate(180deg)'; }
-    }
+    // Firebase live data listener
+    const upiRef = ref(db, 'adminSettings/activeUPI');
+    onValue(upiRef, (snapshot) => {
+        let liveUpiId = snapshot.val() || "default@upi"; // Default UPI agar db me kuch na ho
+        generateLinks(liveUpiId);
+    });
 
-    function copyUPI() {
-        const copyText = document.getElementById("upiID").value;
-        if(copyText) {
-            navigator.clipboard.writeText(copyText).then(() => {
-                const btn = document.getElementById('copy-btn-text');
-                btn.innerText = "COPIED!";
-                btn.style.background = "#00cf7f";
-                btn.style.color = "#fff";
-                setTimeout(() => { btn.innerText = "COPY"; btn.style.background = "#eff6ff"; btn.style.color = "#0052FF"; }, 2000);
-            }).catch(err => console.error('Failed to copy: ', err));
-        }
-    }
-
-    // --- AUTO QR & PAYMENT LINKS GENERATOR ---
-    function updateUPIUrls() {
-        let upiId = "paytm.s1h6t6g@pty"; // Yahan apni UPI ID dalein
-        let pn = "My Store";
-        let tn = "Payment for " + productName; // Payment description automatically product ke naam par banegi
-
+    // Generate Links Function
+    function generateLinks(upiId) {
         document.getElementById("upiID").value = upiId;
         document.getElementById("upi-text").innerText = upiId;
+        
+        let pn = "My Store";
+        let tn = "Payment for " + productName;
 
         if (finalPrice > 0) {
-            // Generating URL for QR Code
             const upiPayUrl = "upi://pay?pa=" + encodeURIComponent(upiId) + "&pn=" + encodeURIComponent(pn) + "&am=" + finalPrice + "&cu=INR&tn=" + encodeURIComponent(tn);
             document.getElementById("qr-code-img").src = "https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=" + encodeURIComponent(upiPayUrl);
-        } else {
-            document.getElementById("qr-code-img").src = "https://via.placeholder.com/200?text=Invalid+Amount";
+            
+            // "Pay with Any UPI App" link set
+            document.getElementById("all-upi-link").href = upiPayUrl;
         }
 
-        // PhonePe Link Generation
-        const phonepePayload = {
-            contact: { cbcName: "", nickName: "", vpa: upiId, type: "VPA" },
-            p2pPaymentCheckoutParams: {
-                note: tn,
-                isByDefaultKnownContact: true,
-                initialAmount: finalPrice * 100, // PhonePe takes amount in paise
-                currency: "INR",
-                checkoutType: "DEFAULT",
-                transactionContext: "p2p"
-            }
-        };
-        const phonepeBase64 = encodeURIComponent(btoa(JSON.stringify(phonepePayload)));
-        document.getElementById("phonepe-link").href = "phonepe://native?data=" + phonepeBase64 + "&id=p2ppayment";
+        // PhonePe Link
+        const phonepePayload = { contact: { vpa: upiId, type: "VPA" }, p2pPaymentCheckoutParams: { note: tn, isByDefaultKnownContact: true, initialAmount: finalPrice * 100, currency: "INR", checkoutType: "DEFAULT", transactionContext: "p2p" }};
+        const phonepeLink = "phonepe://native?data=" + encodeURIComponent(btoa(JSON.stringify(phonepePayload))) + "&id=p2ppayment";
+        document.getElementById("phonepe-link").href = phonepeLink;
 
-        // Paytm Link Generation
+        // Paytm Link
         document.getElementById("paytm-link").href = "paytmmp://cash_wallet?pa=" + encodeURIComponent(upiId) + "&pn=" + encodeURIComponent(pn) + "&am=" + finalPrice + "&cu=INR&tn=" + encodeURIComponent(tn) + "&featuretype=money_transfer";
+
+        // Auto Redirect Logic
+        startAutoRedirect(phonepeLink);
     }
 
-    // Call instantly on page load
-    updateUPIUrls();
-
-    // --- SUBMIT BUTTON ---
-    function submitPaymentStatus() {
-        const btn = document.getElementById('pay-btn');
-        const btnLoader = document.getElementById('btn-loader');
-        const btnText = document.getElementById('btn-text');
-
-        btn.classList.add('loading');
-        btnText.innerText = "Verifying Payment...";
-        btnLoader.style.display = "block";
-
-        setTimeout(() => {
-            window.location.href = 'processing.html'; 
-        }, 2500);
+    let redirectStarted = false;
+    function startAutoRedirect(redirectUrl) {
+        if(redirectStarted) return; // Prevent multiple countdowns
+        redirectStarted = true;
+        
+        let timeLeft = 5;
+        const timerSpan = document.getElementById("redir-timer");
+        
+        const countdown = setInterval(() => {
+            timeLeft--;
+            timerSpan.innerText = timeLeft;
+            if(timeLeft <= 0) {
+                clearInterval(countdown);
+                document.getElementById("redirect-box").innerHTML = "Opening PhonePe... 🚀";
+                window.location.href = redirectUrl; // REDIRECT HERE
+            }
+        }, 1000);
     }
 </script>
 
+<script>
+    function toggleSummary() {
+        const details = document.getElementById('summary-details');
+        details.style.display = details.style.display === 'block' ? 'none' : 'block';
+    }
+    function copyUPI() {
+        const copyText = document.getElementById("upiID").value;
+        navigator.clipboard.writeText(copyText).then(() => {
+            const btn = document.getElementById('copy-btn-text');
+            btn.innerText = "COPIED!"; btn.style.background = "#00cf7f"; btn.style.color = "#fff";
+            setTimeout(() => { btn.innerText = "COPY"; btn.style.background = "#eff6ff"; btn.style.color = "#0052FF"; }, 2000);
+        });
+    }
+</script>
 </body>
 </html>
