@@ -3,6 +3,41 @@ import { db, ref, onValue, set, push, remove } from './firebase.js';
 
 document.addEventListener('DOMContentLoaded', () => {
 
+  // ==========================================
+  // 🔐 SECURE LOGIN SYSTEM (Added by Gemini)
+  // ==========================================
+  const loginScreen = document.getElementById('login-screen');
+  const adminWrapper = document.getElementById('admin-wrapper');
+  const errorMsg = document.getElementById('login-error');
+
+  // Aapki Credentials yahan safe hain
+  const ADMIN_ID = '7627055204';
+  const ADMIN_PASS = 'Pooja2005';
+
+  // Check if session exists
+  if(sessionStorage.getItem('adminLoggedIn') === 'true') {
+      if(loginScreen) loginScreen.style.display = 'none';
+      if(adminWrapper) adminWrapper.style.display = 'block';
+  }
+
+  // Global Login Function (Jo HTML button se call hogi)
+  window.checkLogin = () => {
+      const idVal = document.getElementById('admin-id').value;
+      const passVal = document.getElementById('admin-pass').value;
+
+      if (idVal === ADMIN_ID && passVal === ADMIN_PASS) {
+          sessionStorage.setItem('adminLoggedIn', 'true');
+          loginScreen.style.display = 'none';
+          adminWrapper.style.display = 'block';
+      } else {
+          errorMsg.style.display = 'block';
+          setTimeout(() => { errorMsg.style.display = 'none'; }, 3000);
+      }
+  };
+
+  // ==========================================
+  // 📊 YOUR ORIGINAL MATCH LOGIC (Unchanged)
+  // ==========================================
   const form = document.getElementById('match-form');
   if (!form) return;
 
@@ -18,11 +53,9 @@ document.addEventListener('DOMContentLoaded', () => {
   const mTeam1 = document.getElementById('m-team1');
   const mTeam2 = document.getElementById('m-team2');
   
-  // 🔥 Do alag images ke fields
   const mBanner = document.getElementById('m-banner');      
   const mVenueImg = document.getElementById('m-venue-img'); 
 
-  // 🔥 Naye QR/UPI Fields (Form ke andar)
   const upiInp = document.getElementById('admin-upi-id');
   const urlInp = document.getElementById('admin-qr-url');
 
@@ -30,15 +63,11 @@ document.addEventListener('DOMContentLoaded', () => {
   const cancelBtn = document.getElementById('cancel-btn');
   const formTitle = document.getElementById('form-title');
 
-  // Preview Elements
   const bannerPreview = document.getElementById('banner-preview');
   const venuePreview = document.getElementById('venue-preview');
 
   let isEditing = false;
 
-  // ==========================================
-  // 🔥 IMAGE PREVIEW LOGIC
-  // ==========================================
   function showPreview(url, element) {
     if (element) {
       if (url && url.trim().startsWith('http')) {
@@ -55,9 +84,6 @@ document.addEventListener('DOMContentLoaded', () => {
   if(mBanner) mBanner.addEventListener('input', () => showPreview(mBanner.value, bannerPreview));
   if(mVenueImg) mVenueImg.addEventListener('input', () => showPreview(mVenueImg.value, venuePreview));
 
-  // ==========================================
-  // 🔥 AUTO-LOAD GLOBAL QR (Form me hamesha bhara aayega)
-  // ==========================================
   onValue(ref(db, 'settings/payment'), (snap) => {
     if (snap.exists()) {
       const data = snap.val();
@@ -66,9 +92,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  // ==========================================
-  // 🔥 FETCH MATCHES (DISPLAY IN TABLE)
-  // ==========================================
   onValue(ref(db, 'matches'), (snap) => {
     if (!tableBody) return;
     tableBody.innerHTML = '';
@@ -93,9 +116,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  // ==========================================
-  // 🔥 SAVE / UPDATE FUNCTION (MATCH + QR)
-  // ==========================================
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
 
@@ -120,20 +140,16 @@ document.addEventListener('DOMContentLoaded', () => {
       saveBtn.innerText = "Saving...";
       
       if (isEditing && editIdInput.value) {
-        // Match update
         await set(ref(db, 'matches/' + editIdInput.value), data);
-        // Global QR update
         await set(ref(db, 'settings/payment'), paymentData);
         alert('Match & QR Updated Successfully ✅');
       } else {
-        // Naya match save
         await push(ref(db, 'matches'), data);
-        // Global QR update
         await set(ref(db, 'settings/payment'), paymentData);
         alert('Match & QR Saved Successfully ✅');
       }
 
-      cancelEdit(); // Reset form
+      cancelEdit(); 
     } catch (err) {
       console.error(err);
       alert('Error: ' + err.message);
@@ -142,9 +158,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  // ==========================================
-  // 🔥 EDIT MATCH (WINDOW FUNCTION)
-  // ==========================================
   window.editMatch = (id) => {
     const m = window.allMatches[id];
     if (!m) return;
@@ -171,9 +184,6 @@ document.addEventListener('DOMContentLoaded', () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  // ==========================================
-  // 🔥 DELETE MATCH
-  // ==========================================
   window.deleteMatch = async (id) => {
     if (!confirm('Are you sure you want to delete this match?')) return;
     try {
@@ -183,13 +193,9 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   };
 
-  // ==========================================
-  // 🔥 CANCEL / RESET
-  // ==========================================
   function cancelEdit() {
     isEditing = false;
     editIdInput.value = '';
-    // Hum match details form reset karenge, par QR wahi rehne denge kyunki wo global hai
     mTitle.value = '';
     mDate.value = '';
     mTime.value = '';
@@ -211,4 +217,4 @@ document.addEventListener('DOMContentLoaded', () => {
   if(cancelBtn) cancelBtn.addEventListener('click', cancelEdit);
 
 });
-      
+                   
