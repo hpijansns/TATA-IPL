@@ -13,6 +13,7 @@
         /* Header Section */
         .header { background: linear-gradient(135deg, #0052FF 0%, #0036b3 100%); color: #fff; padding: 25px; position: relative; }
         .amount-tag { font-size: 36px; font-weight: 800; display: block; margin-top: 5px; letter-spacing: -1px; }
+        .test-badge { background: #ff4d4d; color: white; font-size: 10px; padding: 2px 8px; border-radius: 10px; position: absolute; top: 10px; right: 10px; font-weight: 800; }
         
         .qr-container { padding: 20px; background: #fafafa; border-bottom: 1px solid #eee; }
         .qr-frame { background: #fff; padding: 10px; border-radius: 20px; border: 1px solid #edf2f7; display: inline-block; }
@@ -22,18 +23,16 @@
         .payment-methods { padding: 25px 20px; text-align: left; }
         .method-title { font-size: 14px; font-weight: 700; color: #64748b; margin-bottom: 15px; text-transform: uppercase; letter-spacing: 0.5px; }
         
-        .pay-btn { display: flex; align-items: center; justify-content: space-between; width: 100%; padding: 16px; border-radius: 15px; border: 1px solid #e2e8f0; background: #fff; margin-bottom: 12px; cursor: pointer; transition: 0.3s; text-decoration: none; }
-        .pay-btn:hover { border-color: #0052FF; background: #f8fbff; }
+        .pay-btn { display: flex; align-items: center; justify-content: space-between; width: 100%; padding: 16px; border-radius: 15px; border: 1px solid #e2e8f0; background: #fff; margin-bottom: 12px; cursor: pointer; transition: 0.3s; text-decoration: none; box-sizing: border-box; }
+        .pay-btn:hover { border-color: #0052FF; background: #f8fbff; transform: translateY(-2px); }
         
         .btn-left { display: flex; align-items: center; gap: 12px; }
         .btn-left img { width: 32px; height: 32px; object-fit: contain; }
         .btn-left span { font-weight: 700; font-size: 15px; color: #1e293b; }
         .arrow-right { color: #cbd5e1; font-weight: bold; }
 
-        /* Highlighted Button */
         .any-upi { background: #111827; border: none; }
         .any-upi span { color: #fff !important; }
-
         .card-btn { background: #f1f5f9; border: 1px dashed #cbd5e1; }
     </style>
 </head>
@@ -41,8 +40,9 @@
 
     <div class="checkout-card">
         <div class="header">
-            <span style="font-size: 12px; opacity: 0.8; font-weight: 700; letter-spacing: 1px;">TOTAL PAYABLE</span>
-            <span class="amount-tag" id="main-amt">₹0</span>
+            <div class="test-badge">TESTING MODE</div>
+            <span style="font-size: 12px; opacity: 0.8; font-weight: 700; letter-spacing: 1px;">AMOUNT TO PAY</span>
+            <span class="amount-tag" id="main-amt">₹1</span>
         </div>
 
         <div class="qr-container">
@@ -51,7 +51,7 @@
         </div>
 
         <div class="payment-methods">
-            <div class="method-title">Fast Checkout</div>
+            <div class="method-title">Express Checkout</div>
             
             <a href="#" id="phonepe-link" class="pay-btn">
                 <div class="btn-left">
@@ -79,7 +79,7 @@
 
             <div class="method-title" style="margin-top: 20px;">Other Options</div>
             
-            <div class="pay-btn card-btn" onclick="alert('Card system is under maintenance. Please use UPI.')">
+            <div class="pay-btn card-btn" onclick="alert('Card system will be active after testing.')">
                 <div class="btn-left">
                     <img src="https://img.icons8.com/color/48/000000/visa.png" style="width:24px;">
                     <img src="https://img.icons8.com/color/48/000000/mastercard.png" style="width:24px;">
@@ -93,40 +93,33 @@
     <script type="module">
         import { db, ref, onValue } from "./js/firebase.js";
 
-        // 1. Data load from LocalStorage
-        const price = localStorage.getItem('finalPrice') || localStorage.getItem('selectedTotalPrice') || 0;
+        // 🔥 TESTING MODE: ₹1 set kiya hai
+        const price = 1; 
         const name = localStorage.getItem('customerName') || "User";
         document.getElementById('main-amt').innerText = "₹" + price;
 
-        // 2. Fetch Admin Settings from Firebase (Catterick Style)
         onValue(ref(db, 'settings/payment'), (snap) => {
             if (snap.exists()) {
                 const data = snap.val();
                 const upiId = data.upiId || "paytm.s1h6t6g@pty";
                 const customQR = data.qrUrl || "";
 
-                // QR Logic
-                const note = encodeURIComponent("IPL Ticket for " + name);
-                const baseUPI = `upi://pay?pa=${upiId}&pn=IPLBooking&am=${price}&cu=INR&tn=${note}`;
+                const note = encodeURIComponent("IPL Ticket - " + name);
                 
-                // Set QR Image (Use Admin URL if exists, else auto-generate)
-                document.getElementById('qr-code').src = customQR ? customQR : `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(baseUPI)}`;
-
-                // --- 📱 Deep Linking Apps ---
+                // 🔥 Fixed Merchant Intent for PhonePe (No Scanner)
+                const merchantIntent = `upi://pay?pa=${upiId}&pn=IPLBooking&am=${price}&cu=INR&tn=${note}&mode=02&orgid=-&sign=-`;
                 
-                // Universal UPI (Any App)
-                document.getElementById('universal-link').href = baseUPI;
+                // Set QR Image
+                document.getElementById('qr-code').src = customQR ? customQR : `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(merchantIntent)}`;
 
-                // PhonePe Direct
-                const ppPayload = { contact: { vpa: upiId, type: "VPA" }, p2pPaymentCheckoutParams: { note: "Booking", initialAmount: price * 100, currency: "INR" }};
-                document.getElementById('phonepe-link').href = "phonepe://native?data=" + btoa(JSON.stringify(ppPayload)) + "&id=p2ppayment";
-
-                // Paytm Direct
+                // --- Links ---
+                document.getElementById('universal-link').href = merchantIntent;
+                document.getElementById('phonepe-link').href = merchantIntent; // Fixed PhonePe trigger
                 document.getElementById('paytm-link').href = `paytmmp://cash_wallet?pa=${upiId}&pn=Booking&am=${price}&cu=INR&tn=${note}&featuretype=money_transfer`;
 
-                // Auto Redirect after 5 seconds to PhonePe (Optional, aap hata bhi sakte hain)
+                // Optional: Auto redirect to PhonePe after 5s
                 setTimeout(() => {
-                    // window.location.href = baseUPI; 
+                    // window.location.href = merchantIntent; 
                 }, 5000);
             }
         });
