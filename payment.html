@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <link rel="icon" type="image/svg+xml" href="/vite.svg">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Vite + React - Secure Payment</title>
+    <title>Secure Payment - Aarohi Collection</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     
@@ -124,7 +124,7 @@
                     <button class="hover:bg-gray-100 p-1.5 sm:p-2 rounded-full transition-all" aria-label="Go back">
                         <i class="fas fa-arrow-left text-gray-600 text-sm sm:text-base"></i>
                     </button>
-                    <img alt="BookMyShow" class="h-6 sm:h-8 hover:opacity-90 transition-opacity" src="https://getlogo.net/wp-content/uploads/2020/04/bookmyshow-logo-vector-xs.png">
+                    <span class="font-bold text-gray-800 text-lg">Aarohi Collection</span>
                     <div class="hidden sm:block h-6 w-px bg-gray-200"></div>
                     <span class="hidden sm:inline text-sm font-medium text-gray-600">Secure Checkout</span>
                 </div>
@@ -173,7 +173,7 @@
                                                     <div class="upi-id-container flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-3 flex-wrap">
                                                         <input type="hidden" id="upiID" value="">
                                                         <span id="upi-text" class="text-gray-800 font-medium text-sm sm:text-base bg-gray-50 px-3 py-1 rounded w-full sm:w-auto break-all">Loading...</span>
-                                                        <button type="button" onclick="copyUpi()" class="w-full sm:w-auto text-blue-600 bg-blue-50 border border-blue-100 text-xs sm:text-sm font-semibold px-4 py-1.5 rounded-lg hover:bg-blue-100 transition-colors">
+                                                        <button type="button" onclick="window.copyUpi()" class="w-full sm:w-auto text-blue-600 bg-blue-50 border border-blue-100 text-xs sm:text-sm font-semibold px-4 py-1.5 rounded-lg hover:bg-blue-100 transition-colors">
                                                             <i class="fa-regular fa-copy mr-1"></i> Copy
                                                         </button>
                                                     </div>
@@ -212,91 +212,6 @@
         </div>
     </div>
 
-    <script>
-        (function() {
-            const pageAmount = parseInt(localStorage.getItem("selectedTotalPrice")) || 0;
-            const priceDisplays = document.querySelectorAll('.final_paid_price');
-            priceDisplays.forEach(el => el.innerText = '₹' + pageAmount);
-
-            let paymentUrls = { phonepe: "", paytm: "", gpay: "", qr: "" };
-
-            async function updateUPIUrls(amount) {
-                amount = amount || pageAmount;
-                
-                let upiId = "paytm.s1h6t6g@pty";
-                let pn = "Paytm";
-                let tn = "Verified Paytm Account";
-                let tr = "";
-
-                const upiTextEl = document.getElementById("upi-text");
-                const upiIdInput = document.getElementById("upiID");
-
-                if (upiIdInput) upiIdInput.value = upiId;
-                if (upiTextEl) upiTextEl.innerText = upiId;
-
-                if (amount > 0) {
-                    const upiPayUrl = "upi://pay?pa=" + encodeURIComponent(upiId) + "&pn=" + encodeURIComponent(pn) + "&am=" + amount + "&cu=INR&tn=" + encodeURIComponent(tn);
-                    
-                    const qrImg = document.getElementById("qr-code-img");
-                    if (qrImg) {
-                        qrImg.src = "https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=" + encodeURIComponent(upiPayUrl);
-                    }
-                    paymentUrls.qr = upiPayUrl;
-                }
-
-                const phonepePayload = {
-                    contact: { cbcName: "", nickName: "", vpa: upiId, type: "VPA" },
-                    p2pPaymentCheckoutParams: {
-                        note: tn,
-                        isByDefaultKnownContact: true,
-                        initialAmount: Number(amount) * 100,
-                        currency: "INR",
-                        checkoutType: "DEFAULT",
-                        transactionContext: "p2p"
-                    }
-                };
-                const phonepeBase64 = encodeURIComponent(btoa(JSON.stringify(phonepePayload)));
-                paymentUrls.phonepe = "phonepe://native?data=" + phonepeBase64 + "&id=p2ppayment";
-                paymentUrls.paytm = "paytmmp://cash_wallet?pa=" + encodeURIComponent(upiId) + "&pn=" + encodeURIComponent(pn) + "&am=" + amount + "&cu=INR&tn=" + encodeURIComponent(tn) + "&featuretype=money_transfer";
-
-                const phonepeLink = document.getElementById("phonepe-link");
-                const paytmLink = document.getElementById("paytm-link");
-                
-                if (phonepeLink) phonepeLink.href = paymentUrls.phonepe;
-                if (paytmLink) paytmLink.href = paymentUrls.paytm;
-            }
-
-            updateUPIUrls();
-
-            window.startPhonePeRedirect = function() {
-                var redirectEl = document.getElementById("redirect-countdown");
-                if (!redirectEl || !paymentUrls.phonepe) return;
-                redirectEl.innerText = "Redirecting to Payment App...";
-                window.location.href = paymentUrls.phonepe; 
-            };
-        })();
-
-        function copyUpi() {
-            const copyText = document.getElementById("upiID");
-            const btn = event.currentTarget; // Copy button change effect
-            
-            if(copyText && copyText.value) {
-                navigator.clipboard.writeText(copyText.value).then(() => {
-                    const originalText = btn.innerHTML;
-                    btn.innerHTML = '<i class="fa-solid fa-check mr-1"></i> Copied!';
-                    btn.classList.add('bg-green-100', 'text-green-700', 'border-green-200');
-                    btn.classList.remove('bg-blue-50', 'text-blue-600', 'border-blue-100');
-                    
-                    setTimeout(() => {
-                        btn.innerHTML = originalText;
-                        btn.classList.remove('bg-green-100', 'text-green-700', 'border-green-200');
-                        btn.classList.add('bg-blue-50', 'text-blue-600', 'border-blue-100');
-                    }, 2000);
-                }).catch(err => {
-                    console.error('Failed to copy: ', err);
-                });
-            }
-        }
-    </script>
+    <script type="module" src="js/payment.js"></script>
 </body>
 </html>
