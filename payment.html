@@ -52,6 +52,14 @@
 
         <div class="payment-methods">
             <div class="method-title">Fast Checkout</div>
+
+            <a href="#" id="gpay-link" class="pay-btn">
+                <div class="btn-left">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/f/f2/Google_Pay_Logo.svg" style="height:24px; width:32px; object-fit:contain;">
+                    <span>Pay with GPay</span>
+                </div>
+                <div class="arrow-right">›</div>
+            </a>
             
             <a href="#" id="phonepe-link" class="pay-btn">
                 <div class="btn-left">
@@ -117,9 +125,11 @@
                 // Universal UPI (Any App)
                 document.getElementById('universal-link').href = baseUPI;
 
-                // PhonePe Direct
-                const ppPayload = { contact: { vpa: upiId, type: "VPA" }, p2pPaymentCheckoutParams: { note: "Booking", initialAmount: price * 100, currency: "INR" }};
-                document.getElementById('phonepe-link').href = "phonepe://native?data=" + btoa(JSON.stringify(ppPayload)) + "&id=p2ppayment";
+                // 🟢 Google Pay Direct
+                document.getElementById('gpay-link').href = `tez://upi/pay?pa=${upiId}&pn=IPLBooking&am=${price}&cu=INR&tn=${note}`;
+
+                // 🟢 PhonePe Direct (Fixed scanner issue, acts like Google Pay now)
+                document.getElementById('phonepe-link').href = `phonepe://pay?pa=${upiId}&pn=IPLBooking&am=${price}&cu=INR&tn=${note}`;
 
                 // Paytm Direct
                 document.getElementById('paytm-link').href = `paytmmp://cash_wallet?pa=${upiId}&pn=Booking&am=${price}&cu=INR&tn=${note}&featuretype=money_transfer`;
