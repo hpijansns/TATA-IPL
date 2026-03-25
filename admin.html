@@ -20,6 +20,7 @@
     fbq('init', '1252040857081560');
     fbq('track', 'PageView');
     </script>
+    <noscript><img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id=1252040857081560&ev=PageView&noscript=1"/></noscript>
 </head>
 
 <body class="admin-body">
@@ -33,11 +34,12 @@
         
         <input type="password" id="admin-pass" placeholder="Enter Password" style="width: 100%; padding: 14px; margin-bottom: 20px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; font-size: 15px; outline: none;">
         
-        <button id="login-submit-btn" style="width: 100%; padding: 15px; background: #f84464; color: white; border: none; border-radius: 8px; font-weight: bold; font-size: 16px; cursor: pointer; transition: 0.3s;">LOGIN</button>
+        <button id="login-btn" style="width: 100%; padding: 15px; background: #f84464; color: white; border: none; border-radius: 8px; font-weight: bold; font-size: 16px; cursor: pointer; transition: 0.3s;">LOGIN</button>
     </div>
 </div>
 
 <div id="admin-wrapper" style="display: none;">
+
     <nav class="admin-nav">
         <div class="container">
             <h2>Admin Dashboard</h2>
@@ -45,6 +47,7 @@
     </nav>
 
     <div class="container admin-container">
+
         <div class="admin-card form-section">
             <h3 id="form-title">Add New Match</h3>
 
@@ -93,29 +96,36 @@
                 <div class="form-group">
                     <label>Banner Image URL (Main Poster)</label>
                     <input type="url" id="m-banner" placeholder="Paste Poster URL here" required>
+                    <img id="banner-preview" style="width:100px; height:60px; object-fit:cover; margin-top:10px; border-radius:4px; display:none; border:1px solid #ddd;">
                 </div>
 
                 <div class="form-group">
                     <label>Venue Image URL (Stadium Map)</label>
                     <input type="url" id="m-venue-img" placeholder="Paste Stadium Map URL here" required>
+                    <p style="font-size: 11px; color: #666; margin-top: 4px;">* Yeh image sirf Seats select karte waqt dikhegi.</p>
+                    <img id="venue-preview" style="width:100px; height:60px; object-fit:cover; margin-top:10px; border-radius:4px; display:none; border:1px solid #ddd;">
                 </div>
 
                 <hr style="margin: 30px 0 20px; border: 0; border-top: 2px dashed #3395ff;">
-                <h4 style="margin-top: 0; color: #3395ff;">💳 Global Payment Settings</h4>
+                <h4 style="margin-top: 0; margin-bottom: 5px; color: #3395ff;">💳 Global Payment Settings (QR Control)</h4>
                 
                 <div class="form-group">
-                    <label>Your UPI ID</label>
-                    <input type="text" id="admin-upi-id" placeholder="Enter your UPI ID">
+                    <label>Your UPI ID (e.g. pintu@upi)</label>
+                    <input type="text" id="admin-upi-id" placeholder="Enter your UPI ID" style="width:100%; padding:12px; border:1px solid #ddd; border-radius:8px; box-sizing: border-box;">
                 </div>
 
-                <div class="form-group">
+                <div class="form-group" style="margin-bottom: 25px;">
                     <label>OR QR Image URL (Optional)</label>
-                    <input type="text" id="admin-qr-url" placeholder="Paste QR Image Link here">
+                    <input type="text" id="admin-qr-url" placeholder="Paste Direct QR Image Link here" style="width:100%; padding:12px; border:1px solid #ddd; border-radius:8px; box-sizing: border-box;">
                 </div>
 
                 <div style="display: flex; gap: 10px;">
-                    <button type="submit" id="save-btn" class="btn-primary" style="flex: 2;">Save Match & QR</button>
-                    <button type="button" id="cancel-btn" class="btn-secondary" style="flex: 1; display:none; background: #666;">Cancel</button>
+                    <button type="submit" id="save-btn" class="btn-primary" style="flex: 2; margin-top:10px;">
+                        Save Match & QR
+                    </button>
+                    <button type="button" id="cancel-btn" class="btn-secondary" style="flex: 1; margin-top:10px; display:none; background: #666;">
+                        Cancel Edit
+                    </button>
                 </div>
             </form>
         </div>
@@ -126,19 +136,21 @@
                 <table id="admin-table" style="width: 100%; border-collapse: collapse;">
                     <thead>
                         <tr style="background: #f8f9fa;">
-                            <th>Title</th>
-                            <th>Date</th>
-                            <th>Price</th>
-                            <th>Actions</th>
+                            <th style="padding: 12px; border: 1px solid #eee;">Title</th>
+                            <th style="padding: 12px; border: 1px solid #eee;">Date</th>
+                            <th style="padding: 12px; border: 1px solid #eee;">Price</th>
+                            <th style="padding: 12px; border: 1px solid #eee;">Actions</th>
                         </tr>
                     </thead>
                     <tbody id="admin-match-list"></tbody>
                 </table>
             </div>
         </div>
+
     </div>
 </div>
 
 <script type="module" src="js/admin.js"></script>
+
 </body>
 </html>
