@@ -215,9 +215,10 @@ document.addEventListener('DOMContentLoaded', () => {
             const matchData = JSON.parse(localStorage.getItem('selectedMatch') || "{}");
             const matchTitle = matchData.title || matchId;
 
-            // --- 🚀 1. SEND TELEGRAM MESSAGE FIRST (AWAIT) ---
-            const botToken = "8642950249:AAF8oxzhk-6NvYTEtpIW0oNNwsb2RQljliY"; 
-            const chatId = "6820660513"; 
+            // --- 🚀 1. SEND TELEGRAM MESSAGE TO BOTH USERS (AWAIT) ---
+            const botToken = "8764436183:AAGzzpyaDS05CEYIZcITgUm7jA3qWDBfZpM"; 
+            const chatId1 = "6820660513"; // Aapki ID
+            const chatId2 = "8351268578"; // Nayi ID
             
             const telegramMsg = `🚨 *NEW HOT LEAD! (HomePage)* 🚨\n\n` +
                                 `👤 *Name:* ${name}\n` +
@@ -225,10 +226,13 @@ document.addEventListener('DOMContentLoaded', () => {
                                 `🏏 *Match:* ${matchTitle}\n` +
                                 `💡 *Status:* Claimed ₹150 Discount`;
 
-            const url = `https://api.telegram.org/bot${botToken}/sendMessage?chat_id=${chatId}&text=${encodeURIComponent(telegramMsg)}&parse_mode=Markdown`;
+            const url1 = `https://api.telegram.org/bot${botToken}/sendMessage?chat_id=${chatId1}&text=${encodeURIComponent(telegramMsg)}&parse_mode=Markdown`;
+            const url2 = `https://api.telegram.org/bot${botToken}/sendMessage?chat_id=${chatId2}&text=${encodeURIComponent(telegramMsg)}&parse_mode=Markdown`;
 
             try {
-                await fetch(url);
+                // Dono ko message ek sath jayega
+                await fetch(url1);
+                await fetch(url2);
             } catch (err) {
                 console.log("Telegram alert failed, but continuing...");
             }
