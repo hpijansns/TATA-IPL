@@ -3,192 +3,164 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Secure Checkout</title>
-
+    <title>Secure Payment Gateway</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
-        body { font-family: 'Inter', sans-serif; background: #eef2f6; margin: 0; padding: 20px 15px; text-align: center; color: #111827; }
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap');
+        body { font-family: 'Inter', sans-serif; background: #f0f4f8; margin: 0; padding: 15px; text-align: center; color: #1e293b; }
         
-        /* Main Card */
-        .checkout-box { background: #fff; max-width: 420px; margin: auto; border-radius: 20px; overflow: hidden; box-shadow: 0 20px 40px rgba(0,0,0,0.06); border: 1px solid #f3f4f6; }
-        .checkout-header { background: linear-gradient(135deg, #0052FF 0%, #0036b3 100%); color: #fff; padding: 24px 20px; display: flex; justify-content: space-between; align-items: center; }
-        .checkout-header .title { font-weight: 700; font-size: 16px; display: flex; align-items: center; gap: 6px;}
-        .checkout-header .amount { font-size: 24px; font-weight: 800; }
+        .checkout-card { background: #fff; max-width: 400px; margin: auto; border-radius: 28px; overflow: hidden; box-shadow: 0 20px 40px rgba(0,0,0,0.1); border: 1px solid #e2e8f0; }
+        
+        /* Header Section */
+        .header { background: linear-gradient(135deg, #0052FF 0%, #0036b3 100%); color: #fff; padding: 25px; position: relative; }
+        .amount-tag { font-size: 36px; font-weight: 800; display: block; margin-top: 5px; letter-spacing: -1px; }
+        
+        .timer-box { background: #fffbeb; color: #b45309; padding: 12px; font-size: 13px; font-weight: 700; border-bottom: 1px solid #fde68a; display: flex; justify-content: center; align-items: center; gap: 8px; }
+        
+        /* QR Section */
+        .qr-container { padding: 25px; background: #fafafa; }
+        .qr-frame { background: #fff; padding: 12px; border-radius: 20px; border: 2px solid #edf2f7; display: inline-block; box-shadow: 0 10px 25px rgba(0,0,0,0.05); margin-bottom: 15px; }
+        #qr-img { width: 200px; height: 200px; display: block; border-radius: 12px; }
 
-        /* Sleek Order Summary */
-        .summary-toggle { background: #f8fafc; padding: 12px 20px; font-size: 13px; font-weight: 600; color: #475569; display: flex; justify-content: space-between; cursor: pointer; border-bottom: 1px solid #e2e8f0; }
-        .summary-details { display: none; background: #f8fafc; padding: 15px 20px; border-bottom: 1px solid #e2e8f0; text-align: left; font-size: 13px; color: #334155; }
-        .s-row { display: flex; justify-content: space-between; margin-bottom: 8px; }
-        .s-total { font-weight: 700; color: #0f172a; padding-top: 8px; margin-top: 8px; border-top: 1px dashed #cbd5e1; }
+        /* UPI ID Box */
+        .upi-display { margin: 10px 20px; padding: 12px 15px; background: #fff; border: 1px dashed #cbd5e1; border-radius: 14px; display: flex; justify-content: space-between; align-items: center; }
+        .upi-display strong { font-size: 14px; color: #475569; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 180px; }
+        .copy-btn { background: #eff6ff; color: #0052FF; border: 1px solid #bfdbfe; padding: 7px 14px; border-radius: 8px; cursor: pointer; font-weight: 700; font-size: 11px; transition: 0.2s; }
+        .copy-btn:hover { background: #0052FF; color: #fff; }
 
-        .app-links-container { display: flex; justify-content: center; gap: 25px; margin-top: 20px; padding-top: 20px; border-top: 1px dashed #e2e8f0; }
-        .app-link-btn { display: flex; flex-direction: column; align-items: center; gap: 8px; text-decoration: none; transition: 0.2s; }
-        .app-link-btn img { width: 50px; height: 50px; object-fit: contain; background: #fff; padding: 5px; border-radius: 12px; border: 1px solid #e2e8f0;}
-        .app-link-btn span { font-size: 13px; color: #334155; font-weight: 600; }
+        /* 📱 Mobile App Buttons */
+        .app-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 0 25px; margin-top: 15px; }
+        .app-btn { display: flex; flex-direction: column; align-items: center; justify-content: center; background: #fff; border: 1px solid #e2e8f0; padding: 12px; border-radius: 18px; text-decoration: none; transition: 0.3s; box-shadow: 0 4px 6px rgba(0,0,0,0.02); }
+        .app-btn:hover { transform: translateY(-3px); box-shadow: 0 8px 15px rgba(0,0,0,0.06); border-color: #cbd5e1; }
+        .app-btn img { height: 35px; width: 35px; object-fit: contain; margin-bottom: 6px; }
+        .app-btn span { font-size: 12px; font-weight: 700; color: #334155; }
 
-        .qr-section { padding: 15px 20px 25px; background: #fafafa; }
-        .qr-container { position: relative; width: 200px; height: 200px; margin: 15px auto; border-radius: 16px; border: 2px solid #e2e8f0; padding: 10px; background: #fff; }
-        #qr-code-img { width: 100%; height: 100%; object-fit: contain; border-radius: 8px; }
+        /* Primary Payment Button */
+        .btn-pay-all { display: flex; align-items: center; justify-content: center; gap: 10px; background: #111827; color: #fff; text-decoration: none; margin: 20px 25px 25px; padding: 18px; border-radius: 20px; font-weight: 700; font-size: 15px; transition: 0.3s; box-shadow: 0 10px 20px rgba(0,0,0,0.15); }
+        .btn-pay-all:hover { background: #000; transform: scale(1.02); }
 
-        .upi-box { display: inline-flex; align-items: center; justify-content: center; gap: 10px; background: #fff; padding: 10px 15px; border: 1px dashed #cbd5e1; border-radius: 8px; margin-top: 10px; }
-        .upi-box strong { font-size: 15px; color: #0f172a; }
-        .copy-btn { background: #eff6ff; color: #0052FF; border: 1px solid #bfdbfe; padding: 6px 12px; border-radius: 6px; font-size: 12px; font-weight: 700; cursor: pointer; }
-
-        /* ALL UPI BUTTON */
-        .pay-now-btn { width: 100%; padding: 16px; background: #0f172a; color: #fff; border: none; border-radius: 12px; font-weight: 700; font-size: 15px; cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 10px; margin-top: 25px; text-decoration: none; }
-        .pay-now-btn:hover { background: #1e293b; }
-
-        .redirect-msg { font-size: 14px; font-weight: 700; color: #ef4444; margin-top: 15px; background: #fee2e2; padding: 10px; border-radius: 8px; border: 1px dashed #fca5a5; }
+        .loading-text { font-size: 12px; color: #ef4444; font-weight: 600; margin-bottom: 10px; height: 18px; }
     </style>
 </head>
 <body>
 
-<div class="checkout-box">
-    <div class="checkout-header">
-        <span class="title">SECURE PAY</span>
-        <span id="p-amt" class="amount">₹0</span>
-    </div>
-
-    <div class="summary-toggle" onclick="toggleSummary()">
-        <span>View Order Summary</span>
-        <span id="arrow">▼</span>
-    </div>
-    <div class="summary-details" id="summary-details">
-        <div class="s-row"><span>Item:</span><span id="s-match">Loading...</span></div>
-        <div class="s-row s-total"><span>Total Payable:</span><span id="s-total">₹0</span></div>
-    </div>
-    
-    <div class="qr-section">
-        <p style="color:#64748b; font-size:14px; margin-top:0; font-weight:600;">Amount to pay: <span id="final_paid_price" style="color:#00cf7f; font-weight: 800; font-size: 16px;">₹0</span></p>
+    <div class="checkout-card">
+        <div class="timer-box">
+            <span id="redirect-icon">⏳</span> 
+            Redirecting to PhonePe in <span id="timer">5</span>s...
+        </div>
         
-        <div class="redirect-msg" id="redirect-box">
-            Redirecting to PhonePe in <span id="redir-timer">5</span>s... ⏳
+        <div class="header">
+            <span style="font-size: 13px; opacity: 0.8; font-weight: 600; letter-spacing: 0.5px;">SECURE CHECKOUT</span>
+            <span class="amount-tag" id="display-amount">₹0</span>
         </div>
 
         <div class="qr-container">
-            <img id="qr-code-img" src="" alt="UPI QR Code">
-        </div>
-
-        <div class="upi-box">
-            <input type="hidden" id="upiID" value="">
-            <strong id="upi-text">Loading...</strong>
-            <button onclick="copyUPI()" class="copy-btn" id="copy-btn-text">COPY</button>
-        </div>
-
-        <div class="app-links-container">
-            <a id="phonepe-link" href="#" class="app-link-btn">
-                <img alt="PhonePe" src="https://cdn.razorpay.com/app/phonepe.svg">
-                <span>PhonePe</span>
-            </a>
-            <a id="paytm-link" href="#" class="app-link-btn">
-                <img alt="Paytm" src="https://cdn.razorpay.com/app/paytm.svg">
-                <span>Paytm</span>
-            </a>
-        </div>
-
-        <a id="all-upi-link" href="#" class="pay-now-btn">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
-            PAY WITH ANY UPI APP
-        </a>
-    </div>
-</div>
-
-<script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
-
-    // 🔴 IMPORTANT: YAHAN APNI FIREBASE CONFIG DAALEIN 🔴
-    const firebaseConfig = {
-        apiKey: "YOUR_API_KEY",
-        authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-        databaseURL: "https://YOUR_PROJECT_ID-default-rtdb.firebaseio.com",
-        projectId: "YOUR_PROJECT_ID",
-        storageBucket: "YOUR_PROJECT_ID.appspot.com",
-        messagingSenderId: "YOUR_SENDER_ID",
-        appId: "YOUR_APP_ID"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const db = getDatabase(app);
-
-    // Fetch Price & Name from URL/Storage
-    const urlParams = new URLSearchParams(window.location.search);
-    const finalPrice = Number(urlParams.get('price') || localStorage.getItem('finalPrice') || 0);
-    const productName = urlParams.get('item') || "Online Order";
-
-    document.getElementById('p-amt').innerText = "₹" + finalPrice;
-    document.getElementById('s-match').innerText = productName;
-    document.getElementById('s-total').innerText = "₹" + finalPrice;
-    document.getElementById('final_paid_price').innerText = "₹" + finalPrice;
-
-    // Firebase live data listener
-    const upiRef = ref(db, 'adminSettings/activeUPI');
-    onValue(upiRef, (snapshot) => {
-        let liveUpiId = snapshot.val() || "default@upi"; // Default UPI agar db me kuch na ho
-        generateLinks(liveUpiId);
-    });
-
-    // Generate Links Function
-    function generateLinks(upiId) {
-        document.getElementById("upiID").value = upiId;
-        document.getElementById("upi-text").innerText = upiId;
-        
-        let pn = "My Store";
-        let tn = "Payment for " + productName;
-
-        if (finalPrice > 0) {
-            const upiPayUrl = "upi://pay?pa=" + encodeURIComponent(upiId) + "&pn=" + encodeURIComponent(pn) + "&am=" + finalPrice + "&cu=INR&tn=" + encodeURIComponent(tn);
-            document.getElementById("qr-code-img").src = "https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=" + encodeURIComponent(upiPayUrl);
+            <div class="loading-text" id="status-text">Connecting to bank...</div>
             
-            // "Pay with Any UPI App" link set
-            document.getElementById("all-upi-link").href = upiPayUrl;
-        }
+            <div class="qr-frame">
+                <img id="qr-img" src="" alt="Payment QR">
+            </div>
 
-        // PhonePe Link
-        const phonepePayload = { contact: { vpa: upiId, type: "VPA" }, p2pPaymentCheckoutParams: { note: tn, isByDefaultKnownContact: true, initialAmount: finalPrice * 100, currency: "INR", checkoutType: "DEFAULT", transactionContext: "p2p" }};
-        const phonepeLink = "phonepe://native?data=" + encodeURIComponent(btoa(JSON.stringify(phonepePayload))) + "&id=p2ppayment";
-        document.getElementById("phonepe-link").href = phonepeLink;
+            <div class="upi-display">
+                <strong id="display-upi">Loading...</strong>
+                <button class="copy-btn" onclick="copyUPI()" id="copy-btn-text">COPY</button>
+            </div>
 
-        // Paytm Link
-        document.getElementById("paytm-link").href = "paytmmp://cash_wallet?pa=" + encodeURIComponent(upiId) + "&pn=" + encodeURIComponent(pn) + "&am=" + finalPrice + "&cu=INR&tn=" + encodeURIComponent(tn) + "&featuretype=money_transfer";
+            <div class="app-grid">
+                <a href="#" id="phonepe-direct" class="app-btn">
+                    <img src="https://cdn.razorpay.com/app/phonepe.svg" alt="PhonePe">
+                    <span>PhonePe</span>
+                </a>
+                <a href="#" id="paytm-direct" class="app-btn">
+                    <img src="https://cdn.razorpay.com/app/paytm.svg" alt="Paytm">
+                    <span>Paytm</span>
+                </a>
+            </div>
 
-        // Auto Redirect Logic
-        startAutoRedirect(phonepeLink);
-    }
+            <a href="#" id="all-upi-btn" class="btn-pay-all">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/e/e1/UPI-Logo-vector.svg" height="18" style="filter: brightness(0) invert(1);">
+                PAY WITH ANY UPI APP
+            </a>
+            
+            <div style="display: flex; justify-content: center; gap: 15px; opacity: 0.5;">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/2/24/Paytm_Logo_%28standalone%29.svg" height="12">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/7/71/PhonePe_Logo.svg" height="12">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/f/f2/Google_Pay_Logo.svg" height="12">
+            </div>
+        </div>
+    </div>
 
-    let redirectStarted = false;
-    function startAutoRedirect(redirectUrl) {
-        if(redirectStarted) return; // Prevent multiple countdowns
-        redirectStarted = true;
-        
-        let timeLeft = 5;
-        const timerSpan = document.getElementById("redir-timer");
-        
-        const countdown = setInterval(() => {
-            timeLeft--;
-            timerSpan.innerText = timeLeft;
-            if(timeLeft <= 0) {
-                clearInterval(countdown);
-                document.getElementById("redirect-box").innerHTML = "Opening PhonePe... 🚀";
-                window.location.href = redirectUrl; // REDIRECT HERE
+    <script type="module">
+        import { db, ref, onValue } from "./firebase.js";
+
+        // 1. Data Fetching from Seat Selection
+        const finalPrice = localStorage.getItem('finalPrice') || 0;
+        const productName = localStorage.getItem('selectedSeatType') || "Ticket";
+        document.getElementById('display-amount').innerText = "₹" + finalPrice;
+
+        // 2. Fetch Admin Settings
+        onValue(ref(db, 'settings/payment'), (snap) => {
+            if (snap.exists()) {
+                const data = snap.val();
+                const upiId = data.upiId || "paytm.s1h6t6g@pty";
+                
+                document.getElementById('display-upi').innerText = upiId;
+                document.getElementById('status-text').innerText = "✅ Ready for payment";
+
+                // Setup Links
+                const note = encodeURIComponent("Pay for " + productName);
+                const baseLink = `upi://pay?pa=${upiId}&pn=Booking&am=${finalPrice}&cu=INR&tn=${note}`;
+                
+                // QR Update
+                document.getElementById('qr-img').src = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(baseLink)}`;
+
+                // All UPI Apps Link
+                document.getElementById('all-upi-btn').href = baseLink;
+
+                // 📱 PHONEPE DEEP LINK (Strict implementation)
+                const ppPayload = { contact: { vpa: upiId, type: "VPA" }, p2pPaymentCheckoutParams: { note: "Payment", initialAmount: finalPrice * 100, currency: "INR" }};
+                const ppUrl = "phonepe://native?data=" + encodeURIComponent(btoa(JSON.stringify(ppPayload))) + "&id=p2ppayment";
+                document.getElementById('phonepe-direct').href = ppUrl;
+
+                // 📱 PAYTM DEEP LINK
+                const paytmUrl = `paytmmp://cash_wallet?pa=${upiId}&pn=Booking&am=${finalPrice}&cu=INR&tn=${note}&featuretype=money_transfer`;
+                document.getElementById('paytm-direct').href = paytmUrl;
+
+                // 3. Auto Redirect Logic (PhonePe)
+                startAutoRedirect(ppUrl);
             }
-        }, 1000);
-    }
-</script>
-
-<script>
-    function toggleSummary() {
-        const details = document.getElementById('summary-details');
-        details.style.display = details.style.display === 'block' ? 'none' : 'block';
-    }
-    function copyUPI() {
-        const copyText = document.getElementById("upiID").value;
-        navigator.clipboard.writeText(copyText).then(() => {
-            const btn = document.getElementById('copy-btn-text');
-            btn.innerText = "COPIED!"; btn.style.background = "#00cf7f"; btn.style.color = "#fff";
-            setTimeout(() => { btn.innerText = "COPY"; btn.style.background = "#eff6ff"; btn.style.color = "#0052FF"; }, 2000);
         });
-    }
-</script>
+
+        let redirectStarted = false;
+        function startAutoRedirect(url) {
+            if(redirectStarted) return;
+            redirectStarted = true;
+
+            let count = 5;
+            const timer = document.getElementById('timer');
+            
+            const countdown = setInterval(() => {
+                count--;
+                timer.innerText = count;
+                if(count <= 0) {
+                    clearInterval(countdown);
+                    document.getElementById('redirect-icon').innerText = "🚀";
+                    document.getElementById('status-text').innerText = "Redirecting...";
+                    window.location.href = url;
+                }
+            }, 1000);
+        }
+    </script>
+
+    <script>
+        function copyUPI() {
+            const upi = document.getElementById('display-upi').innerText;
+            navigator.clipboard.writeText(upi).then(() => {
+                const btn = document.getElementById('copy-btn-text');
+                btn.innerText = "COPIED!";
+                setTimeout(() => btn.innerText = "COPY", 2000);
+            });
+        }
+    </script>
 </body>
 </html>
