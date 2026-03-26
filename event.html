@@ -9,8 +9,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-    <link rel="stylesheet" href="css/style.css">
-
     <script>
     !function(f,b,e,v,n,t,s)
     {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
@@ -20,80 +18,23 @@
     t.src=v;s=b.getElementsByTagName(e)[0];
     s.parentNode.insertBefore(t,s)}(window, document,'script',
     'https://connect.facebook.net/en_US/fbevents.js');
-
     fbq('init', '1252040857081560');
     fbq('track', 'PageView');
     </script>
     <noscript>
-        <img height="1" width="1" style="display:none"
-        src="https://www.facebook.com/tr?id=1252040857081560&ev=PageView&noscript=1"/>
+        <img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id=1252040857081560&ev=PageView&noscript=1"/>
     </noscript>
 
     <style>
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: #f4f5f7;
-            -webkit-tap-highlight-color: transparent;
-            margin: 0;
-            padding: 0;
-        }
-
-        /* Loading Animation */
-        .loading-container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 60vh;
-            color: #666;
-        }
-        .spinner {
-            border: 3px solid #f3f3f3;
-            border-top: 3px solid #f84464;
-            border-radius: 50%;
-            width: 30px;
-            height: 30px;
-            animation: spin 1s linear infinite;
-            margin-bottom: 10px;
-        }
+        body { font-family: 'Inter', sans-serif; background-color: #f4f5f7; -webkit-tap-highlight-color: transparent; margin: 0; padding: 0; }
+        .loading-container { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 60vh; color: #666; }
+        .spinner { border: 3px solid #f3f3f3; border-top: 3px solid #f84464; border-radius: 50%; width: 30px; height: 30px; animation: spin 1s linear infinite; margin-bottom: 10px; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-
-        /* 🔥 Modal Styling (Bottom Sheet) 🔥 */
-        #tnc-modal {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.6);
-            z-index: 9999;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.3s ease;
-            display: flex;
-            align-items: flex-end; /* Niche se aayega */
-        }
-
-        #tnc-modal.active {
-            opacity: 1;
-            pointer-events: auto;
-        }
-
-        #popup-box {
-            background: #fff;
-            width: 100%;
-            border-radius: 20px 20px 0 0;
-            padding: 24px 20px;
-            transform: translateY(100%);
-            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            max-height: 85vh;
-            display: flex;
-            flex-direction: column;
-            box-shadow: 0 -4px 20px rgba(0,0,0,0.1);
-        }
-
-        #tnc-modal.active #popup-box {
-            transform: translateY(0);
-        }
-
-        /* Custom Scrollbar for T&C */
+        
+        #tnc-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.6); z-index: 9999; opacity: 0; pointer-events: none; transition: opacity 0.3s ease; display: flex; align-items: flex-end; }
+        #tnc-modal.active { opacity: 1; pointer-events: auto; }
+        #popup-box { background: #fff; width: 100%; border-radius: 20px 20px 0 0; padding: 24px 20px; transform: translateY(100%); transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); max-height: 85vh; display: flex; flex-direction: column; box-shadow: 0 -4px 20px rgba(0,0,0,0.1); }
+        #tnc-modal.active #popup-box { transform: translateY(0); }
         .tnc-scroll::-webkit-scrollbar { width: 4px; }
         .tnc-scroll::-webkit-scrollbar-thumb { background: #ccc; border-radius: 4px; }
     </style>
@@ -122,16 +63,13 @@
 
     <div id="tnc-modal">
         <div id="popup-box">
-            
             <div class="w-10 h-1.5 bg-gray-300 rounded-full mx-auto mb-5"></div>
-
             <div class="flex justify-between items-center mb-4 border-b border-gray-100 pb-3">
                 <h2 class="text-xl font-bold text-gray-900">Important Note</h2>
                 <button id="close-popup" class="w-8 h-8 flex items-center justify-center bg-gray-100 rounded-full text-gray-600 hover:bg-gray-200">
                     <i class="fas fa-times"></i>
                 </button>
             </div>
-
             <div class="tnc-scroll overflow-y-auto flex-1 mb-5 pr-2">
                 <ul class="space-y-4 text-sm text-gray-600 font-medium leading-relaxed">
                     <li class="flex gap-3"><i class="fas fa-chair text-gray-400 mt-1"></i> Seated Event! View from the seat may vary.</li>
@@ -141,11 +79,9 @@
                     <li class="flex gap-3"><i class="fas fa-ban text-gray-400 mt-1"></i> No Re-entry allowed once scanned at the gate.</li>
                 </ul>
             </div>
-
             <button id="accept-tnc-btn" class="w-full bg-[#f84464] hover:bg-[#e03a58] text-white font-bold py-3.5 rounded-xl shadow-md transition-colors text-base">
                 Okay, Got It
             </button>
-
         </div>
     </div>
 
