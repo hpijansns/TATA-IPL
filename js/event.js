@@ -146,17 +146,20 @@ if (!match) {
             <p style="font-size: 12px; color: #666; margin-bottom: 16px;">Events around you, book now</p>
             
             <div style="display: flex; gap: 12px; overflow-x: auto; padding-bottom: 10px; scrollbar-width: none;">
-                <div style="min-width: 130px;">
-                    <img src="https://assets-in.bmscdn.com/discovery-catalog/events/tr:w-400,h-600,bg-CCCCCC:w-400.0,h-660.0,cm-pad_resize,bg-000000,fo-top:ote-VEFUQSBJUkwgMjAyNg%3D%3D,ots-29,otc-FFFFFF,oy-612,ox-24:q-80/et00311494-nntwcvtzrh-portrait.jpg" style="width: 100%; border-radius: 8px;">
-                    <div style="font-size: 13px; font-weight: 600; color: #333; margin-top: 8px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">TATA IPL 2026</div>
+                <div style="min-width: 130px; width: 130px;">
+                    <img src="https://assets-in.bmscdn.com/discovery-catalog/events/tr:w-400,h-600,bg-CCCCCC:w-400.0,h-660.0,cm-pad_resize,bg-000000,fo-top:ote-VEFUQSBJUkwgMjAyNg%3D%3D,ots-29,otc-FFFFFF,oy-612,ox-24:q-80/et00311494-nntwcvtzrh-portrait.jpg" style="width: 100%; border-radius: 8px; object-fit: cover; height: 195px;">
+                    <div style="font-size: 13px; font-weight: 600; color: #333; margin-top: 8px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">CSK vs RCB</div>
+                    <div style="font-size: 11px; color: #666; margin-top: 2px;">TATA IPL 2026</div>
                 </div>
-                <div style="min-width: 130px;">
-                    <img src="https://assets-in.bmscdn.com/discovery-catalog/events/tr:w-400,h-600,bg-CCCCCC:w-400.0,h-660.0,cm-pad_resize,bg-000000,fo-top:ote-U2hvb3RpbmcgQXJlbmE%3D,ots-29,otc-FFFFFF,oy-612,ox-24:q-80/et00336140-xkznnzxvbd-portrait.jpg" style="width: 100%; border-radius: 8px;">
-                    <div style="font-size: 13px; font-weight: 600; color: #333; margin-top: 8px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Airsoft Gun India</div>
+                <div style="min-width: 130px; width: 130px;">
+                    <img src="https://assets-in.bmscdn.com/discovery-catalog/events/tr:w-400,h-600,bg-CCCCCC:w-400.0,h-660.0,cm-pad_resize,bg-000000,fo-top:ote-VEFUQSBJUkwgMjAyNg%3D%3D,ots-29,otc-FFFFFF,oy-612,ox-24:q-80/et00311494-nntwcvtzrh-portrait.jpg" style="width: 100%; border-radius: 8px; object-fit: cover; height: 195px;">
+                    <div style="font-size: 13px; font-weight: 600; color: #333; margin-top: 8px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">MI vs GT</div>
+                    <div style="font-size: 11px; color: #666; margin-top: 2px;">TATA IPL 2026</div>
                 </div>
-                <div style="min-width: 130px;">
-                    <img src="https://assets-in.bmscdn.com/discovery-catalog/events/tr:w-400,h-600,bg-CCCCCC:w-400.0,h-660.0,cm-pad_resize,bg-000000,fo-top:ote-TXVtYmFpIEN5Y2xpbmc%3D,ots-29,otc-FFFFFF,oy-612,ox-24:q-80/et00355125-jvzxyqwqbc-portrait.jpg" style="width: 100%; border-radius: 8px;">
-                    <div style="font-size: 13px; font-weight: 600; color: #333; margin-top: 8px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Mumbai Midnight</div>
+                <div style="min-width: 130px; width: 130px;">
+                    <img src="https://assets-in.bmscdn.com/discovery-catalog/events/tr:w-400,h-600,bg-CCCCCC:w-400.0,h-660.0,cm-pad_resize,bg-000000,fo-top:ote-VEFUQSBJUkwgMjAyNg%3D%3D,ots-29,otc-FFFFFF,oy-612,ox-24:q-80/et00311494-nntwcvtzrh-portrait.jpg" style="width: 100%; border-radius: 8px; object-fit: cover; height: 195px;">
+                    <div style="font-size: 13px; font-weight: 600; color: #333; margin-top: 8px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">RR vs KKR</div>
+                    <div style="font-size: 11px; color: #666; margin-top: 2px;">TATA IPL 2026</div>
                 </div>
             </div>
         </div>
@@ -164,13 +167,15 @@ if (!match) {
     </div>
 
     <div style="background: #333; padding: 40px 20px; text-align: center; margin: 0 -16px;">
-        <img src="https://getlogo.net/wp-content/uploads/2020/04/bookmyshow-logo-vector-xs.png" style="height: 24px; margin: 0 auto 20px; filter: brightness(0) invert(1);">
+        <img src="https://getlogo.net/wp-content/uploads/2020/04/bookmyshow-logo-vector-xs.png" style="height: 30px; margin: 0 auto 20px; filter: brightness(0) invert(1);">
         
-        <div style="display: flex; justify-content: center; gap: 15px; margin-bottom: 24px;">
-            <div style="width: 40px; height: 40px; border-radius: 50%; background: #444; display: flex; align-items: center; justify-content: center; color: #999;"><i class="fab fa-facebook-f"></i></div>
-            <div style="width: 40px; height: 40px; border-radius: 50%; background: #444; display: flex; align-items: center; justify-content: center; color: #999;"><i class="fab fa-twitter"></i></div>
-            <div style="width: 40px; height: 40px; border-radius: 50%; background: #444; display: flex; align-items: center; justify-content: center; color: #999;"><i class="fab fa-instagram"></i></div>
-            <div style="width: 40px; height: 40px; border-radius: 50%; background: #444; display: flex; align-items: center; justify-content: center; color: #999;"><i class="fab fa-youtube"></i></div>
+        <div style="display: flex; justify-content: center; gap: 12px; margin-bottom: 24px; flex-wrap: wrap;">
+            <div style="width: 36px; height: 36px; border-radius: 50%; background: #fff; display: flex; align-items: center; justify-content: center; color: #000; font-size: 16px;"><i class="fab fa-facebook-f"></i></div>
+            <div style="width: 36px; height: 36px; border-radius: 50%; background: #fff; display: flex; align-items: center; justify-content: center; color: #000; font-size: 16px;"><i class="fa-brands fa-x-twitter"></i></div>
+            <div style="width: 36px; height: 36px; border-radius: 50%; background: #fff; display: flex; align-items: center; justify-content: center; color: #000; font-size: 16px;"><i class="fab fa-instagram"></i></div>
+            <div style="width: 36px; height: 36px; border-radius: 50%; background: #fff; display: flex; align-items: center; justify-content: center; color: #000; font-size: 16px;"><i class="fab fa-youtube"></i></div>
+            <div style="width: 36px; height: 36px; border-radius: 50%; background: #fff; display: flex; align-items: center; justify-content: center; color: #000; font-size: 16px;"><i class="fab fa-pinterest-p"></i></div>
+            <div style="width: 36px; height: 36px; border-radius: 50%; background: #fff; display: flex; align-items: center; justify-content: center; color: #000; font-size: 16px;"><i class="fab fa-linkedin-in"></i></div>
         </div>
         
         <p style="font-size: 11px; color: #888; line-height: 1.6; margin: 0;">
