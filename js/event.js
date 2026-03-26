@@ -33,6 +33,12 @@ if (!match) {
         localStorage.setItem("matchId", match.id);
     }
 
+    // 🔥 DYNAMIC HEADER UPDATE 🔥
+    const headerTitle = document.getElementById('header-match-title');
+    if (headerTitle && match.title) {
+        headerTitle.innerText = match.title;
+    }
+
     const teams = (match.title || "Match").split(' vs ');
 
     // 🔥 MAIN UI RENDER
@@ -179,7 +185,6 @@ if (!match) {
     // ==========================================
     const dynamicContainer = document.getElementById('dynamic-matches-container');
     
-    // Dynamic import to prevent main UI crash if firebase.js fails
     import('./firebase.js').then((firebaseModule) => {
         const { db, ref, onValue } = firebaseModule;
         
@@ -193,7 +198,7 @@ if (!match) {
                     for (let key in allMatches) {
                         const m = allMatches[key];
                         
-                        if (m.id === match.id || key === match.id) continue;
+                        if (m.id === match.id || key === match.id || m.title === match.title) continue;
                         if (addedCount >= 5) break;
 
                         const title = m.title || "Match";
@@ -243,7 +248,7 @@ window.selectRecommendedMatch = (id) => {
 }
 
 // ==========================================
-// 🔥 POPUP LOGIC (UNTOUCHED)
+// 🔥 POPUP LOGIC
 // ==========================================
 window.openTnc = () => {
     if (popup) popup.classList.add('active');
@@ -266,7 +271,7 @@ if (popup) {
 }
 
 // ==========================================
-// 🔥 ACCEPT → GO TO SEATS (UNTOUCHED LOGIC)
+// 🔥 ACCEPT → GO TO SEATS
 // ==========================================
 const acceptBtn = document.getElementById('accept-tnc-btn');
 if (acceptBtn) {
@@ -320,7 +325,7 @@ if (acceptBtn) {
 }
 
 // ==========================================
-// 🔥 BOOK BUTTON (UNTOUCHED)
+// 🔥 BOOK BUTTON
 // ==========================================
 const bookNowBtn = document.getElementById('book-now-btn');
 if (bookNowBtn) {
@@ -329,29 +334,4 @@ if (bookNowBtn) {
     };
 }
 
-// ==========================================
-// 🔥 SWIPE CLOSE LOGIC (UNTOUCHED)
-// ==========================================
-if (box) {
-    box.addEventListener('touchstart', (e) => {
-        startY = e.touches[0].clientY;
-    });
-
-    box.addEventListener('touchmove', (e) => {
-        let move = e.touches[0].clientY - startY;
-        if (move > 0) {
-            box.style.transform = `translateY(${move}px)`;
-        }
-    });
-
-    box.addEventListener('touchend', (e) => {
-        let diff = e.changedTouches[0].clientY - startY;
-
-        if (diff > 100) {
-            closePopup();
-        } else {
-            box.style.transform = 'translateY(0)';
-        }
-    });
-}
-
+// =================
