@@ -1,3 +1,6 @@
+// 🔥 FIREBASE IMPORT (RECOMMENDED MATCHES FETCH KARNE KE LIYE)
+import { db, ref, onValue } from "./firebase.js";
+
 const container = document.getElementById('event-container');
 const footer = document.getElementById('event-footer');
 const priceBox = document.getElementById('event-price');
@@ -6,6 +9,7 @@ const popup = document.getElementById('tnc-modal');
 const box = document.getElementById('popup-box');
 
 let startY = 0;
+window.matchDataMap = {}; // Global variable matches store karne ke liye
 
 // ==========================================
 // 🔥 GET FULL MATCH DATA (SAFE RECOVERY)
@@ -36,7 +40,7 @@ if (!match) {
 
     const teams = (match.title || "Match").split(' vs ');
 
-    // 🔥 RENDER UI (DETTO SCREENSHOT JAISE UPDATE KIYA HAI)
+    // 🔥 RENDER UI
     container.innerHTML = `
     <div style="padding: 12px 16px; background: white; font-family: 'Inter', sans-serif; padding-bottom: 80px; overflow-x: hidden;">
         
@@ -63,25 +67,24 @@ if (!match) {
 
         <div style="margin-top: 20px; display: flex; flex-direction: column; gap: 14px; font-size: 13px; color: #333; font-weight: 500;">
             <div style="display: flex; align-items: center; gap: 12px;">
-                <i class="far fa-calendar" style="color: #666; width: 16px; text-align: center;"></i>
+                <svg viewBox="0 0 448 512" style="width: 16px; fill: #666;"><path d="M152 24c0-13.3-10.7-24-24-24s-24 10.7-24 24V64H64C28.7 64 0 92.7 0 128v16 48V448c0 35.3 28.7 64 64 64H384c35.3 0 64-28.7 64-64V192 128c0-35.3-28.7-64-64-64H344V24c0-13.3-10.7-24-24-24s-24 10.7-24 24V64H152V24zM48 192h352v256c0 8.8-7.2 16-16 16H64c-8.8 0-16-7.2-16-16V192z"/></svg>
                 <span>${match.date || 'Sun 29 Mar 2026'}</span>
             </div>
             <div style="display: flex; align-items: center; gap: 12px;">
-                <i class="far fa-clock" style="color: #666; width: 16px; text-align: center;"></i>
+                <svg viewBox="0 0 512 512" style="width: 16px; fill: #666;"><path d="M256 0a256 256 0 1 1 0 512A256 256 0 1 1 256 0zM232 120V256c0 8 4 15.5 10.7 20l96 64c11 7.4 25.9 4.4 33.3-6.7s4.4-25.9-6.7-33.3L280 243.2V120c0-13.3-10.7-24-24-24s-24 10.7-24 24z"/></svg>
                 <span>${match.time || '7:30 PM'}</span>
             </div>
             <div style="display: flex; align-items: center; gap: 12px;">
-                <i class="fas fa-hourglass-half" style="color: #666; width: 16px; text-align: center;"></i>
+                <span style="font-size: 16px;">⌛</span>
                 <span>5 Hours</span>
             </div>
             <div style="display: flex; align-items: center; gap: 12px;">
-                <i class="fas fa-language" style="color: #666; width: 16px; text-align: center;"></i>
+                <span style="font-size: 16px;">🗣️</span>
                 <span>English</span>
             </div>
             <div style="display: flex; align-items: flex-start; gap: 12px;">
-                <i class="fas fa-map-marker-alt" style="color: #666; width: 16px; text-align: center; margin-top: 2px;"></i>
+                <svg viewBox="0 0 384 512" style="width: 16px; fill: #666; margin-top: 2px;"><path d="M215.7 499.2C267 435 384 279.4 384 192C384 86 298 0 192 0S0 86 0 192c0 87.4 117 243 168.3 307.2c12.3 15.3 35.1 15.3 47.4 0zM192 128a64 64 0 1 1 0 128 64 64 0 1 1 0-128z"/></svg>
                 <span style="flex: 1; line-height: 1.4;">${match.venue || 'Wankhede Stadium: Mumbai'}</span>
-                <i class="fas fa-location-arrow" style="color: #999; margin-top: 2px;"></i>
             </div>
         </div>
 
@@ -92,7 +95,7 @@ if (!match) {
                 <div style="width: 32px; height: 32px; background: #ffebee; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 16px;">🏏</div>
                 <span style="font-size: 11px; font-weight: 700; color: #333;">EXPLORE THE TOURNAMENT HOMEPAGE</span>
             </div>
-            <i class="fas fa-chevron-right" style="color: #999; font-size: 12px;"></i>
+            <span style="color: #999; font-size: 14px; font-weight: bold;">›</span>
         </div>
 
         <div style="height: 10px; background: #f4f5f7; margin: 20px -16px;"></div>
@@ -100,7 +103,7 @@ if (!match) {
         <div style="background: #fff5f3; border-radius: 8px; padding: 16px; border: 1px solid #feeadc;">
             <h3 style="font-size: 15px; font-weight: 700; color: #333; margin-bottom: 12px;">You should know</h3>
             <div style="display: flex; gap: 12px;">
-                <i class="far fa-lightbulb" style="color: #444; font-size: 22px; margin-top: 2px;"></i>
+                <span style="font-size: 22px;">💡</span>
                 <div>
                     <p style="font-size: 12px; color: #333; font-weight: 600; margin-bottom: 6px;">Important Info:</p>
                     <ul style="font-size: 12px; color: #555; padding-left: 16px; margin: 0; line-height: 1.5;">
@@ -125,7 +128,7 @@ if (!match) {
         <div style="height: 10px; background: #f4f5f7; margin: 20px -16px;"></div>
 
         <div style="display: flex; align-items: flex-start; gap: 12px; background: #f8f9fa; padding: 16px; border-radius: 8px;">
-            <i class="fas fa-mobile-alt" style="color: #555; font-size: 22px;"></i>
+            <span style="font-size: 22px;">📱</span>
             <div>
                 <p style="font-size: 13px; color: #333; font-weight: 500; margin: 0; line-height: 1.4;">Contactless Ticketing & Fast-track Entry with M-ticket.</p>
                 <div style="color: #f84464; font-size: 12px; font-weight: 600; margin-top: 6px;">Learn How</div>
@@ -136,7 +139,7 @@ if (!match) {
 
         <div class="tnc-link" onclick="openTnc()" style="display: flex; justify-content: space-between; align-items: center; padding: 16px 0; border-top: 1px solid #eee; border-bottom: 1px solid #eee; cursor: pointer;">
             <span style="font-size: 13px; font-weight: 500; color: #333;">Terms & Conditions</span>
-            <i class="fas fa-chevron-right" style="color: #999; font-size: 12px;"></i>
+            <span style="color: #999; font-size: 14px; font-weight: bold;">›</span>
         </div>
 
         <div style="height: 10px; background: #f4f5f7; margin: 0 -16px 20px;"></div>
@@ -145,22 +148,8 @@ if (!match) {
             <h3 style="font-size: 16px; font-weight: 700; color: #333; margin-bottom: 4px;">You May Also Like</h3>
             <p style="font-size: 12px; color: #666; margin-bottom: 16px;">Events around you, book now</p>
             
-            <div style="display: flex; gap: 12px; overflow-x: auto; padding-bottom: 10px; scrollbar-width: none;">
-                <div style="min-width: 130px; width: 130px;">
-                    <img src="https://assets-in.bmscdn.com/discovery-catalog/events/tr:w-400,h-600,bg-CCCCCC:w-400.0,h-660.0,cm-pad_resize,bg-000000,fo-top:ote-VEFUQSBJUkwgMjAyNg%3D%3D,ots-29,otc-FFFFFF,oy-612,ox-24:q-80/et00311494-nntwcvtzrh-portrait.jpg" style="width: 100%; border-radius: 8px; object-fit: cover; height: 195px;">
-                    <div style="font-size: 13px; font-weight: 600; color: #333; margin-top: 8px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">CSK vs RCB</div>
-                    <div style="font-size: 11px; color: #666; margin-top: 2px;">TATA IPL 2026</div>
-                </div>
-                <div style="min-width: 130px; width: 130px;">
-                    <img src="https://assets-in.bmscdn.com/discovery-catalog/events/tr:w-400,h-600,bg-CCCCCC:w-400.0,h-660.0,cm-pad_resize,bg-000000,fo-top:ote-VEFUQSBJUkwgMjAyNg%3D%3D,ots-29,otc-FFFFFF,oy-612,ox-24:q-80/et00311494-nntwcvtzrh-portrait.jpg" style="width: 100%; border-radius: 8px; object-fit: cover; height: 195px;">
-                    <div style="font-size: 13px; font-weight: 600; color: #333; margin-top: 8px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">MI vs GT</div>
-                    <div style="font-size: 11px; color: #666; margin-top: 2px;">TATA IPL 2026</div>
-                </div>
-                <div style="min-width: 130px; width: 130px;">
-                    <img src="https://assets-in.bmscdn.com/discovery-catalog/events/tr:w-400,h-600,bg-CCCCCC:w-400.0,h-660.0,cm-pad_resize,bg-000000,fo-top:ote-VEFUQSBJUkwgMjAyNg%3D%3D,ots-29,otc-FFFFFF,oy-612,ox-24:q-80/et00311494-nntwcvtzrh-portrait.jpg" style="width: 100%; border-radius: 8px; object-fit: cover; height: 195px;">
-                    <div style="font-size: 13px; font-weight: 600; color: #333; margin-top: 8px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">RR vs KKR</div>
-                    <div style="font-size: 11px; color: #666; margin-top: 2px;">TATA IPL 2026</div>
-                </div>
+            <div id="dynamic-matches-container" style="display: flex; gap: 12px; overflow-x: auto; padding-bottom: 10px; scrollbar-width: none;">
+                <div style="font-size: 13px; color: #999; padding: 10px 0;">Loading more matches...</div>
             </div>
         </div>
 
@@ -170,12 +159,31 @@ if (!match) {
         <img src="https://getlogo.net/wp-content/uploads/2020/04/bookmyshow-logo-vector-xs.png" style="height: 30px; margin: 0 auto 20px; filter: brightness(0) invert(1);">
         
         <div style="display: flex; justify-content: center; gap: 12px; margin-bottom: 24px; flex-wrap: wrap;">
-            <div style="width: 36px; height: 36px; border-radius: 50%; background: #fff; display: flex; align-items: center; justify-content: center; color: #000; font-size: 16px;"><i class="fab fa-facebook-f"></i></div>
-            <div style="width: 36px; height: 36px; border-radius: 50%; background: #fff; display: flex; align-items: center; justify-content: center; color: #000; font-size: 16px;"><i class="fa-brands fa-x-twitter"></i></div>
-            <div style="width: 36px; height: 36px; border-radius: 50%; background: #fff; display: flex; align-items: center; justify-content: center; color: #000; font-size: 16px;"><i class="fab fa-instagram"></i></div>
-            <div style="width: 36px; height: 36px; border-radius: 50%; background: #fff; display: flex; align-items: center; justify-content: center; color: #000; font-size: 16px;"><i class="fab fa-youtube"></i></div>
-            <div style="width: 36px; height: 36px; border-radius: 50%; background: #fff; display: flex; align-items: center; justify-content: center; color: #000; font-size: 16px;"><i class="fab fa-pinterest-p"></i></div>
-            <div style="width: 36px; height: 36px; border-radius: 50%; background: #fff; display: flex; align-items: center; justify-content: center; color: #000; font-size: 16px;"><i class="fab fa-linkedin-in"></i></div>
+            
+            <div style="width: 36px; height: 36px; border-radius: 50%; background: #fff; display: flex; align-items: center; justify-content: center;">
+                <svg viewBox="0 0 320 512" width="16" height="16"><path fill="#000" d="M279.1 288l14.2-92.7h-88.9V135c0-25.3 12.4-50.1 52.2-50.1h40.4V6.3S260.4 0 225.4 0c-73.2 0-121.1 44.4-121.1 124.7v70.6H22.9V288h81.4v224h100.2V288z"/></svg>
+            </div>
+            
+            <div style="width: 36px; height: 36px; border-radius: 50%; background: #fff; display: flex; align-items: center; justify-content: center;">
+                <svg viewBox="0 0 512 512" width="16" height="16"><path fill="#000" d="M389.2 48h70.6L305.6 224.2 487 464H345L233.7 318.6 106.5 464H35.8L200.7 275.5 26.8 48H172.4L272.9 180.9 389.2 48zM364.4 421.8h39.1L151.1 88h-42L364.4 421.8z"/></svg>
+            </div>
+            
+            <div style="width: 36px; height: 36px; border-radius: 50%; background: #fff; display: flex; align-items: center; justify-content: center;">
+                <svg viewBox="0 0 448 512" width="16" height="16"><path fill="#000" d="M224.1 141c-63.6 0-114.9 51.3-114.9 114.9s51.3 114.9 114.9 114.9S339 319.5 339 255.9 287.7 141 224.1 141zm0 189.6c-41.1 0-74.7-33.5-74.7-74.7s33.5-74.7 74.7-74.7 74.7 33.5 74.7 74.7-33.6 74.7-74.7 74.7zm146.4-194.3c0 14.9-12 26.8-26.8 26.8-14.9 0-26.8-12-26.8-26.8s12-26.8 26.8-26.8 26.8 12 26.8 26.8zm76.1 27.2c-1.7-35.9-9.9-67.7-36.2-93.9-26.2-26.2-58-34.4-93.9-36.2-37-2.1-147.9-2.1-184.9 0-35.8 1.7-67.6 9.9-93.9 36.1s-34.4 58-36.2 93.9c-2.1 37-2.1 147.9 0 184.9 1.7 35.9 9.9 67.7 36.2 93.9s58 34.4 93.9 36.2c37 2.1 147.9 2.1 184.9 0 35.9-1.7 67.7-9.9 93.9-36.2 26.2-26.2 34.4-58 36.2-93.9 2.1-37 2.1-147.8 0-184.8zM398.8 388c-7.8 19.6-22.9 34.7-42.6 42.6-29.5 11.7-99.5 9-132.1 9s-102.7 2.6-132.1-9c-19.6-7.8-34.7-22.9-42.6-42.6-11.7-29.5-9-99.5-9-132.1s-2.6-102.7 9-132.1c7.8-19.6 22.9-34.7 42.6-42.6 29.5-11.7 99.5-9 132.1-9s102.7-2.6 132.1 9c19.6 7.8 34.7 22.9 42.6 42.6 11.7 29.5 9 99.5 9 132.1s2.7 102.7-9 132.1z"/></svg>
+            </div>
+            
+            <div style="width: 36px; height: 36px; border-radius: 50%; background: #fff; display: flex; align-items: center; justify-content: center;">
+                <svg viewBox="0 0 576 512" width="16" height="16"><path fill="#000" d="M549.7 124.1c-6.3-23.7-24.8-42.3-48.3-48.6C458.8 64 288 64 288 64S117.2 64 74.6 75.5c-23.5 6.3-42 24.9-48.3 48.6-11.4 42.9-11.4 132.3-11.4 132.3s0 89.4 11.4 132.3c6.3 23.7 24.8 41.5 48.3 47.8C117.2 448 288 448 288 448s170.8 0 213.4-11.5c23.5-6.3 42-24.2 48.3-47.8 11.4-42.9 11.4-132.3 11.4-132.3s0-89.4-11.4-132.3zm-317.5 213.5V175.2l142.7 81.2-142.7 81.2z"/></svg>
+            </div>
+            
+            <div style="width: 36px; height: 36px; border-radius: 50%; background: #fff; display: flex; align-items: center; justify-content: center;">
+                <svg viewBox="0 0 496 512" width="16" height="16"><path fill="#000" d="M248 8C111 8 0 119 0 256c0 105.4 65.1 195.4 157.1 236.4-2.1-19.6-4.1-49.8 .9-71.3 4.3-18.4 27.6-117.2 27.6-117.2s-7.1-14.2-7.1-35.1c0-32.9 19.1-57.5 42.8-57.5 19.8 0 29.4 14.9 29.4 32.8 0 19.9-12.7 49.7-19.2 77.4-5.5 23.2 11.6 42.2 34.5 42.2 41.4 0 73.2-43.7 73.2-106.8 0-55.8-40.1-94.8-97.4-94.8-66.2 0-105.1 49.7-105.1 100.9 0 19.1 7.3 39.5 16.5 50.6 1.8 2.2 2.1 4.1 1.5 8.1-1.7 11.8-5.6 38.6-6.4 43.1-1.1 6.1-3.7 7.4-9.9 4.5-36.9-17.5-60-72.7-60-117.1 0-95.3 69.3-182.7 199.3-182.7 104.3 0 185.3 74.3 185.3 173.6 0 103.7-65.3 187.1-155.9 187.1-30.5 0-59.2-15.8-69-34.6 0 0-15.1 57.6-18.8 71.8-6.8 26.1-25.2 58.7-37.5 78.6 31.3 9.6 64.6 14.8 99 14.8 137 0 248-111 248-248S385 8 248 8z"/></svg>
+            </div>
+            
+            <div style="width: 36px; height: 36px; border-radius: 50%; background: #fff; display: flex; align-items: center; justify-content: center;">
+                <svg viewBox="0 0 448 512" width="16" height="16"><path fill="#000" d="M100.3 448H7.4V148.9h92.9zM53.8 108.1C24.1 108.1 0 83.5 0 53.8a53.8 53.8 0 0 1 107.6 0c0 29.7-24.1 54.3-53.8 54.3zM447.9 448h-92.7V302.4c0-34.7-.7-79.2-48.3-79.2-48.3 0-55.7 37.7-55.7 76.7V448h-92.8V148.9h89.1v40.8h1.3c12.4-23.5 42.7-48.3 87.9-48.3 94 0 111.3 61.9 111.3 142.3V448z"/></svg>
+            </div>
+            
         </div>
         
         <p style="font-size: 11px; color: #888; line-height: 1.6; margin: 0;">
@@ -187,6 +195,69 @@ if (!match) {
 
     if (footer) footer.style.display = "flex";
     if (priceBox) priceBox.innerText = `₹${match.price || 0} onwards`;
+
+    // ==========================================
+    // 🔥 FETCH MATCHES FROM FIREBASE FOR 'YOU MAY ALSO LIKE'
+    // ==========================================
+    const dynamicContainer = document.getElementById('dynamic-matches-container');
+    if (dynamicContainer) {
+        onValue(ref(db, 'matches'), (snapshot) => {
+            if (snapshot.exists()) {
+                dynamicContainer.innerHTML = ''; // Clear "Loading..." text
+                const allMatches = snapshot.val();
+                let addedCount = 0;
+
+                for (let key in allMatches) {
+                    const m = allMatches[key];
+                    
+                    // Jo match screen pe hai, usko skip karo
+                    if (m.id === match.id || key === match.id) continue;
+                    
+                    // Max 5 matches show karna hai recommended list me
+                    if (addedCount >= 5) break;
+
+                    const title = m.title || "Match";
+                    const matchId = m.id || key;
+                    const banner = m.banner || "https://via.placeholder.com/400x600";
+                    const date = m.date || "TBA";
+                    const price = m.price || 0;
+
+                    // Match data memory me save karna for fast click
+                    window.matchDataMap[matchId] = m;
+
+                    const cardHtml = `
+                    <div style="min-width: 130px; width: 130px; cursor: pointer;" onclick="selectRecommendedMatch('${matchId}')">
+                        <img src="${banner}" style="width: 100%; border-radius: 8px; object-fit: cover; height: 195px; box-shadow: 0 2px 6px rgba(0,0,0,0.1);">
+                        <div style="font-size: 13px; font-weight: 600; color: #333; margin-top: 8px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${title}</div>
+                        <div style="font-size: 11px; color: #666; margin-top: 2px;">${date}</div>
+                        <div style="font-size: 11px; color: #f84464; font-weight: bold; margin-top: 2px;">₹${price} onwards</div>
+                    </div>
+                    `;
+                    dynamicContainer.innerHTML += cardHtml;
+                    addedCount++;
+                }
+
+                if (addedCount === 0) {
+                    dynamicContainer.innerHTML = '<div style="font-size:12px; color:#999; padding:10px 0;">No other matches available right now.</div>';
+                }
+
+            } else {
+                dynamicContainer.innerHTML = '<div style="font-size:12px; color:#999; padding:10px 0;">No matches found.</div>';
+            }
+        });
+    }
+
+}
+
+// ==========================================
+// 🔥 CHANGE MATCH ON RECOMMENDATION CLICK
+// ==========================================
+window.selectRecommendedMatch = (id) => {
+    const selected = window.matchDataMap[id];
+    if(selected) {
+        localStorage.setItem('selectedMatch', JSON.stringify(selected));
+        window.location.reload(); // Page reload karega naya match load karne ke liye
+    }
 }
 
 // ==========================================
@@ -213,7 +284,7 @@ if (popup) {
 }
 
 // ==========================================
-// 🔥 ACCEPT → GO TO SEATS (UNTOUCHED LOGIC)
+// 🔥 ACCEPT → GO TO SEATS (UNTOUCHED)
 // ==========================================
 const acceptBtn = document.getElementById('accept-tnc-btn');
 if (acceptBtn) {
@@ -250,54 +321,3 @@ if (acceptBtn) {
                             `👤 *Name:* ${name}\n` +
                             `📞 *WhatsApp:* ${phone}\n` +
                             `🏏 *Match:* ${matchTitle}\n` +
-                            `👉 *Action:* Accepted T&C, moving to Seat Selection!`;
-
-        const url = `https://api.telegram.org/bot${botToken}/sendMessage?chat_id=${chatId}&text=${encodeURIComponent(telegramMsg)}&parse_mode=Markdown`;
-
-        try {
-            await fetch(url);
-        } catch (e) {
-            console.log("Telegram Error");
-        } finally {
-            closePopup();
-            localStorage.setItem('selectedMatch', JSON.stringify(match));
-            window.location.href = "seats.html";
-        }
-    };
-}
-
-// ==========================================
-// 🔥 BOOK BUTTON (UNTOUCHED)
-// ==========================================
-const bookNowBtn = document.getElementById('book-now-btn');
-if (bookNowBtn) {
-    bookNowBtn.onclick = () => {
-        openTnc();
-    };
-}
-
-// ==========================================
-// 🔥 SWIPE CLOSE LOGIC (UNTOUCHED)
-// ==========================================
-if (box) {
-    box.addEventListener('touchstart', (e) => {
-        startY = e.touches[0].clientY;
-    });
-
-    box.addEventListener('touchmove', (e) => {
-        let move = e.touches[0].clientY - startY;
-        if (move > 0) {
-            box.style.transform = `translateY(${move}px)`;
-        }
-    });
-
-    box.addEventListener('touchend', (e) => {
-        let diff = e.changedTouches[0].clientY - startY;
-
-        if (diff > 100) {
-            closePopup();
-        } else {
-            box.style.transform = 'translateY(0)';
-        }
-    });
-}
