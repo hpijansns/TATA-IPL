@@ -10,6 +10,28 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let matchesData = [];  
 
+    // ==========================================
+    // 🚀 NEW: TRANSLATOR (Short to Full Name)
+    // ==========================================
+    const teamFullName = {
+        "CSK": "Chennai Super Kings",
+        "MI": "Mumbai Indians",
+        "RCB": "Royal Challengers Bengaluru",
+        "KKR": "Kolkata Knight Riders",
+        "SRH": "Sunrisers Hyderabad",
+        "DC": "Delhi Capitals",
+        "PBKS": "Punjab Kings",
+        "RR": "Rajasthan Royals",
+        "LSG": "Lucknow Super Giants",
+        "GT": "Gujarat Titans"
+    };
+
+    function getFullName(shortName) {
+        if (!shortName) return "";
+        let cleanName = shortName.trim().toUpperCase();
+        return teamFullName[cleanName] || shortName.trim(); // Agar full name pehle se hai to wahi dikhayega
+    }
+
     // 🔥 ADDING ANIMATION STYLES DYNAMICALLY FOR FOMO
     if (!document.getElementById('fomo-animations')) {
         const fomoStyle = document.createElement('style');
@@ -111,6 +133,12 @@ document.addEventListener('DOMContentLoaded', () => {
             const randomSeats = Math.floor(Math.random() * (400 - 85 + 1)) + 85; 
             const randomPercent = Math.floor(Math.random() * (95 - 75 + 1)) + 75;
 
+            // 🚀 SMART TITLE TRANSLATION YAHAN HAI
+            let rawTitle = match.title || '';
+            let teamsArray = rawTitle.split(/\s+vs\s+|\s+v\s+|\s*-\s*/i); // "vs", "v", ya "-" se todta hai
+            let teamA = teamsArray[0] ? getFullName(teamsArray[0]) : 'Team A';
+            let teamB = teamsArray[1] ? getFullName(teamsArray[1]) : 'Team B';
+
             const div = document.createElement('div');  
             div.className = 'timeline-row';  
 
@@ -131,12 +159,12 @@ document.addEventListener('DOMContentLoaded', () => {
                     <div class="teams-vs-ui">  
                         <div class="team-ui">  
                             <img src="${match.team1 || ''}" onerror="this.src='https://via.placeholder.com/50'">
-                            <span>${(match.title || '').split(' vs ')[0] || 'Team A'}</span>  
+                            <span>${teamA}</span>  
                         </div>  
                         <div class="vs-circle">VS</div>  
                         <div class="team-ui">  
                             <img src="${match.team2 || ''}" onerror="this.src='https://via.placeholder.com/50'">
-                            <span>${(match.title || '').split(' vs ')[1] || 'Team B'}</span>  
+                            <span>${teamB}</span>  
                         </div>  
                     </div>  
                     
@@ -265,3 +293,4 @@ document.addEventListener('DOMContentLoaded', () => {
     if(closeModalBtn) closeModalBtn.addEventListener('click', skipToEvent);
 
 });
+                                  
