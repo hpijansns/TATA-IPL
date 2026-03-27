@@ -237,16 +237,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // 🔴 YAHAN APNI 10 TEAMS KE GOL WALE LOGO KE LINKS DAALIYE 🔴
     const teamLogos = {
-        "CSK": "", 
-        "MI": "", 
-        "RCB": "", 
-        "KKR": "", 
-        "SRH": "", 
-        "DC": "", 
-        "PBKS": "", 
-        "RR": "", 
-        "LSG": "", 
-        "GT": ""
+        "CSK": "https://iili.io/qUcs9ov.png", 
+        "MI": "https://iili.io/qSFtonj.png", 
+        "RCB": "https://iili.io/qUBWD9n.webp", 
+        "KKR": "https://iili.io/qSFtCZb.png", 
+        "SRH": "https://iili.io/qSBf9J1.png", 
+        "DC": "https://iili.io/qSf8yG9.jpg", 
+        "PBKS": "https://iili.io/qUqmEOX.jpg", 
+        "RR": "https://iili.io/qUqO2HP.jpg", 
+        "LSG": "https://iili.io/qUBx5lI.png", 
+        "GT": "https://iili.io/qUqWsqB.png"
     };
 
     function getShortName(nameStr) {
