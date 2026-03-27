@@ -11,7 +11,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let matchesData = [];  
 
     // ==========================================
-    // 🚀 NEW: TRANSLATOR (Short to Full Name)
+    // 🚀 TRANSLATOR (Short to Full Name)
     // ==========================================
     const teamFullName = {
         "CSK": "Chennai Super Kings",
@@ -29,7 +29,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function getFullName(shortName) {
         if (!shortName) return "";
         let cleanName = shortName.trim().toUpperCase();
-        return teamFullName[cleanName] || shortName.trim(); // Agar full name pehle se hai to wahi dikhayega
+        return teamFullName[cleanName] || shortName.trim(); 
     }
 
     // 🔥 ADDING ANIMATION STYLES DYNAMICALLY FOR FOMO
@@ -101,7 +101,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // ==========================================
-    // 🔥 RENDER MATCHES (Fixed UI + Moving Hurry)
+    // 🔥 RENDER MATCHES (Fixed UI + Bold Team Names)
     // ==========================================
     function renderMatches(matches) {  
 
@@ -133,9 +133,9 @@ document.addEventListener('DOMContentLoaded', () => {
             const randomSeats = Math.floor(Math.random() * (400 - 85 + 1)) + 85; 
             const randomPercent = Math.floor(Math.random() * (95 - 75 + 1)) + 75;
 
-            // 🚀 SMART TITLE TRANSLATION YAHAN HAI
+            // 🚀 SMART TITLE TRANSLATION
             let rawTitle = match.title || '';
-            let teamsArray = rawTitle.split(/\s+vs\s+|\s+v\s+|\s*-\s*/i); // "vs", "v", ya "-" se todta hai
+            let teamsArray = rawTitle.split(/\s+vs\s+|\s+v\s+|\s*-\s*/i);
             let teamA = teamsArray[0] ? getFullName(teamsArray[0]) : 'Team A';
             let teamB = teamsArray[1] ? getFullName(teamsArray[1]) : 'Team B';
 
@@ -156,19 +156,19 @@ document.addEventListener('DOMContentLoaded', () => {
                         ⏳ Hurry! Seats Selling Out
                     </div>
 
-                    <div class="teams-vs-ui">  
-                        <div class="team-ui">  
-                            <img src="${match.team1 || ''}" onerror="this.src='https://via.placeholder.com/50'">
-                            <span>${teamA}</span>  
+                    <div class="teams-vs-ui" style="align-items: flex-start;">  
+                        <div class="team-ui" style="text-align: center; width: 42%;">  
+                            <img src="${match.team1 || ''}" onerror="this.src='https://via.placeholder.com/50'" style="margin-bottom: 5px;">
+                            <span style="display: block; font-weight: 900; text-transform: uppercase; font-size: 11px; color: #000; font-style: italic; letter-spacing: 0.5px; line-height: 1.3;">${teamA}</span>  
                         </div>  
-                        <div class="vs-circle">VS</div>  
-                        <div class="team-ui">  
-                            <img src="${match.team2 || ''}" onerror="this.src='https://via.placeholder.com/50'">
-                            <span>${teamB}</span>  
+                        <div class="vs-circle" style="margin-top: 15px;">VS</div>  
+                        <div class="team-ui" style="text-align: center; width: 42%;">  
+                            <img src="${match.team2 || ''}" onerror="this.src='https://via.placeholder.com/50'" style="margin-bottom: 5px;">
+                            <span style="display: block; font-weight: 900; text-transform: uppercase; font-size: 11px; color: #000; font-style: italic; letter-spacing: 0.5px; line-height: 1.3;">${teamB}</span>  
                         </div>  
                     </div>  
                     
-                    <div class="venue-time" style="font-size: 12px; color: #555; margin-top: 10px;">  
+                    <div class="venue-time" style="font-size: 12px; color: #555; margin-top: 15px;">  
                         ${match.time || ''} • ${stadiumName}  
                     </div>  
 
@@ -293,4 +293,3 @@ document.addEventListener('DOMContentLoaded', () => {
     if(closeModalBtn) closeModalBtn.addEventListener('click', skipToEvent);
 
 });
-                                  
