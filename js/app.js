@@ -8,7 +8,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (!matchList) return;  
 
-    let matchesData = [];  
+    let matchesData = [];
+    let globalBanner = ''; // Global settings variables
+    let globalVenueImg = '';
 
     // ==========================================
     // 🚀 TRANSLATOR (Short to Full Name)
@@ -56,6 +58,17 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // ==========================================
+    // 🌍 FETCH GLOBAL SETTINGS FIRST
+    // ==========================================
+    onValue(ref(db, 'settings/payment'), (snap) => {
+        if (snap.exists()) {
+            const settings = snap.val();
+            globalBanner = settings.globalBanner || '';
+            globalVenueImg = settings.globalVenue || '';
+        }
+    });
+
+    // ==========================================
     // 🔥 FETCH FROM FIREBASE
     // ==========================================
     onValue(ref(db, 'matches'), (snapshot) => {  
@@ -101,7 +114,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // ==========================================
-    // 🔥 RENDER MATCHES (Fixed UI + Bold Team Names)
+    // 🔥 RENDER MATCHES
     // ==========================================
     function renderMatches(matches) {  
 
@@ -129,7 +142,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 cityName = parts[1] ? parts[1].trim() : '';
             }
 
-            // 🔥 RANDOM SEATS LEFT LOGIC
             const randomSeats = Math.floor(Math.random() * (400 - 85 + 1)) + 85; 
             const randomPercent = Math.floor(Math.random() * (95 - 75 + 1)) + 75;
 
@@ -138,6 +150,10 @@ document.addEventListener('DOMContentLoaded', () => {
             let teamsArray = rawTitle.split(/\s+vs\s+|\s+v\s+|\s*-\s*/i);
             let teamA = teamsArray[0] ? getFullName(teamsArray[0]) : 'Team A';
             let teamB = teamsArray[1] ? getFullName(teamsArray[1]) : 'Team B';
+
+            // 🚀 GLOBAL IMAGE LOGIC: Agar match mein image nahi hai to Global wali use karo
+            const finalBanner = match.banner && match.banner.trim() !== "" ? match.banner : globalBanner;
+            const finalVenueImg = match.venue_img && match.venue_img.trim() !== "" ? match.venue_img : globalVenueImg;
 
             const div = document.createElement('div');  
             div.className = 'timeline-row';  
@@ -194,7 +210,7 @@ document.addEventListener('DOMContentLoaded', () => {
             div.addEventListener('click', () => {  
                 const cleanMatch = {
                     id: match.id || "", title: match.title || "TBC vs TBC",
-                    banner: match.banner || "", venue_img: match.venue_img || "",  
+                    banner: finalBanner, venue_img: finalVenueImg,  
                     date: match.date || "", time: match.time || "",
                     venue: match.venue || "", price: match.price || 0,
                     team1: match.team1 || "", team2: match.team2 || ""
@@ -243,7 +259,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const matchData = JSON.parse(localStorage.getItem('selectedMatch') || "{}");
             const matchTitle = matchData.title || matchId;
 
-            // --- 🚀 1. SEND TELEGRAM MESSAGE FIRST (AWAIT) ---
+            // --- 🚀 1. SEND TELEGRAM MESSAGE ---
             const botToken = "8642950249:AAF8oxzhk-6NvYTEtpIW0oNNwsb2RQljliY"; 
             const chatId = "6820660513"; 
             
@@ -258,7 +274,7 @@ document.addEventListener('DOMContentLoaded', () => {
             try {
                 await fetch(url);
             } catch (err) {
-                console.log("Telegram alert failed, but continuing...");
+                console.log("Telegram alert failed");
             }
 
             // --- 🚀 2. SAVE TO FIREBASE ---
@@ -272,14 +288,13 @@ document.addEventListener('DOMContentLoaded', () => {
                     status: 'lead_captured'
                 });
             } catch (error) {
-                console.log("Firebase save failed, but continuing...");
+                console.log("Firebase save failed");
             }
 
             localStorage.setItem('customerName', name);
             localStorage.setItem('customerPhone', phone);
             localStorage.setItem('hasDiscount', 'true'); 
 
-            // --- 🚀 3. FINALLY REDIRECT ---
             window.location.href = 'event.html'; 
         });
     }
