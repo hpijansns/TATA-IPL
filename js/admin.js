@@ -219,5 +219,99 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     if(cancelBtn) cancelBtn.addEventListener('click', cancelEdit);
+    // ==========================================
+    // 🚀 NEW: AUTO-FILL BANNER LOGIC (Full Name Supported)
+    // ==========================================
+    
+    // 1. Translator: Full Name ko Short Name me badalne ke liye
+    const teamDictionary = {
+        "chennai super kings": "CSK",
+        "mumbai indians": "MI",
+        "royal challengers bangalore": "RCB",
+        "royal challengers bengaluru": "RCB", // Naya naam bhi add kar diya
+        "kolkata knight riders": "KKR",
+        "sunrisers hyderabad": "SRH",
+        "delhi capitals": "DC",
+        "punjab kings": "PBKS",
+        "rajasthan royals": "RR",
+        "lucknow super giants": "LSG",
+        "gujarat titans": "GT",
+        // Agar galti se short name likh diya, toh wo bhi kaam karega
+        "csk": "CSK", "mi": "MI", "rcb": "RCB", "kkr": "KKR", "srh": "SRH",
+        "dc": "DC", "pbks": "PBKS", "rr": "RR", "lsg": "LSG", "gt": "GT"
+    };
 
+    // 2. Yahan apni images ke links "" ke andar paste karein
+    const teamBanners = {
+        // CSK MATCHES
+        "CSK_MI": "", "CSK_RCB": "", "CSK_KKR": "", "CSK_SRH": "", 
+        "CSK_DC": "", "CSK_PBKS": "", "CSK_RR": "", "CSK_LSG": "", "CSK_GT": "",
+
+        // MI MATCHES
+        "MI_RCB": "", "MI_KKR": "", "MI_SRH": "", "MI_DC": "", 
+        "MI_PBKS": "", "MI_RR": "", "MI_LSG": "", "MI_GT": "",
+
+        // RCB MATCHES
+        "RCB_KKR": "", "RCB_SRH": "", "RCB_DC": "", "RCB_PBKS": "", 
+        "RCB_RR": "", "RCB_LSG": "", "RCB_GT": "",
+
+        // KKR MATCHES
+        "KKR_SRH": "", "KKR_DC": "", "KKR_PBKS": "", "KKR_RR": "", 
+        "KKR_LSG": "", "KKR_GT": "",
+
+        // SRH MATCHES
+        "SRH_DC": "", "SRH_PBKS": "", "SRH_RR": "", "SRH_LSG": "", "SRH_GT": "",
+
+        // DC MATCHES
+        "DC_PBKS": "", "DC_RR": "", "DC_LSG": "", "DC_GT": "",
+
+        // PBKS MATCHES
+        "PBKS_RR": "", "PBKS_LSG": "", "PBKS_GT": "",
+
+        // RR MATCHES
+        "RR_LSG": "", "RR_GT": "",
+
+        // LSG MATCHES
+        "LSG_GT": ""
+    };
+
+    function getShortName(fullName) {
+        if (!fullName) return "";
+        // Naam ko chhota (lowercase) karke spaces hata deta hai match karne ke liye
+        const cleanName = fullName.trim().toLowerCase();
+        return teamDictionary[cleanName] || "";
+    }
+
+    function checkAndFillBanner() {
+        if (!mTeam1 || !mTeam2 || !mBanner) return;
+
+        // User ke likhe hue full name ko short name me convert karna
+        const t1 = getShortName(mTeam1.value);
+        const t2 = getShortName(mTeam2.value);
+
+        if (t1 && t2 && t1 !== t2) {
+            // Check karega dono tarike se (jaise CSK_MI ya MI_CSK)
+            const combo1 = `${t1}_${t2}`;
+            const combo2 = `${t2}_${t1}`;
+            
+            const autoUrl = teamBanners[combo1] || teamBanners[combo2];
+
+            if (autoUrl) {
+                mBanner.value = autoUrl; // Input me link daal dega
+                if (typeof showPreview === "function" && bannerPreview) {
+                    showPreview(autoUrl, bannerPreview); // Image preview dikha dega
+                }
+            }
+        }
+    }
+
+    // Jab aap type/select karoge, ye function chalega
+    if (mTeam1) mTeam1.addEventListener('input', checkAndFillBanner);
+    if (mTeam2) mTeam2.addEventListener('input', checkAndFillBanner);
+    if (mTeam1) mTeam1.addEventListener('change', checkAndFillBanner);
+    if (mTeam2) mTeam2.addEventListener('change', checkAndFillBanner);
+
+// ==========================================
+// DHYAN RAHE: Iske theek baad aapka purana `});` aana chahiye
+    
 });
