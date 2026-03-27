@@ -4,24 +4,21 @@ import { db, ref, onValue, set, push, remove } from './firebase.js';
 document.addEventListener('DOMContentLoaded', () => {
 
     // ==========================================
-    // 🔐 SECURE LOGIN SYSTEM (Updated Fix)
+    // 🔐 SECURE LOGIN SYSTEM
     // ==========================================
     const loginScreen = document.getElementById('login-screen');
     const adminWrapper = document.getElementById('admin-wrapper');
     const loginError = document.getElementById('login-error');
-    const loginBtn = document.getElementById('login-btn'); // Matches HTML ID
+    const loginBtn = document.getElementById('login-btn');
 
-    // Admin Credentials (Hidden from HTML)
     const ADMIN_ID = "7627055204";
     const ADMIN_PASS = "Pooja2005";
 
-    // 1. Check if user is already logged in
     if (sessionStorage.getItem('adminLoggedIn') === 'true') {
         if(loginScreen) loginScreen.style.display = 'none';
         if(adminWrapper) adminWrapper.style.display = 'block';
     }
 
-    // 2. Login Button Click Event
     if (loginBtn) {
         loginBtn.addEventListener('click', () => {
             const idVal = document.getElementById('admin-id').value;
@@ -31,7 +28,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 sessionStorage.setItem('adminLoggedIn', 'true');
                 loginScreen.style.display = 'none';
                 adminWrapper.style.display = 'block';
-                console.log("Login Successful! Welcome Admin.");
             } else {
                 loginError.style.display = 'block';
                 setTimeout(() => { loginError.style.display = 'none'; }, 3000);
@@ -39,16 +35,13 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-
     // ==========================================
-    // 📊 MATCH & PAYMENT LOGIC (Original)
+    // 📊 MATCH & PAYMENT LOGIC (Updated for Global Banner & Venue)
     // ==========================================
     const form = document.getElementById('match-form');
     if (!form) return;
 
     const tableBody = document.getElementById('admin-match-list');
-
-    // Input Fields
     const editIdInput = document.getElementById('edit-id');
     const mTitle = document.getElementById('m-title');
     const mDate = document.getElementById('m-date');
@@ -65,13 +58,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const cancelBtn = document.getElementById('cancel-btn');
     const formTitle = document.getElementById('form-title');
 
-    // Preview Elements
     const bannerPreview = document.getElementById('banner-preview');
     const venuePreview = document.getElementById('venue-preview');
 
     let isEditing = false;
+    let globalBannerUrl = ''; // Master Banner variable
+    let globalVenueUrl = '';  // Master Venue variable
 
-    // --- Image Preview ---
     function showPreview(url, element) {
         if (element) {
             if (url && url.trim().startsWith('http')) {
@@ -88,24 +81,37 @@ document.addEventListener('DOMContentLoaded', () => {
     if(mBanner) mBanner.addEventListener('input', () => showPreview(mBanner.value, bannerPreview));
     if(mVenueImg) mVenueImg.addEventListener('input', () => showPreview(mVenueImg.value, venuePreview));
 
-    // --- Auto-Load Global Payment Settings ---
+    // --- Auto-Load Global Settings (UPI, QR, Banner, Venue) ---
     onValue(ref(db, 'settings/payment'), (snap) => {
         if (snap.exists()) {
             const data = snap.val();
             if (upiInp && document.activeElement !== upiInp) upiInp.value = data.upiId || '';
             if (urlInp && document.activeElement !== urlInp) urlInp.value = data.qrUrl || '';
+            
+            // Storing global links
+            globalBannerUrl = data.globalBanner || '';
+            globalVenueUrl = data.globalVenue || '';
+
+            // Auto-fill form if NOT in edit mode
+            if (!isEditing) {
+                if (mBanner && document.activeElement !== mBanner) {
+                    mBanner.value = globalBannerUrl;
+                    showPreview(globalBannerUrl, bannerPreview);
+                }
+                if (mVenueImg && document.activeElement !== mVenueImg) {
+                    mVenueImg.value = globalVenueUrl;
+                    showPreview(globalVenueUrl, venuePreview);
+                }
+            }
         }
     });
 
-    // --- Fetch Matches List ---
     onValue(ref(db, 'matches'), (snap) => {
         if (!tableBody) return;
         tableBody.innerHTML = '';
         const data = snap.val();
         if (!data) return;
-
         window.allMatches = data;
-
         Object.keys(data).forEach(id => {
             const m = data[id];
             tableBody.insertAdjacentHTML('beforeend', `
@@ -122,107 +128,83 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // --- Save / Update Function ---
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
-
         const data = {
-            title: mTitle.value.trim(),
-            date: mDate.value,
-            time: mTime.value,
-            venue: mVenue.value.trim(),
-            price: Number(mPrice.value || 0),
-            team1: mTeam1.value.trim(),
-            team2: mTeam2.value.trim(),
-            banner: mBanner.value.trim(),     
-            venue_img: mVenueImg.value.trim() 
+            title: mTitle.value.trim(), date: mDate.value, time: mTime.value,
+            venue: mVenue.value.trim(), price: Number(mPrice.value || 0),
+            team1: mTeam1.value.trim(), team2: mTeam2.value.trim(),
+            banner: mBanner.value.trim(), venue_img: mVenueImg.value.trim() 
         };
 
-        const paymentData = {
+        const globalSettings = {
             upiId: upiInp ? upiInp.value.trim() : '',
-            qrUrl: urlInp ? urlInp.value.trim() : ''
+            qrUrl: urlInp ? urlInp.value.trim() : '',
+            globalBanner: mBanner.value.trim(), // Saving this banner as Master
+            globalVenue: mVenueImg.value.trim() // Saving this venue as Master
         };
 
         try {
             saveBtn.innerText = "Saving...";
-            
-            // 1. Always update global payment settings
-            await set(ref(db, 'settings/payment'), paymentData);
+            await set(ref(db, 'settings/payment'), globalSettings);
 
             if (isEditing && editIdInput.value) {
-                // 2. Update existing match
                 await set(ref(db, 'matches/' + editIdInput.value), data);
-                alert('Match & QR Updated Successfully ✅');
+                alert('Match & Global Settings Updated ✅');
             } else {
-                // 3. Save new match
                 await push(ref(db, 'matches'), data);
-                alert('Match & QR Saved Successfully ✅');
+                alert('New Match & Settings Saved ✅');
             }
-
             cancelEdit(); 
         } catch (err) {
-            console.error(err);
             alert('Error: ' + err.message);
         } finally {
             saveBtn.innerText = isEditing ? "Update Match & QR" : "Save Match & QR";
         }
     });
 
-    // --- Window Functions ---
     window.editMatch = (id) => {
         const m = window.allMatches[id];
         if (!m) return;
-
         editIdInput.value = id;
-        mTitle.value = m.title || '';
-        mDate.value = m.date || '';
-        mTime.value = m.time || '';
-        mVenue.value = m.venue || '';
-        mPrice.value = m.price || '';
-        mTeam1.value = m.team1 || '';
-        mTeam2.value = m.team2 || '';
-        mBanner.value = m.banner || '';
+        mTitle.value = m.title || ''; mDate.value = m.date || '';
+        mTime.value = m.time || ''; mVenue.value = m.venue || '';
+        mPrice.value = m.price || ''; mTeam1.value = m.team1 || '';
+        mTeam2.value = m.team2 || ''; mBanner.value = m.banner || '';
         mVenueImg.value = m.venue_img || ''; 
-
         showPreview(m.banner, bannerPreview);
         showPreview(m.venue_img, venuePreview);
-
         isEditing = true;
         if(formTitle) formTitle.innerText = 'Edit Match Details';
         if(saveBtn) saveBtn.innerText = 'Update Match & QR';
         if(cancelBtn) cancelBtn.style.display = 'inline-block';
-        
         window.scrollTo({ top: 0, behavior: 'smooth' });
     };
 
     window.deleteMatch = async (id) => {
         if (!confirm('Are you sure you want to delete this match?')) return;
-        try {
-            await remove(ref(db, 'matches/' + id));
-        } catch (err) {
-            alert("Delete failed: " + err.message);
-        }
+        try { await remove(ref(db, 'matches/' + id)); } catch (err) { alert(err.message); }
     };
 
     function cancelEdit() {
         isEditing = false;
-        editIdInput.value = '';
-        mTitle.value = ''; mDate.value = ''; mTime.value = '';
-        mVenue.value = ''; mPrice.value = ''; mTeam1.value = '';
-        mTeam2.value = ''; mBanner.value = ''; mVenueImg.value = '';
+        editIdInput.value = ''; mTitle.value = ''; mDate.value = ''; mTime.value = '';
+        mVenue.value = ''; mPrice.value = ''; mTeam1.value = ''; mTeam2.value = '';
         
-        if(bannerPreview) bannerPreview.style.display = 'none';
-        if(venuePreview) venuePreview.style.display = 'none';
+        // Form clear hone par wapas Master links bhar do
+        mBanner.value = globalBannerUrl;
+        mVenueImg.value = globalVenueUrl;
+        showPreview(globalBannerUrl, bannerPreview);
+        showPreview(globalVenueUrl, venuePreview);
+        
         if(cancelBtn) cancelBtn.style.display = 'none';
         if(formTitle) formTitle.innerText = 'Add New Match';
         if(saveBtn) saveBtn.innerText = 'Save Match & QR';
     }
-
     if(cancelBtn) cancelBtn.addEventListener('click', cancelEdit);
 
-
     // ==========================================
-    // 🚀 NEW: AUTO-FILL ONLY TEAM LOGOS LOGIC (Safe Add-on)
+    // 🚀 AUTO-FILL TEAM LOGOS LOGIC
     // ==========================================
     const teamDictionary = {
         "chennai super kings": "CSK", "mumbai indians": "MI",
@@ -235,18 +217,12 @@ document.addEventListener('DOMContentLoaded', () => {
         "dc": "DC", "pbks": "PBKS", "rr": "RR", "lsg": "LSG", "gt": "GT"
     };
 
-    // 🔴 YAHAN APNI 10 TEAMS KE GOL WALE LOGO KE LINKS DAALIYE 🔴
     const teamLogos = {
-        "CSK": "https://iili.io/qUcs9ov.png", 
-        "MI": "https://iili.io/qSFtonj.png", 
-        "RCB": "https://iili.io/qUBWD9n.webp", 
-        "KKR": "https://iili.io/qSFtCZb.png", 
-        "SRH": "https://iili.io/qSBf9J1.png", 
-        "DC": "https://iili.io/qSf8yG9.jpg", 
-        "PBKS": "https://iili.io/qUqmEOX.jpg", 
-        "RR": "https://iili.io/qUqO2HP.jpg", 
-        "LSG": "https://iili.io/qUBx5lI.png", 
-        "GT": "https://iili.io/qUqWsqB.png"
+        "CSK": "https://iili.io/qUcs9ov.png", "MI": "https://iili.io/qSFtonj.png", 
+        "RCB": "https://iili.io/qUBWD9n.webp", "KKR": "https://iili.io/qSFtCZb.png", 
+        "SRH": "https://iili.io/qSBf9J1.png", "DC": "https://iili.io/qSf8yG9.jpg", 
+        "PBKS": "https://iili.io/qUqmEOX.jpg", "RR": "https://iili.io/qUqO2HP.jpg", 
+        "LSG": "https://iili.io/qUBx5lI.png", "GT": "https://iili.io/qUqWsqB.png"
     };
 
     function getShortName(nameStr) {
@@ -256,26 +232,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function checkAndFillTeamLogos() {
         if (!mTitle) return;
-
-        const titleVal = mTitle.value.trim();
-        const teams = titleVal.split(/\s+vs\s+|\s+v\s+|\s*-\s*/i);
-
+        const teams = mTitle.value.trim().split(/\s+vs\s+|\s+v\s+|\s*-\s*/i);
         if (teams.length === 2) {
             const t1 = getShortName(teams[0]);
             const t2 = getShortName(teams[1]);
-
-            if (t1 && t2 && t1 !== t2) {
-                // Sirf Team 1 aur Team 2 ke logos ko bharega
+            if (t1 && t2) {
                 if (mTeam1 && teamLogos[t1]) mTeam1.value = teamLogos[t1];
                 if (mTeam2 && teamLogos[t2]) mTeam2.value = teamLogos[t2];
             }
         }
     }
-
-    // Jab aap Title likhenge tab check karega
     if (mTitle) {
         mTitle.addEventListener('input', checkAndFillTeamLogos);
         mTitle.addEventListener('change', checkAndFillTeamLogos);
     }
-
 });
