@@ -1,0 +1,35 @@
+<svg viewBox="0 0 500 500" xmlns="http://www.w3.org/2000/svg">
+
+  <!-- Ground -->
+  <circle cx="250" cy="250" r="80" fill="#1e7d32"/>
+
+  <!-- Ring -->
+  <circle cx="250" cy="250" r="130" fill="none" stroke="#ddd" stroke-width="40"/>
+
+  <!-- Blocks (Outer Ring) -->
+
+  <path d="M250 40 A210 210 0 0 1 400 120 L350 170 A150 150 0 0 0 250 110 Z"
+        fill="#8e44ad" class="block" data-price="1000"/>
+
+  <path d="M400 120 A210 210 0 0 1 450 250 L390 250 A150 150 0 0 0 350 170 Z"
+        fill="#3498db" class="block" data-price="1200"/>
+
+  <path d="M450 250 A210 210 0 0 1 400 380 L350 330 A150 150 0 0 0 390 250 Z"
+        fill="#e67e22" class="block" data-price="1500"/>
+
+  <path d="M400 380 A210 210 0 0 1 250 460 L250 390 A150 150 0 0 0 350 330 Z"
+        fill="#2ecc71" class="block" data-price="2000"/>
+
+  <path d="M250 460 A210 210 0 0 1 100 380 L150 330 A150 150 0 0 0 250 390 Z"
+        fill="#e74c3c" class="block" data-price="3000"/>
+
+  <path d="M100 380 A210 210 0 0 1 50 250 L110 250 A150 150 0 0 0 150 330 Z"
+        fill="#f1c40f" class="block" data-price="3500"/>
+
+  <path d="M50 250 A210 210 0 0 1 100 120 L150 170 A150 150 0 0 0 110 250 Z"
+        fill="#9b59b6" class="block" data-price="1800"/>
+
+  <path d="M100 120 A210 210 0 0 1 250 40 L250 110 A150 150 0 0 0 150 170 Z"
+        fill="#1abc9c" class="block" data-price="2200"/>
+
+</svg>
